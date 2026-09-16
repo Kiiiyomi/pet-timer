@@ -192,9 +192,8 @@ let editId = null;
 let accountOptions = [];
 let breedOptions = [];
 
-/* 编辑表单的图片临时状态 */
-let pendingImgBlob = null;      // 本次上传/粘贴的新图片 Blob
-let pendingImgCleared = false;  // 用户是否点击了"清除图片"
+let pendingImgBlob = null;
+let pendingImgCleared = false;
 
 /* ============================================================
  *  工具函数
@@ -228,6 +227,9 @@ function touchPet(pet, ts){
 }
 function isIndexedImgId(img){
     return img && img.indexOf("img_") === 0;
+}
+function isBase64Img(img){
+    return img && img.indexOf("data:image/") === 0;
 }
 
 /* ============================================================
@@ -295,7 +297,6 @@ function deleteImage(id){
     });
 }
 
-/* 图片 URL 缓存，避免重复 createObjectURL 与每秒重绘闪烁 */
 const imgUrlCache = {};
 function getImageUrlSync(imgId){
     return imgUrlCache[imgId] || null;
@@ -317,7 +318,6 @@ function forgetImgUrl(imgId){
     }
 }
 
-/* base64 <-> Blob 辅助 */
 function blobToBase64(blob){
     return new Promise(function(resolve){
         const r = new FileReader();
@@ -339,7 +339,6 @@ function base64ToBlob(dataUrl){
     });
 }
 
-/* 压缩图片为 Blob：最长边 maxSize、JPEG quality */
 function compressToBlob(file, maxSize, quality){
     maxSize = maxSize || 360;
     quality = quality || 0.75;
@@ -367,7 +366,7 @@ function compressToBlob(file, maxSize, quality){
 }
 
 /* ============================================================
- *  localStorage（元数据）
+ *  localStorage（元数据）—— 带紧急降级
  * ============================================================ */
 function safeSave(){
     try{
@@ -376,8 +375,20 @@ function safeSave(){
         return true;
     }catch(e){
         console.warn("localStorage 写入失败", e);
-        alert("⚠️ 本地存储写入失败（可能余额已满）。\n请立即点击「💾导出备份」保底。");
-        return false;
+        /* 紧急降级：丢弃图片字段，保住宠物数据 */
+        try{
+            const slim = {
+                pets: petList.map(function(p){ return Object.assign({}, p, {img:""}); }),
+                accounts: accountOptions,
+                breeds: breedOptions
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
+            alert("⚠️ 本地存储已满！\n已紧急丢弃图片字段以保住宠物数据。\n请立刻点击「💾导出备份」保底，然后用图片链接替代本地上传。");
+            return false;
+        }catch(e2){
+            alert("⚠️ 本地存储彻底写不进去！\n请立即点击「💾导出备份」，把数据保存到电脑/网盘。");
+            return false;
+        }
     }
 }
 function saveToLocal(){ safeSave(); }
@@ -393,6 +404,27 @@ function loadFromLocal(){
         petList.forEach(function(p){
             if(!p.utime) p.utime = p.ctime || Date.now();
         });
+
+        /* 自动迁移：localStorage 里残留的 base64 图片 -> IndexedDB */
+        const needMigrate = petList.filter(function(p){ return isBase64Img(p.img); });
+        if(needMigrate.length > 0){
+            console.log("检测到 " + needMigrate.length + " 张 base64 图片，正在迁移到 IndexedDB...");
+            Promise.all(needMigrate.map(function(p){
+                return base64ToBlob(p.img).then(function(blob){
+                    const newId = "img_" + genId();
+                    return saveImage(newId, blob).then(function(){
+                        p.img = newId;
+                    });
+                }).catch(function(e){
+                    console.warn("迁移失败，丢弃该图", e);
+                    p.img = "";
+                });
+            })).then(function(){
+                saveToLocal();   // 重写 localStorage，立即瘦身
+                render();
+                console.log("图片迁移完成");
+            });
+        }
     }catch(e){ console.error("加载本地数据失败", e); }
 }
 
@@ -603,7 +635,6 @@ function buildCard(pet, now){
     return div;
 }
 
-/* 异步填充卡片图片 */
 function fillCardImages(container){
     container.querySelectorAll("img[data-imgid]").forEach(function(imgEl){
         const id = imgEl.getAttribute("data-imgid");
@@ -618,7 +649,6 @@ function fillCardImages(container){
                 }).catch(function(){ /* 忽略 */ });
             }
         }else{
-            // 网络链接或 base64
             imgEl.src = id;
         }
     });
@@ -767,7 +797,7 @@ document.getElementById("petImgUrl").addEventListener("paste", function(e){
             compressToBlob(f).then(function(blob){
                 pendingImgBlob = blob;
                 pendingImgCleared = false;
-                document.getElementById("petImgUrl").value = ""; // 本地图不占用链接框
+                document.getElementById("petImgUrl").value = "";
                 const url = URL.createObjectURL(blob);
                 showFormImgPreview(url);
             }).catch(function(err){
@@ -790,7 +820,6 @@ document.getElementById("uploadImg").onchange = function(e){
     }).catch(function(err){
         alert("图片处理失败：" + err.message);
     });
-    // 清空 file input，便于同一文件再次选择
     e.target.value = "";
 };
 
@@ -801,16 +830,13 @@ document.getElementById("btnClearImg").onclick = function(){
     showFormImgPreview("");
 };
 
-/* 链接框手动清空时，同步清除预览 */
 document.getElementById("petImgUrl").addEventListener("input", function(){
     const v = this.value.trim();
     if(v){
-        // 用户输入了链接，覆盖本地图选择
         if(pendingImgBlob){ pendingImgBlob = null; }
         pendingImgCleared = false;
         showFormImgPreview(v);
     }
-    // 清空时不立即动 preview，交由 clear 按钮或保存时判断
 });
 
 /* ============================================================
@@ -829,7 +855,6 @@ function openEdit(pid){
     document.getElementById("modalTitle").textContent = pid ? "编辑宠物档案" : "新增宠物档案";
     document.getElementById("btnDel").classList.toggle("hidden", !pid);
 
-    /* 清空表单 */
     document.getElementById("petImgUrl").value = "";
     document.getElementById("txtAccount").value = "";
     document.getElementById("txtBreed").value = "";
@@ -859,7 +884,6 @@ function openEdit(pid){
             document.getElementById("petNote").value = p.note || "";
             fillEditSelects(p.account || "", p.breed || "");
 
-            /* 图片预览 */
             if(p.img){
                 if(isIndexedImgId(p.img)){
                     const cached = getImageUrlSync(p.img);
@@ -913,13 +937,11 @@ document.getElementById("btnSave").onclick = async function(){
 
     const oldPet = editId ? petList.find(function(x){ return x.id === editId; }) : null;
 
-    /* -------- 处理图片 -------- */
     let finalImg = "";
     let oldImgToDelete = null;
 
     try{
         if(pendingImgBlob){
-            /* 新上传/粘贴的图片：写入 IndexedDB */
             finalImg = "img_" + genId();
             if(oldPet && isIndexedImgId(oldPet.img)){
                 oldImgToDelete = oldPet.img;
@@ -944,13 +966,11 @@ document.getElementById("btnSave").onclick = async function(){
         return;
     }
 
-    /* 清理旧图 */
     if(oldImgToDelete){
         deleteImage(oldImgToDelete).catch(function(e){ console.warn("删除旧图失败", e); });
         forgetImgUrl(oldImgToDelete);
     }
 
-    /* -------- 保存宠物元数据 -------- */
     addOption(accountOptions, accountVal);
     addOption(breedOptions, breedVal);
 
@@ -996,7 +1016,7 @@ document.getElementById("btnDel").onclick = function(){
 };
 
 /* ============================================================
- *  导入 / 导出
+ *  导入
  * ============================================================ */
 document.getElementById("btnImport").onclick = function(){
     const ipt = document.createElement("input");
@@ -1014,6 +1034,8 @@ document.getElementById("btnImport").onclick = function(){
                 alert("导入失败：备份文件缺少pets数据");
                 return;
             }
+
+            /* 归一化宠物数据（保留 img 原样，稍后处理） */
             const migratedPets = obj.pets.map(function(p){
                 const created = p.ctime || Date.now();
                 return {
@@ -1036,13 +1058,31 @@ document.getElementById("btnImport").onclick = function(){
                     note:p.note || ""
                 };
             });
+
             if(!confirm("导入将覆盖当前全部数据，确认继续？")) return;
 
+            /* 清空 URL 缓存 */
+            Object.keys(imgUrlCache).forEach(forgetImgUrl);
+
+            /* 步骤 1：把旧备份里的 base64 图片迁移进 IndexedDB */
+            const migrateTasks = migratedPets.map(function(p){
+                if(isBase64Img(p.img)){
+                    return base64ToBlob(p.img).then(function(blob){
+                        const newId = "img_" + genId();
+                        return saveImage(newId, blob).then(function(){
+                            p.img = newId;
+                        });
+                    }).catch(function(e){
+                        console.warn("迁移旧 base64 图片失败，丢弃", e);
+                        p.img = "";
+                    });
+                }
+                return Promise.resolve();
+            });
+
+            /* 步骤 2：把新版备份的 images 字段（id -> base64）写回 IndexedDB */
             const images = obj.images || {};
             const imgIds = Object.keys(images);
-
-            /* 清空当前图片 URL 缓存 */
-            Object.keys(imgUrlCache).forEach(forgetImgUrl);
 
             const doImport = function(){
                 petList = migratedPets;
@@ -1050,27 +1090,29 @@ document.getElementById("btnImport").onclick = function(){
                 breedOptions   = Array.isArray(obj.breeds)   ? obj.breeds   : [];
                 saveToLocal();
                 render();
-                alert("导入成功，共"+migratedPets.length+"只宠物"
-                    + (imgIds.length ? "，包含 "+imgIds.length+" 张图片" : ""));
+                alert("导入成功，共" + migratedPets.length + "只宠物"
+                    + (imgIds.length ? "，恢复图片 " + imgIds.length + " 张" : ""));
             };
 
-            if(imgIds.length === 0){
-                doImport();
-            }else{
-                Promise.all(imgIds.map(function(id){
-                    return base64ToBlob(images[id])
-                        .then(function(blob){ return saveImage(id, blob); })
-                        .catch(function(e){ console.warn("导入图片失败", id, e); });
-                })).then(doImport);
-            }
+            Promise.all(migrateTasks)
+                .then(function(){
+                    return Promise.all(imgIds.map(function(id){
+                        return base64ToBlob(images[id])
+                            .then(function(blob){ return saveImage(id, blob); })
+                            .catch(function(e){ console.warn("导入图片失败", id, e); });
+                    }));
+                })
+                .then(doImport);
         };
         r.readAsText(f);
     };
     ipt.click();
 };
 
+/* ============================================================
+ *  导出（图片打包成 base64）
+ * ============================================================ */
 document.getElementById("btnExport").onclick = async function(){
-    /* 打包 IndexedDB 图片为 base64 */
     const imgMap = {};
     for(let i = 0; i < petList.length; i++){
         const p = petList[i];
@@ -1087,7 +1129,7 @@ document.getElementById("btnExport").onclick = async function(){
         pets:petList,
         accounts:accountOptions,
         breeds:breedOptions,
-        images:imgMap       // id -> base64
+        images:imgMap
     };
     const blob = new Blob([JSON.stringify(payload)], {type:"application/json"});
     const a = document.createElement("a");
@@ -1097,7 +1139,7 @@ document.getElementById("btnExport").onclick = async function(){
 };
 
 /* ============================================================
- *  筛选 / 排序事件绑定
+ *  筛选 / 排序事件
  * ============================================================ */
 document.getElementById("searchInput").oninput = render;
 document.getElementById("filterStatusSel").onchange = render;
