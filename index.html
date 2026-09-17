@@ -35,9 +35,9 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .form-row label{display:block;margin-bottom:4px;font-size:14px}
 textarea{width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font-family:inherit;font-size:14px}
 .hidden{display:none !important}
-.img-preview-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:none;align-items:center;justify-content:center;padding:12px}
+.img-preview-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:none;align-items:center;justify-content:center;padding:12px;cursor:zoom-out}
 .img-preview-modal.show{display:flex}
-.img-preview-modal img{max-width:95%;max-height:95%;object-fit:contain}
+.img-preview-modal img{max-width:95%;max-height:95%;object-fit:contain;cursor:default}
 .status-idle{color:#20b060;font-weight:bold}
 .status-waitpair{color:#e04080;font-weight:bold}
 .gender-m{color:#348ede;font-weight:bold}
@@ -45,7 +45,8 @@ textarea{width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font-fam
 .opt-manage-row{margin:8px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start}
 #formImgPreviewWrap{margin-top:6px;display:none;align-items:center;gap:8px}
 #formImgPreviewWrap.show{display:flex}
-#formImgPreview{max-width:120px;max-height:120px;border-radius:6px;border:1px solid #ddd;object-fit:cover}
+#formImgPreview{max-width:140px;max-height:140px;border-radius:6px;border:1px solid #ddd;object-fit:cover;cursor:zoom-in;transition:transform .15s}
+#formImgPreview:hover{transform:scale(1.03)}
 </style>
 </head>
 <body>
@@ -117,7 +118,7 @@ textarea{width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font-fam
 <input type="text" id="petImgUrl" placeholder="图片链接，或按 Ctrl+V 粘贴截图">
 <input type="file" accept="image/*" id="uploadImg" style="margin-top:4px">
 <div id="formImgPreviewWrap">
-    <img id="formImgPreview" alt="预览">
+    <img id="formImgPreview" alt="预览（点击放大）" title="点击放大查看">
     <button type="button" id="btnClearImg" style="padding:4px 8px;font-size:12px">清除图片</button>
 </div>
 </div>
@@ -339,9 +340,10 @@ function base64ToBlob(dataUrl){
     });
 }
 
+/* 压缩：默认最长边 1200px、JPEG 质量 0.85（比之前的 360/0.75 清晰很多） */
 function compressToBlob(file, maxSize, quality){
-    maxSize = maxSize || 360;
-    quality = quality || 0.75;
+    maxSize = maxSize || 1200;
+    quality = quality || 0.85;
     return new Promise(function(resolve, reject){
         const r = new FileReader();
         r.onload = function(ev){
@@ -351,7 +353,11 @@ function compressToBlob(file, maxSize, quality){
                 const c = document.createElement("canvas");
                 c.width  = Math.max(1, Math.round(img.width  * scale));
                 c.height = Math.max(1, Math.round(img.height * scale));
-                c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+                const ctx = c.getContext("2d");
+                /* 缩小图片时开启高质量插值，减少锯齿 */
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = "high";
+                ctx.drawImage(img, 0, 0, c.width, c.height);
                 c.toBlob(function(blob){
                     if(blob) resolve(blob);
                     else reject(new Error("canvas.toBlob 返回空"));
@@ -375,7 +381,6 @@ function safeSave(){
         return true;
     }catch(e){
         console.warn("localStorage 写入失败", e);
-        /* 紧急降级：丢弃图片字段，保住宠物数据 */
         try{
             const slim = {
                 pets: petList.map(function(p){ return Object.assign({}, p, {img:""}); }),
@@ -405,7 +410,6 @@ function loadFromLocal(){
             if(!p.utime) p.utime = p.ctime || Date.now();
         });
 
-        /* 自动迁移：localStorage 里残留的 base64 图片 -> IndexedDB */
         const needMigrate = petList.filter(function(p){ return isBase64Img(p.img); });
         if(needMigrate.length > 0){
             console.log("检测到 " + needMigrate.length + " 张 base64 图片，正在迁移到 IndexedDB...");
@@ -420,7 +424,7 @@ function loadFromLocal(){
                     p.img = "";
                 });
             })).then(function(){
-                saveToLocal();   // 重写 localStorage，立即瘦身
+                saveToLocal();
                 render();
                 console.log("图片迁移完成");
             });
@@ -718,21 +722,21 @@ const previewModal = document.getElementById("imgPreviewModal");
 const previewImg   = document.getElementById("previewBigImg");
 previewModal.onclick = function(){ previewModal.classList.remove("show"); };
 
+function openBigPreview(src){
+    if(!src) return;
+    previewImg.src = src;
+    previewModal.classList.add("show");
+}
+
 document.getElementById("petContainer").addEventListener("click", function(e){
     const wrap = e.target.closest(".avatar-wrap");
     if(wrap){
         const src = wrap.getAttribute("data-bigimg");
         if(src){
             if(isIndexedImgId(src)){
-                getImageUrl(src).then(function(url){
-                    if(url){
-                        previewImg.src = url;
-                        previewModal.classList.add("show");
-                    }
-                });
+                getImageUrl(src).then(function(url){ openBigPreview(url); });
             }else{
-                previewImg.src = src;
-                previewModal.classList.add("show");
+                openBigPreview(src);
             }
         }
         return;
@@ -778,7 +782,7 @@ document.getElementById("closeOptManage").onclick = function(){
 };
 
 /* ============================================================
- *  表单图片：粘贴、上传、清除、预览
+ *  表单图片：粘贴、上传、清除、预览、点击放大
  * ============================================================ */
 function showFormImgPreview(url){
     const wrap = document.getElementById("formImgPreviewWrap");
@@ -787,6 +791,18 @@ function showFormImgPreview(url){
     if(url) wrap.classList.add("show");
     else    wrap.classList.remove("show");
 }
+
+/* 点击表单里的预览图 → 弹出大图查看 */
+document.getElementById("formImgPreview").addEventListener("click", function(){
+    const src = this.src;
+    if(!src) return;
+    openBigPreview(src);
+});
+
+/* Esc 关闭大图 */
+document.addEventListener("keydown", function(e){
+    if(e.key === "Escape") previewModal.classList.remove("show");
+});
 
 document.getElementById("petImgUrl").addEventListener("paste", function(e){
     const items = e.clipboardData.items;
@@ -1035,7 +1051,6 @@ document.getElementById("btnImport").onclick = function(){
                 return;
             }
 
-            /* 归一化宠物数据（保留 img 原样，稍后处理） */
             const migratedPets = obj.pets.map(function(p){
                 const created = p.ctime || Date.now();
                 return {
@@ -1061,10 +1076,8 @@ document.getElementById("btnImport").onclick = function(){
 
             if(!confirm("导入将覆盖当前全部数据，确认继续？")) return;
 
-            /* 清空 URL 缓存 */
             Object.keys(imgUrlCache).forEach(forgetImgUrl);
 
-            /* 步骤 1：把旧备份里的 base64 图片迁移进 IndexedDB */
             const migrateTasks = migratedPets.map(function(p){
                 if(isBase64Img(p.img)){
                     return base64ToBlob(p.img).then(function(blob){
@@ -1080,7 +1093,6 @@ document.getElementById("btnImport").onclick = function(){
                 return Promise.resolve();
             });
 
-            /* 步骤 2：把新版备份的 images 字段（id -> base64）写回 IndexedDB */
             const images = obj.images || {};
             const imgIds = Object.keys(images);
 
