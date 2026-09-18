@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>以闪亮之名｜宠物繁育计时工具V12</title>
+<title>以闪亮之名｜宠物繁育计时工具V13.1</title>
 <style>
 *{box-sizing:border-box;font-family:system-ui,-apple-system}
 body{margin:12px;background:#f7f8fa;color:#222;max-width:1400px;margin-inline:auto;padding:8px}
@@ -47,15 +47,22 @@ textarea{width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font-fam
 #formImgPreviewWrap.show{display:flex}
 #formImgPreview{max-width:140px;max-height:140px;border-radius:6px;border:1px solid #ddd;object-fit:cover;cursor:zoom-in;transition:transform .15s}
 #formImgPreview:hover{transform:scale(1.03)}
+.time-hint{font-size:12px;color:#666;background:#f4f7fb;border:1px dashed #c8d6e5;border-radius:6px;padding:6px 8px;margin-bottom:6px;line-height:1.5}
+.time-hint b{color:#e04080}
+.tag-manager-list{max-height:50vh;overflow:auto;border:1px solid #eee;border-radius:6px;padding:6px;margin-top:6px}
+.tag-manager-row{display:flex;align-items:center;gap:8px;margin:4px 0;padding:4px 6px;border-radius:4px}
+.tag-manager-row:hover{background:#f7f8fa}
+.tag-manager-count{color:#888;font-size:12px}
 </style>
 </head>
 <body>
 <div id="globalAlertBox" class="top-alert hidden"></div>
-<div class="top-bar">
+<div class="top-bar" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
 <button class="primary" id="btnAdd">➕新增宠物</button>
 <button id="btnExport">💾导出备份</button>
 <button id="btnImport">📂导入备份</button>
-<button id="btnManageOpt">⚙️管理账号/品种选项</button>
+<button id="btnManageOpt">⚙️管理账号/品种</button>
+<button id="btnManageTag">🏷️管理标签</button>
 </div>
 <div class="search-row">
 <input id="searchInput" placeholder="🔍搜索名字/标签/CP..." style="flex:1;min-width:200px">
@@ -110,6 +117,19 @@ textarea{width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font-fam
     </div>
 </div>
 
+<div class="modal hidden" id="tagManageModal">
+    <div class="modal-box">
+        <h3>管理标签</h3>
+        <div style="font-size:12px;color:#666;margin-top:4px">
+            下方列出所有宠物档案里出现过的标签。"从所有宠物删除"会把该标签从每一只宠物的标签列表里移除。
+        </div>
+        <div class="tag-manager-list" id="tagListWrap"></div>
+        <div style="margin-top:12px;text-align:right">
+            <button id="closeTagManage">关闭</button>
+        </div>
+    </div>
+</div>
+
 <div class="modal hidden" id="editModal">
 <div class="modal-box">
 <h3 id="modalTitle">新增宠物档案</h3>
@@ -153,6 +173,7 @@ textarea{width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;font-fam
 </div>
 <div class="form-row">
 <label>总时长</label>
+<div class="time-hint" id="timeStatusHint">新增档案：填入总时长，保存后即为初始剩余时间。</div>
 <div style="display:flex;gap:8px;align-items:center">
 <input type="number" id="tHour" value="0" min="0" placeholder="小时">
 <span>小时</span>
@@ -195,6 +216,10 @@ let breedOptions = [];
 
 let pendingImgBlob = null;
 let pendingImgCleared = false;
+/* V13.1：是否被用户手动改动过时间字段（默认 false） */
+let timeEditedByUser = false;
+let editOriginalHourStr = "";
+let editOriginalMinuteStr = "";
 
 /* ============================================================
  *  工具函数
@@ -234,7 +259,7 @@ function isBase64Img(img){
 }
 
 /* ============================================================
- *  IndexedDB 图片存储
+ *  IndexedDB
  * ============================================================ */
 const IMG_DB_NAME = "petTimerImages";
 const IMG_DB_VERSION = 1;
@@ -253,18 +278,11 @@ function openImgDB(){
                 }
             };
             req.onsuccess = function(e){ resolve(e.target.result); };
-            req.onerror = function(e){
-                console.error("IndexedDB 打开失败", e);
-                reject(e);
-            };
-        }catch(err){
-            console.error("IndexedDB 异常", err);
-            reject(err);
-        }
+            req.onerror = function(e){ console.error("IndexedDB 打开失败", e); reject(e); };
+        }catch(err){ console.error("IndexedDB 异常", err); reject(err); }
     });
     return imgDBPromise;
 }
-
 function saveImage(id, blob){
     return openImgDB().then(function(db){
         return new Promise(function(resolve, reject){
@@ -275,7 +293,6 @@ function saveImage(id, blob){
         });
     });
 }
-
 function getImage(id){
     return openImgDB().then(function(db){
         return new Promise(function(resolve, reject){
@@ -286,7 +303,6 @@ function getImage(id){
         });
     });
 }
-
 function deleteImage(id){
     return openImgDB().then(function(db){
         return new Promise(function(resolve, reject){
@@ -297,11 +313,8 @@ function deleteImage(id){
         });
     });
 }
-
 const imgUrlCache = {};
-function getImageUrlSync(imgId){
-    return imgUrlCache[imgId] || null;
-}
+function getImageUrlSync(imgId){ return imgUrlCache[imgId] || null; }
 function getImageUrl(imgId){
     if(!imgId) return Promise.resolve("");
     if(imgUrlCache[imgId]) return Promise.resolve(imgUrlCache[imgId]);
@@ -318,7 +331,6 @@ function forgetImgUrl(imgId){
         delete imgUrlCache[imgId];
     }
 }
-
 function blobToBase64(blob){
     return new Promise(function(resolve){
         const r = new FileReader();
@@ -339,11 +351,9 @@ function base64ToBlob(dataUrl){
         }catch(e){ reject(e); }
     });
 }
-
-/* 压缩：默认最长边 1200px、JPEG 质量 0.85（比之前的 360/0.75 清晰很多） */
 function compressToBlob(file, maxSize, quality){
-    maxSize = maxSize || 1200;
-    quality = quality || 0.85;
+    maxSize = maxSize || 2400;
+    quality = quality || 0.92;
     return new Promise(function(resolve, reject){
         const r = new FileReader();
         r.onload = function(ev){
@@ -354,7 +364,6 @@ function compressToBlob(file, maxSize, quality){
                 c.width  = Math.max(1, Math.round(img.width  * scale));
                 c.height = Math.max(1, Math.round(img.height * scale));
                 const ctx = c.getContext("2d");
-                /* 缩小图片时开启高质量插值，减少锯齿 */
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = "high";
                 ctx.drawImage(img, 0, 0, c.width, c.height);
@@ -372,7 +381,7 @@ function compressToBlob(file, maxSize, quality){
 }
 
 /* ============================================================
- *  localStorage（元数据）—— 带紧急降级
+ *  localStorage
  * ============================================================ */
 function safeSave(){
     try{
@@ -388,10 +397,10 @@ function safeSave(){
                 breeds: breedOptions
             };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
-            alert("⚠️ 本地存储已满！\n已紧急丢弃图片字段以保住宠物数据。\n请立刻点击「💾导出备份」保底，然后用图片链接替代本地上传。");
+            alert("⚠️ 本地存储已满！\n已紧急丢弃图片字段以保住宠物数据。\n请立刻点击「💾导出备份」保底。");
             return false;
         }catch(e2){
-            alert("⚠️ 本地存储彻底写不进去！\n请立即点击「💾导出备份」，把数据保存到电脑/网盘。");
+            alert("⚠️ 本地存储彻底写不进去！\n请立即点击「💾导出备份」。");
             return false;
         }
     }
@@ -408,6 +417,7 @@ function loadFromLocal(){
         breedOptions = Array.isArray(obj.breeds) ? obj.breeds : [];
         petList.forEach(function(p){
             if(!p.utime) p.utime = p.ctime || Date.now();
+            if(p.runStartRemain === undefined) p.runStartRemain = null;
         });
 
         const needMigrate = petList.filter(function(p){ return isBase64Img(p.img); });
@@ -416,9 +426,7 @@ function loadFromLocal(){
             Promise.all(needMigrate.map(function(p){
                 return base64ToBlob(p.img).then(function(blob){
                     const newId = "img_" + genId();
-                    return saveImage(newId, blob).then(function(){
-                        p.img = newId;
-                    });
+                    return saveImage(newId, blob).then(function(){ p.img = newId; });
                 }).catch(function(e){
                     console.warn("迁移失败，丢弃该图", e);
                     p.img = "";
@@ -433,73 +441,14 @@ function loadFromLocal(){
 }
 
 /* ============================================================
- *  账号 / 品种 选项管理
- * ============================================================ */
-function renderOptionManager(){
-    const accWrap = document.getElementById("accListWrap");
-    const breedWrap = document.getElementById("breedListWrap");
-    accWrap.innerHTML = "";
-    breedWrap.innerHTML = "";
-    accountOptions.forEach(function(item, idx){
-        const div = document.createElement("div");
-        div.style = "margin:4px 0;display:flex;align-items:center;gap:4px";
-        div.innerHTML = "<span>"+escapeHtml(item)+'</span><button class="del-opt" data-type="acc" data-idx="'+idx+'">删除</button>';
-        accWrap.appendChild(div);
-    });
-    breedOptions.forEach(function(item, idx){
-        const div = document.createElement("div");
-        div.style = "margin:4px 0;display:flex;align-items:center;gap:4px";
-        div.innerHTML = "<span>"+escapeHtml(item)+'</span><button class="del-opt" data-type="breed" data-idx="'+idx+'">删除</button>';
-        breedWrap.appendChild(div);
-    });
-}
-
-function fillEditSelects(selectedAcc, selectedBr){
-    selectedAcc = selectedAcc || "";
-    selectedBr  = selectedBr  || "";
-    const selA = document.getElementById("selAccount");
-    const selB = document.getElementById("selBreed");
-    selA.innerHTML = '<option value="">--请选择或输入--</option>';
-    selB.innerHTML = '<option value="">--请选择或输入--</option>';
-    accountOptions.forEach(function(o){
-        const op = document.createElement("option");
-        op.value = o; op.textContent = o;
-        if(o === selectedAcc) op.selected = true;
-        selA.appendChild(op);
-    });
-    breedOptions.forEach(function(o){
-        const op = document.createElement("option");
-        op.value = o; op.textContent = o;
-        if(o === selectedBr) op.selected = true;
-        selB.appendChild(op);
-    });
-}
-
-function renderFilterSelect(){
-    const accSel = document.getElementById("filterAccountSel");
-    const brSel  = document.getElementById("filterBreedSel");
-    const curA = accSel.value;
-    const curB = brSel.value;
-    accSel.innerHTML = '<option value="">账号</option>';
-    brSel.innerHTML  = '<option value="">品种</option>';
-    accountOptions.forEach(function(o){
-        const op = document.createElement("option"); op.value = o; op.textContent = o; accSel.appendChild(op);
-    });
-    breedOptions.forEach(function(o){
-        const op = document.createElement("option"); op.value = o; op.textContent = o; brSel.appendChild(op);
-    });
-    accSel.value = curA;
-    brSel.value  = curB;
-}
-
-/* ============================================================
- *  计时 / 锁定逻辑
+ *  计时
  * ============================================================ */
 function getPetRemainMs(pet, now){
     now = now || Date.now();
     if(!pet.isRunning) return pet.pausedAt || 0;
+    const base = (pet.runStartRemain != null) ? pet.runStartRemain : (pet.totalMs || 0);
     const spent = now - (pet.startTs || now);
-    return Math.max(0, (pet.totalMs || 0) - spent);
+    return Math.max(0, base - spent);
 }
 function getEstimateEndTime(pet, now){
     now = now || Date.now();
@@ -508,20 +457,28 @@ function getEstimateEndTime(pet, now){
     return now + rem;
 }
 function startPetTimer(pet, now){
+    now = now || Date.now();
+    if(pet.isRunning){
+        pet.runStartRemain = getPetRemainMs(pet, now);
+    }else{
+        pet.runStartRemain = (pet.pausedAt != null) ? pet.pausedAt : (pet.totalMs || 0);
+    }
     pet.isRunning = true;
-    pet.startTs = now || Date.now();
-    touchPet(pet, pet.startTs);
+    pet.startTs = now;
+    touchPet(pet, now);
 }
 function pausePetTimer(pet, now){
     now = now || Date.now();
     pet.pausedAt = getPetRemainMs(pet, now);
     pet.isRunning = false;
+    pet.runStartRemain = null;
     touchPet(pet, now);
 }
 function resetPetTimer(pet, now){
     now = now || Date.now();
     pet.isRunning = false;
     pet.startTs = null;
+    pet.runStartRemain = null;
     pet.pausedAt = pet.totalMs || 0;
     pet.locked = false;
     touchPet(pet, now);
@@ -533,9 +490,9 @@ function deliverBaby(pet, now){
     pet.totalMs = hmToMs(72, 0);
     pet.pausedAt = pet.totalMs;
     pet.isRunning = false;
+    pet.runStartRemain = null;
     startPetTimer(pet, now);
 }
-
 const FEMALE_LOCK_REMAIN_MS = hmToMs(72, 0);
 function checkFemaleAutoLock(now){
     now = now || Date.now();
@@ -547,6 +504,7 @@ function checkFemaleAutoLock(now){
             if(rem <= 0){
                 p.isRunning = false;
                 p.pausedAt = 0;
+                p.runStartRemain = null;
                 touchPet(p, now);
                 stateChanged = true;
             }
@@ -557,6 +515,7 @@ function checkFemaleAutoLock(now){
                 p.pausedAt = FEMALE_LOCK_REMAIN_MS;
                 p.isRunning = false;
                 p.locked = true;
+                p.runStartRemain = null;
                 touchPet(p, now);
                 stateChanged = true;
                 alerts.push("【"+(p.name||"未命名")+"】母宠到达接生节点，已自动暂停，请手动接生！");
@@ -579,7 +538,7 @@ function checkFemaleAutoLock(now){
 }
 
 /* ============================================================
- *  卡片渲染
+ *  卡片
  * ============================================================ */
 function buildCard(pet, now){
     const div = document.createElement("div");
@@ -614,7 +573,6 @@ function buildCard(pet, now){
     const cpDisplay = (pet.cp || "").trim()
         ? '<div style="font-size:12px;color:#777">CP：'+escapeHtml(pet.cp)+'</div>'
         : "";
-
     const imgHtml = pet.img
         ? '<div class="avatar-wrap" data-bigimg="'+escapeHtml(pet.img)+'"><img data-imgid="'+escapeHtml(pet.img)+'" alt=""></div>'
         : '<div class="avatar-wrap"></div>';
@@ -650,7 +608,7 @@ function fillCardImages(container){
             }else{
                 getImageUrl(id).then(function(url){
                     if(url && imgEl.parentNode) imgEl.src = url;
-                }).catch(function(){ /* 忽略 */ });
+                }).catch(function(){});
             }
         }else{
             imgEl.src = id;
@@ -727,6 +685,9 @@ function openBigPreview(src){
     previewImg.src = src;
     previewModal.classList.add("show");
 }
+document.addEventListener("keydown", function(e){
+    if(e.key === "Escape") previewModal.classList.remove("show");
+});
 
 document.getElementById("petContainer").addEventListener("click", function(e){
     const wrap = e.target.closest(".avatar-wrap");
@@ -758,8 +719,42 @@ document.getElementById("petContainer").addEventListener("click", function(e){
 });
 
 /* ============================================================
- *  账号 / 品种 管理弹窗
+ *  账号/品种管理
  * ============================================================ */
+function renderOptionManager(){
+    const accWrap = document.getElementById("accListWrap");
+    const breedWrap = document.getElementById("breedListWrap");
+    accWrap.innerHTML = "";
+    breedWrap.innerHTML = "";
+    accountOptions.forEach(function(item, idx){
+        const div = document.createElement("div");
+        div.style = "margin:4px 0;display:flex;align-items:center;gap:4px";
+        div.innerHTML = "<span>"+escapeHtml(item)+'</span><button class="del-opt" data-type="acc" data-idx="'+idx+'">删除</button>';
+        accWrap.appendChild(div);
+    });
+    breedOptions.forEach(function(item, idx){
+        const div = document.createElement("div");
+        div.style = "margin:4px 0;display:flex;align-items:center;gap:4px";
+        div.innerHTML = "<span>"+escapeHtml(item)+'</span><button class="del-opt" data-type="breed" data-idx="'+idx+'">删除</button>';
+        breedWrap.appendChild(div);
+    });
+}
+function renderFilterSelect(){
+    const accSel = document.getElementById("filterAccountSel");
+    const brSel  = document.getElementById("filterBreedSel");
+    const curA = accSel.value;
+    const curB = brSel.value;
+    accSel.innerHTML = '<option value="">账号</option>';
+    brSel.innerHTML  = '<option value="">品种</option>';
+    accountOptions.forEach(function(o){
+        const op = document.createElement("option"); op.value = o; op.textContent = o; accSel.appendChild(op);
+    });
+    breedOptions.forEach(function(o){
+        const op = document.createElement("option"); op.value = o; op.textContent = o; brSel.appendChild(op);
+    });
+    accSel.value = curA;
+    brSel.value  = curB;
+}
 document.getElementById("optManageModal").addEventListener("click", function(e){
     const delBtn = e.target.closest(".del-opt");
     if(!delBtn) return;
@@ -782,7 +777,64 @@ document.getElementById("closeOptManage").onclick = function(){
 };
 
 /* ============================================================
- *  表单图片：粘贴、上传、清除、预览、点击放大
+ *  标签管理
+ * ============================================================ */
+function collectAllTags(){
+    const map = {};
+    petList.forEach(function(p){
+        (p.tags || []).forEach(function(t){
+            const k = (t || "").trim();
+            if(k) map[k] = (map[k] || 0) + 1;
+        });
+    });
+    return map;
+}
+function renderTagManager(){
+    const wrap = document.getElementById("tagListWrap");
+    wrap.innerHTML = "";
+    const map = collectAllTags();
+    const keys = Object.keys(map).sort(function(a,b){ return a.localeCompare(b, "zh"); });
+    if(keys.length === 0){
+        wrap.innerHTML = '<div style="color:#999;padding:6px">暂无标签</div>';
+        return;
+    }
+    keys.forEach(function(tag){
+        const row = document.createElement("div");
+        row.className = "tag-manager-row";
+        row.innerHTML = '<span class="tag">'+escapeHtml(tag)+'</span>'
+                      + '<span class="tag-manager-count">（'+map[tag]+' 只宠物使用）</span>'
+                      + '<button class="del-opt" data-tag="'+escapeHtml(tag)+'">从所有宠物删除</button>';
+        wrap.appendChild(row);
+    });
+}
+document.getElementById("tagManageModal").addEventListener("click", function(e){
+    const btn = e.target.closest(".del-opt");
+    if(!btn) return;
+    const tag = btn.getAttribute("data-tag");
+    const count = collectAllTags()[tag] || 0;
+    if(!confirm("确认从所有宠物档案中删除标签「"+tag+"」？\n将影响 "+count+" 只宠物。")) return;
+    const now = Date.now();
+    petList.forEach(function(p){
+        if(Array.isArray(p.tags)){
+            const before = p.tags.length;
+            p.tags = p.tags.filter(function(t){ return (t || "").trim() !== tag; });
+            if(p.tags.length !== before) touchPet(p, now);
+        }
+    });
+    saveToLocal();
+    renderTagManager();
+    render();
+});
+document.getElementById("btnManageTag").onclick = function(){
+    renderTagManager();
+    document.getElementById("tagManageModal").classList.remove("hidden");
+};
+document.getElementById("closeTagManage").onclick = function(){
+    document.getElementById("tagManageModal").classList.add("hidden");
+};
+
+/* ============================================================
+ *  表单图片
  * ============================================================ */
 function showFormImgPreview(url){
     const wrap = document.getElementById("formImgPreviewWrap");
@@ -791,19 +843,11 @@ function showFormImgPreview(url){
     if(url) wrap.classList.add("show");
     else    wrap.classList.remove("show");
 }
-
-/* 点击表单里的预览图 → 弹出大图查看 */
 document.getElementById("formImgPreview").addEventListener("click", function(){
     const src = this.src;
     if(!src) return;
     openBigPreview(src);
 });
-
-/* Esc 关闭大图 */
-document.addEventListener("keydown", function(e){
-    if(e.key === "Escape") previewModal.classList.remove("show");
-});
-
 document.getElementById("petImgUrl").addEventListener("paste", function(e){
     const items = e.clipboardData.items;
     for(let i = 0; i < items.length; i++){
@@ -814,16 +858,12 @@ document.getElementById("petImgUrl").addEventListener("paste", function(e){
                 pendingImgBlob = blob;
                 pendingImgCleared = false;
                 document.getElementById("petImgUrl").value = "";
-                const url = URL.createObjectURL(blob);
-                showFormImgPreview(url);
-            }).catch(function(err){
-                alert("图片处理失败：" + err.message);
-            });
+                showFormImgPreview(URL.createObjectURL(blob));
+            }).catch(function(err){ alert("图片处理失败：" + err.message); });
             break;
         }
     }
 });
-
 document.getElementById("uploadImg").onchange = function(e){
     const f = e.target.files[0];
     if(!f) return;
@@ -831,21 +871,16 @@ document.getElementById("uploadImg").onchange = function(e){
         pendingImgBlob = blob;
         pendingImgCleared = false;
         document.getElementById("petImgUrl").value = "";
-        const url = URL.createObjectURL(blob);
-        showFormImgPreview(url);
-    }).catch(function(err){
-        alert("图片处理失败：" + err.message);
-    });
+        showFormImgPreview(URL.createObjectURL(blob));
+    }).catch(function(err){ alert("图片处理失败：" + err.message); });
     e.target.value = "";
 };
-
 document.getElementById("btnClearImg").onclick = function(){
     pendingImgBlob = null;
     pendingImgCleared = true;
     document.getElementById("petImgUrl").value = "";
     showFormImgPreview("");
 };
-
 document.getElementById("petImgUrl").addEventListener("input", function(){
     const v = this.value.trim();
     if(v){
@@ -862,10 +897,72 @@ const modal = document.getElementById("editModal");
 document.getElementById("btnAdd").onclick = function(){ openEdit(null); };
 document.getElementById("btnCancel").onclick = closeEdit;
 
+function fillEditSelects(selectedAcc, selectedBr){
+    selectedAcc = selectedAcc || "";
+    selectedBr  = selectedBr  || "";
+    const selA = document.getElementById("selAccount");
+    const selB = document.getElementById("selBreed");
+    selA.innerHTML = '<option value="">--请选择或输入--</option>';
+    selB.innerHTML = '<option value="">--请选择或输入--</option>';
+    accountOptions.forEach(function(o){
+        const op = document.createElement("option");
+        op.value = o; op.textContent = o;
+        if(o === selectedAcc) op.selected = true;
+        selA.appendChild(op);
+    });
+    breedOptions.forEach(function(o){
+        const op = document.createElement("option");
+        op.value = o; op.textContent = o;
+        if(o === selectedBr) op.selected = true;
+        selB.appendChild(op);
+    });
+}
+
+function setTimeHintForEdit(p){
+    const hint = document.getElementById("timeStatusHint");
+    const remMs = getPetRemainMs(p, Date.now());
+    let state = "⏸已暂停";
+    if(p.locked) state = "🔒待接生";
+    else if(p.isRunning) state = "⏱运行中";
+    else if(remMs <= 0) state = "🟢空闲";
+    hint.innerHTML = '当前：<b>'+state+'</b>，剩余 <b>'+msToHMS(remMs)+'</b>。<br/>'
+                   + '不改下方时间 = 计时保持不变；改动时间 = 会把计时重置为新时长。';
+}
+function setTimeHintForNew(){
+    document.getElementById("timeStatusHint").textContent = "新增档案：填入总时长，保存后即为初始剩余时间。";
+}
+
+/* V13.1 新增：监听时间输入框，准确判断"用户是否改了时间" */
+function bindTimeInputsOnce(){
+    const hEl = document.getElementById("tHour");
+    const mEl = document.getElementById("tMinute");
+    const check = function(){
+        if(editId === null){
+            /* 新增模式下，任何输入都视为用户设定，无需追踪 */
+            return;
+        }
+        const h = String(hEl.value);
+        const m = String(mEl.value);
+        if(h === editOriginalHourStr && m === editOriginalMinuteStr){
+            timeEditedByUser = false;
+        }else{
+            timeEditedByUser = true;
+        }
+    };
+    hEl.addEventListener("input", check);
+    mEl.addEventListener("input", check);
+    /* number 输入框的滚轮也会改值，加上 wheel 兜底 */
+    hEl.addEventListener("change", check);
+    mEl.addEventListener("change", check);
+}
+
 function openEdit(pid){
     editId = pid;
     pendingImgBlob = null;
     pendingImgCleared = false;
+    timeEditedByUser = false;
+    editOriginalHourStr = "";
+    editOriginalMinuteStr = "";
 
     modal.classList.remove("hidden");
     document.getElementById("modalTitle").textContent = pid ? "编辑宠物档案" : "新增宠物档案";
@@ -883,6 +980,7 @@ function openEdit(pid){
     document.getElementById("tMinute").value = 0;
     document.getElementById("petNote").value = "";
     showFormImgPreview("");
+    setTimeHintForNew();
 
     fillEditSelects();
 
@@ -895,21 +993,24 @@ function openEdit(pid){
             document.getElementById("petTags").value = (p.tags || []).join("\n");
             document.getElementById("timerMode").value = p.timerMode || "normal";
             const totalMin = Math.round((p.totalMs || 0) / 60000);
-            document.getElementById("tHour").value = Math.floor(totalMin / 60);
-            document.getElementById("tMinute").value = totalMin % 60;
+            const hVal = Math.floor(totalMin / 60);
+            const mVal = totalMin % 60;
+            document.getElementById("tHour").value = hVal;
+            document.getElementById("tMinute").value = mVal;
+            /* 记录字符串形式，用于精确比对 */
+            editOriginalHourStr = String(hVal);
+            editOriginalMinuteStr = String(mVal);
             document.getElementById("petNote").value = p.note || "";
             fillEditSelects(p.account || "", p.breed || "");
+            setTimeHintForEdit(p);
 
             if(p.img){
                 if(isIndexedImgId(p.img)){
                     const cached = getImageUrlSync(p.img);
-                    if(cached){
-                        showFormImgPreview(cached);
-                    }else{
-                        getImageUrl(p.img).then(function(url){
-                            if(url && editId === pid) showFormImgPreview(url);
-                        });
-                    }
+                    if(cached) showFormImgPreview(cached);
+                    else getImageUrl(p.img).then(function(url){
+                        if(url && editId === pid) showFormImgPreview(url);
+                    });
                 }else{
                     document.getElementById("petImgUrl").value = p.img;
                     showFormImgPreview(p.img);
@@ -918,12 +1019,14 @@ function openEdit(pid){
         }
     }
 }
-
 function closeEdit(){
     modal.classList.add("hidden");
     editId = null;
     pendingImgBlob = null;
     pendingImgCleared = false;
+    timeEditedByUser = false;
+    editOriginalHourStr = "";
+    editOriginalMinuteStr = "";
 }
 
 /* ============================================================
@@ -955,24 +1058,17 @@ document.getElementById("btnSave").onclick = async function(){
 
     let finalImg = "";
     let oldImgToDelete = null;
-
     try{
         if(pendingImgBlob){
             finalImg = "img_" + genId();
-            if(oldPet && isIndexedImgId(oldPet.img)){
-                oldImgToDelete = oldPet.img;
-            }
+            if(oldPet && isIndexedImgId(oldPet.img)) oldImgToDelete = oldPet.img;
             await saveImage(finalImg, pendingImgBlob);
         }else if(pendingImgCleared){
             finalImg = "";
-            if(oldPet && isIndexedImgId(oldPet.img)){
-                oldImgToDelete = oldPet.img;
-            }
+            if(oldPet && isIndexedImgId(oldPet.img)) oldImgToDelete = oldPet.img;
         }else if(imgUrlInput){
             finalImg = imgUrlInput;
-            if(oldPet && isIndexedImgId(oldPet.img) && oldPet.img !== imgUrlInput){
-                oldImgToDelete = oldPet.img;
-            }
+            if(oldPet && isIndexedImgId(oldPet.img) && oldPet.img !== imgUrlInput) oldImgToDelete = oldPet.img;
         }else{
             finalImg = oldPet ? (oldPet.img || "") : "";
         }
@@ -981,7 +1077,6 @@ document.getElementById("btnSave").onclick = async function(){
         alert("图片保存失败：" + err.message);
         return;
     }
-
     if(oldImgToDelete){
         deleteImage(oldImgToDelete).catch(function(e){ console.warn("删除旧图失败", e); });
         forgetImgUrl(oldImgToDelete);
@@ -993,11 +1088,29 @@ document.getElementById("btnSave").onclick = async function(){
     if(editId){
         const idx = petList.findIndex(function(x){ return x.id === editId; });
         if(idx > -1){
-            petList[idx] = Object.assign({}, petList[idx], {
+            const old = petList[idx];
+
+            /* V13.1：用 timeEditedByUser 判断，不再比较毫秒数 */
+            const timeChanged = timeEditedByUser;
+
+            const updated = Object.assign({}, old, {
                 img:finalImg, account:accountVal, breed:breedVal, cp:cpVal,
                 name:nameVal, gender:genderVal, tags:tagsArr, timerMode:tMode,
-                totalMs:totalMs, note:noteVal, utime:now
+                note:noteVal, utime:now
             });
+
+            if(timeChanged){
+                /* 用户真的改了时间：重置为新时长 */
+                updated.totalMs = totalMs;
+                updated.pausedAt = totalMs;
+                updated.isRunning = false;
+                updated.startTs = null;
+                updated.runStartRemain = null;
+                updated.locked = false;
+            }
+            /* 否则保留原计时字段（totalMs / pausedAt / isRunning / startTs / runStartRemain / locked） */
+
+            petList[idx] = updated;
         }
     }else{
         petList.push({
@@ -1005,7 +1118,7 @@ document.getElementById("btnSave").onclick = async function(){
             img:finalImg, account:accountVal, breed:breedVal, cp:cpVal,
             name:nameVal, gender:genderVal, tags:tagsArr, timerMode:tMode,
             totalMs:totalMs, pausedAt:totalMs, isRunning:false, startTs:null,
-            locked:false, note:noteVal
+            runStartRemain:null, locked:false, note:noteVal
         });
     }
 
@@ -1041,88 +1154,117 @@ document.getElementById("btnImport").onclick = function(){
     ipt.onchange = function(e){
         const f = e.target.files[0];
         if(!f) return;
+        const sizeMB = (f.size / 1024 / 1024).toFixed(1);
+        if(f.size > 30 * 1024 * 1024){
+            if(!confirm("备份文件较大（" + sizeMB + "MB）。\n导入时浏览器可能卡顿，手机端可能内存不足。\n是否继续？")) return;
+        }
         const r = new FileReader();
+        r.onerror = function(){ alert("读取文件失败：文件可能损坏"); };
         r.onload = function(ev){
-            let obj;
-            try{ obj = JSON.parse(ev.target.result); }
-            catch(err){ alert("导入失败：文件不是有效的JSON"); return; }
-            if(!obj || !Array.isArray(obj.pets)){
-                alert("导入失败：备份文件缺少pets数据");
-                return;
+            try{
+                importBackupText(ev.target.result, sizeMB);
+            }catch(err){
+                console.error("导入异常", err);
+                alert("导入失败：" + err.message);
             }
-
-            const migratedPets = obj.pets.map(function(p){
-                const created = p.ctime || Date.now();
-                return {
-                    id:p.id || genId(),
-                    ctime:created,
-                    utime:p.utime || created,
-                    img:p.img || "",
-                    account:p.account || "",
-                    breed:p.breed || "",
-                    cp:p.cp || "",
-                    name:p.name || "未命名",
-                    gender:p.gender || "m",
-                    tags:Array.isArray(p.tags) ? p.tags : [],
-                    timerMode:p.timerMode || "normal",
-                    totalMs:p.totalMs || 0,
-                    pausedAt:p.pausedAt || 0,
-                    isRunning:!!p.isRunning,
-                    startTs:p.startTs || null,
-                    locked:!!p.locked,
-                    note:p.note || ""
-                };
-            });
-
-            if(!confirm("导入将覆盖当前全部数据，确认继续？")) return;
-
-            Object.keys(imgUrlCache).forEach(forgetImgUrl);
-
-            const migrateTasks = migratedPets.map(function(p){
-                if(isBase64Img(p.img)){
-                    return base64ToBlob(p.img).then(function(blob){
-                        const newId = "img_" + genId();
-                        return saveImage(newId, blob).then(function(){
-                            p.img = newId;
-                        });
-                    }).catch(function(e){
-                        console.warn("迁移旧 base64 图片失败，丢弃", e);
-                        p.img = "";
-                    });
-                }
-                return Promise.resolve();
-            });
-
-            const images = obj.images || {};
-            const imgIds = Object.keys(images);
-
-            const doImport = function(){
-                petList = migratedPets;
-                accountOptions = Array.isArray(obj.accounts) ? obj.accounts : [];
-                breedOptions   = Array.isArray(obj.breeds)   ? obj.breeds   : [];
-                saveToLocal();
-                render();
-                alert("导入成功，共" + migratedPets.length + "只宠物"
-                    + (imgIds.length ? "，恢复图片 " + imgIds.length + " 张" : ""));
-            };
-
-            Promise.all(migrateTasks)
-                .then(function(){
-                    return Promise.all(imgIds.map(function(id){
-                        return base64ToBlob(images[id])
-                            .then(function(blob){ return saveImage(id, blob); })
-                            .catch(function(e){ console.warn("导入图片失败", id, e); });
-                    }));
-                })
-                .then(doImport);
         };
         r.readAsText(f);
     };
     ipt.click();
 };
 
+function importBackupText(text, sizeMB){
+    let obj;
+    try{
+        obj = JSON.parse(text);
+    }catch(err){
+        alert("导入失败：文件不是有效的 JSON。\n文件大小：" + sizeMB + "MB\n解析错误：" + err.message);
+        return;
+    }
+    if(!obj || typeof obj !== "object" || Array.isArray(obj)){
+        alert("导入失败：文件内容格式不正确（顶层不是对象）");
+        return;
+    }
+    if(!Array.isArray(obj.pets)){
+        alert("导入失败：备份文件缺少 pets 数组字段");
+        return;
+    }
+
+    const migratedPets = obj.pets.map(function(p){
+        if(!p || typeof p !== "object") p = {};
+        const created = p.ctime || Date.now();
+        return {
+            id:p.id || genId(),
+            ctime:created,
+            utime:p.utime || created,
+            img:p.img || "",
+            account:p.account || "",
+            breed:p.breed || "",
+            cp:p.cp || "",
+            name:p.name || "未命名",
+            gender:p.gender || "m",
+            tags:Array.isArray(p.tags) ? p.tags : [],
+            timerMode:p.timerMode || "normal",
+            totalMs:p.totalMs || 0,
+            pausedAt:p.pausedAt || 0,
+            isRunning:!!p.isRunning,
+            startTs:p.startTs || null,
+            runStartRemain:(p.runStartRemain !== undefined) ? p.runStartRemain : null,
+            locked:!!p.locked,
+            note:p.note || ""
+        };
+    });
+
+    const images = obj.images || {};
+    const imgIds = Object.keys(images);
+    const base64Pets = migratedPets.filter(function(p){ return isBase64Img(p.img); });
+
+    if(!confirm("导入将覆盖当前全部数据，确认继续？\n\n"
+        + "宠物数量：" + migratedPets.length + "\n"
+        + "内嵌 base64 图片：" + base64Pets.length + " 张\n"
+        + "images 字段图片：" + imgIds.length + " 张")) return;
+
+    Object.keys(imgUrlCache).forEach(forgetImgUrl);
+
+    const tasks = [];
+
+    base64Pets.forEach(function(p){
+        tasks.push(
+            base64ToBlob(p.img).then(function(blob){
+                const newId = "img_" + genId();
+                return saveImage(newId, blob).then(function(){ p.img = newId; });
+            }).catch(function(e){
+                console.warn("迁移 base64 图片失败", e);
+                p.img = "";
+            })
+        );
+    });
+
+    imgIds.forEach(function(id){
+        tasks.push(
+            base64ToBlob(images[id]).then(function(blob){
+                return saveImage(id, blob);
+            }).catch(function(e){
+                console.warn("写入 images 图片失败", id, e);
+            })
+        );
+    });
+
+    Promise.all(tasks).then(function(){
+        petList = migratedPets;
+        accountOptions = Array.isArray(obj.accounts) ? obj.accounts : [];
+        breedOptions   = Array.isArray(obj.breeds)   ? obj.breeds   : [];
+        saveToLocal();
+        render();
+        alert("导入成功，共 " + migratedPets.length + " 只宠物");
+    }).catch(function(err){
+        console.error("导入失败", err);
+        alert("导入失败：" + (err && err.message ? err.message : "未知错误"));
+    });
+}
+
 /* ============================================================
- *  导出（图片打包成 base64）
+ *  导出
  * ============================================================ */
 document.getElementById("btnExport").onclick = async function(){
     const imgMap = {};
@@ -1132,21 +1274,16 @@ document.getElementById("btnExport").onclick = async function(){
             try{
                 const blob = await getImage(p.img);
                 if(blob) imgMap[p.img] = await blobToBase64(blob);
-            }catch(e){
-                console.warn("导出图片失败", p.img, e);
-            }
+            }catch(e){ console.warn("导出图片失败", p.img, e); }
         }
     }
     const payload = {
-        pets:petList,
-        accounts:accountOptions,
-        breeds:breedOptions,
-        images:imgMap
+        pets:petList, accounts:accountOptions, breeds:breedOptions, images:imgMap
     };
     const blob = new Blob([JSON.stringify(payload)], {type:"application/json"});
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "pet-timer-v12-backup.json";
+    a.download = "pet-timer-v13-backup.json";
     a.click();
 };
 
@@ -1163,6 +1300,7 @@ document.getElementById("sortModeSel").onchange = render;
 /* ============================================================
  *  启动
  * ============================================================ */
+bindTimeInputsOnce();
 loadFromLocal();
 render();
 setInterval(render, 1000);
