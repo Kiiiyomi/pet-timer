@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>宠物档案管理 V22</title>
+<title>宠物档案管理 V25</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;font-family:system-ui,-apple-system}
@@ -46,6 +46,8 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .status-waitpair{color:#e04080;font-weight:bold}
 .gender-m{color:#348ede;font-weight:bold}
 .gender-f{color:#e85496;font-weight:bold}
+.cp-line{font-size:12px;color:#7a6b9a;margin:3px 0;line-height:1.5}
+.cp-line b{color:#9b59b6;font-weight:500}
 .star-btn{position:absolute;top:6px;right:6px;background:transparent;border:none;font-size:18px;cursor:pointer;padding:2px 4px;line-height:1;color:#ddd;transition:.15s}
 .star-btn:hover{color:#f0b840}
 .star-btn.on{color:#f0b840}
@@ -63,7 +65,6 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .pet-table td input,.pet-table td select{width:100%;min-width:60px;padding:3px 4px;font-size:13px;border:1px solid #3070ee;border-radius:3px}
 .cell-tag{background:#e8edf4;padding:1px 4px;border-radius:3px;font-size:11px;margin-right:2px}
 .pet-table.hide-cp .cp-col{display:none !important}
-
 .dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
 .dash-card{background:#fff;border:1px solid #e3e8ef;border-radius:10px;padding:12px}
 .dash-card h4{margin:0 0 8px;font-size:14px;color:#444}
@@ -73,7 +74,6 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .stat-item{flex:1;min-width:80px;text-align:center;padding:8px;background:#f7f9fc;border-radius:8px}
 .stat-num{font-size:20px;font-weight:bold;color:#3070ee}
 .stat-lb{font-size:12px;color:#666;margin-top:3px}
-
 .batch-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;background:#222;color:#fff;padding:8px 16px;border-radius:30px;display:flex;gap:10px;align-items:center;z-index:500;box-shadow:0 6px 20px rgba(0,0,0,.25);font-size:13px}
 .batch-bar button{background:#444;color:#fff;border:none;padding:5px 12px;border-radius:20px;font-size:13px}
 .batch-bar button:hover{background:#555}
@@ -81,9 +81,6 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .batch-bar button.warn:hover{background:#c23333}
 .batch-bar button.hl{background:#3070ee}
 .batch-bar button.hl:hover{background:#2560d0}
-.batch-bar button.gold{background:#d99f30}
-.batch-bar button.gold:hover{background:#c28b20}
-
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:999}
 .modal-box{background:#fff;border-radius:10px;padding:14px;max-width:600px;width:94%;max-height:92vh;overflow:auto}
 .form-row{margin:7px 0}
@@ -94,7 +91,13 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .img-preview-modal.show{display:flex}
 .img-preview-modal img{max-width:95%;max-height:95%;object-fit:contain}
 .cp-block{border:1px dashed #cdd7e4;border-radius:8px;padding:8px;margin:8px 0;background:#fafbfd}
-.cp-block h4{margin:0 0 6px;font-size:13px;color:#3070ee}
+.cp-block-header{display:flex;justify-content:space-between;align-items:center;margin:0 0 6px;gap:6px}
+.cp-block-header h4{margin:0;font-size:13px;color:#3070ee;flex:1}
+.cp-block-actions{display:flex;gap:4px;flex-shrink:0}
+.swap-btn{background:#f0f4fa;border:1px solid #d0dae8;color:#4a6b93;padding:3px 10px;font-size:12px;border-radius:14px;cursor:pointer}
+.swap-btn:hover{background:#e0ecff;border-color:#3070ee;color:#3070ee}
+.clear-cp-btn{background:#fff0f0;border-color:#ffc8c8;color:#c82424}
+.clear-cp-btn:hover{background:#ffe0e0;border-color:#ff9090;color:#a01010}
 .time-hint{font-size:12px;color:#666;background:#f4f7fb;border:1px dashed #c8d6e5;border-radius:6px;padding:5px 7px;margin-bottom:5px}
 .time-hint b{color:#e04080}
 #formImgPreviewWrap,#cp1PreviewWrap,#cp2PreviewWrap{margin-top:5px;display:none;align-items:center;gap:6px}
@@ -107,50 +110,65 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .list-wrap{max-height:40vh;overflow:auto;border:1px solid #eee;border-radius:6px;padding:6px}
 .list-row{display:flex;align-items:center;gap:6px;margin:3px 0;padding:3px 6px;border-radius:4px;font-size:13px}
 .list-row:hover{background:#f7f8fa}
-
 .feature-chip{display:inline-block;padding:1px 7px;border-radius:10px;font-size:11px;margin:0 3px 3px 0;border:1px solid;line-height:1.6}
-
 .feat-manage-row{display:flex;align-items:center;gap:6px;padding:5px 6px;border-radius:5px;font-size:13px;border-bottom:1px solid #f2f5f9}
 .feat-manage-row:hover{background:#f7f8fa}
+.feat-manage-row input[type="checkbox"]{margin:0;flex-shrink:0}
 .feat-manage-row input[type="text"]{flex:1;min-width:80px;padding:4px 6px}
 .feat-manage-row input[type="color"]{width:36px;height:28px;padding:0;border:1px solid #ccc;border-radius:4px;cursor:pointer;background:#fff}
 .feat-count{color:#94a3b8;font-size:11px;margin-left:4px}
-
 .modal-header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:-4px 0 10px;padding-bottom:8px;border-bottom:1px solid #eef1f5;position:sticky;top:-14px;background:#fff;z-index:10;padding-top:4px}
 .modal-header h3{margin:0;font-size:16px;flex:1;min-width:0}
 .modal-header-btns{display:flex;gap:6px;flex-shrink:0}
-
-.gender-pick{display:inline-flex;border:1px solid #cbd5e1;border-radius:6px;overflow:hidden}
-.gender-opt{padding:6px 22px;cursor:pointer;background:#fff;color:#666;font-size:13px;user-select:none;transition:.15s}
-.gender-opt:first-child{border-right:1px solid #cbd5e1}
-.gender-opt:hover{background:#f4f7fb}
+.gender-pick,.mode-pick{display:inline-flex;border:1px solid #cbd5e1;border-radius:6px;overflow:hidden;flex-wrap:wrap}
+.gender-opt,.mode-opt{padding:6px 18px;cursor:pointer;background:#fff;color:#666;font-size:13px;user-select:none;transition:.15s;border-right:1px solid #cbd5e1}
+.gender-opt:last-child,.mode-opt:last-child{border-right:none}
+.gender-opt:hover,.mode-opt:hover{background:#f4f7fb}
 .gender-opt.selected[data-gender="m"]{background:#348ede;color:#fff}
 .gender-opt.selected[data-gender="f"]{background:#e85496;color:#fff}
-
-/* chip 选择器（账号、品种大类） */
+.mode-opt.selected{background:#3070ee;color:#fff}
 .chip-picker{display:flex;flex-wrap:wrap;gap:5px;max-height:120px;overflow:auto;border:1px solid #e3e8ef;border-radius:6px;padding:6px;background:#fafbfd;min-height:36px}
 .chip-pick-item{padding:3px 12px;border-radius:14px;border:1.5px solid #ccd6e2;cursor:pointer;font-size:12px;background:#fff;transition:.15s;user-select:none}
 .chip-pick-item:hover{border-color:#3070ee;background:#f4f9ff}
 .chip-pick-item.selected{background:#3070ee;border-color:#3070ee;color:#fff;font-weight:500}
 .chip-empty{color:#999;font-size:12px;padding:6px}
-
-/* 总时长快捷按钮 */
 .quick-time{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px}
 .quick-time button{padding:4px 12px;font-size:12px;border:1px solid #cbd5e1;border-radius:14px;background:#fff;color:#444}
 .quick-time button:hover{background:#e8f0ff;border-color:#3070ee;color:#3070ee}
-
-/* 排序锁定 */
 .sort-lock{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#666;background:#fff;border:1px solid #cbd5e1;border-radius:6px;padding:5px 10px}
 .sort-lock.locked{background:#fff8e6;border-color:#f0b840;color:#a06a10}
 .sort-lock input{margin:0}
-
-/* 工作台批量操作条 */
 .bench-actions{display:flex;gap:6px;flex-wrap:wrap;padding:8px 10px;background:#fffaf0;border:1px solid #f0e0c0;border-radius:8px;margin-bottom:8px;align-items:center;font-size:13px}
 .bench-actions .lbl{color:#a06a10;font-weight:500;margin-right:4px}
 .bench-actions button{padding:5px 12px;font-size:12px;border-radius:6px;border:1px solid #d0dae8;background:#fff}
 .bench-actions button:hover{background:#fff3d8;border-color:#f0b840}
-.bench-actions .primary-sm{background:#3070ee;color:#fff;border-color:#3070ee}
-.bench-actions .primary-sm:hover{background:#2560d0}
+.img-input-box{background:#fffdf3;border:1.5px solid #f0c870;border-radius:6px;padding:8px}
+.img-input-box label{color:#a06a10;font-weight:500}
+.img-input-box input[type="text"]{background:#fff;border-color:#e8c060}
+.feat-quick-area{margin-top:6px;border:1px solid #e3e8ef;border-radius:6px;padding:8px;background:#fafbfd;max-height:220px;overflow:auto}
+.feat-quick-group{margin-bottom:8px}
+.feat-quick-group:last-child{margin-bottom:0}
+.feat-quick-title{font-size:12px;color:#666;margin-bottom:4px;font-weight:500}
+.feat-quick-title .cat{color:#3070ee}
+.feat-quick-chips{display:flex;flex-wrap:wrap;gap:4px}
+.feat-quick-chip{padding:2px 10px;border-radius:12px;border:1px solid #ccd6e2;background:#fff;font-size:12px;cursor:pointer;transition:.15s;user-select:none}
+.feat-quick-chip:hover{border-color:#3070ee;color:#3070ee}
+.feat-quick-chip.on{color:#fff;font-weight:500}
+.feat-cat-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;border-bottom:1px solid #e3e8ef;padding-bottom:6px}
+.feat-cat-tab{padding:5px 14px;font-size:13px;border:1px solid #cbd5e1;border-radius:16px;background:#fff;color:#444;cursor:pointer}
+.feat-cat-tab:hover{background:#f4f7fb}
+.feat-cat-tab.active{background:#3070ee;border-color:#3070ee;color:#fff;font-weight:500}
+.feat-batch-bar{display:flex;gap:6px;align-items:center;margin-bottom:6px;font-size:12px;padding:6px 8px;background:#f7f9fc;border-radius:6px;border:1px solid #e3e8ef}
+.feat-batch-bar label{display:inline-flex;align-items:center;gap:4px;cursor:pointer}
+.feat-batch-bar .sel-count{color:#888;margin-left:4px}
+.feat-batch-bar .spacer{flex:1}
+.feat-batch-bar select{padding:3px 8px;font-size:12px}
+.feat-batch-bar button{padding:3px 10px;font-size:12px;border-radius:5px}
+.feat-batch-bar button.danger{background:#ffeeee;color:#c82424;border-color:#ffb4b4}
+.feat-batch-bar button.ok{background:#e8f5ee;color:#1a7a4a;border-color:#a8d8c0}
+.btn-undo{background:#fff8e6;border-color:#f0b840;color:#a06a10}
+.btn-undo:hover:not(:disabled){background:#ffefc0}
+.btn-undo:disabled{opacity:.4;cursor:not-allowed;background:#fff;border-color:#ddd;color:#aaa}
 </style>
 </head>
 <body>
@@ -167,6 +185,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
     <input type="checkbox" id="sortLockChk"> 🔒 锁定排序
 </label>
 <button id="btnApplySort" style="font-size:12px;padding:5px 10px">↻ 应用排序</button>
+<button id="btnUndo" class="btn-undo" style="font-size:12px;padding:5px 10px" disabled>↶ 撤回</button>
 </div>
 
 <div class="view-tabs">
@@ -297,19 +316,45 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 </div></div>
 
 <!-- 管理特征 -->
-<div class="modal hidden" id="featManageModal"><div class="modal-box">
+<div class="modal hidden" id="featManageModal"><div class="modal-box" style="max-width:780px">
+<div class="modal-header">
 <h3>管理宠物特征</h3>
-<div style="font-size:12px;color:#666;margin-top:4px">
-编辑名称可直接改名（改完会同步所有宠物档案）。点色块可换颜色。<br/>
-删除某个特征不会从宠物档案里移除，只是从可选库中移除。
+<div class="modal-header-btns">
+<button id="closeFeatManage">关闭</button>
 </div>
-<div class="list-wrap" id="featListWrap" style="margin-top:8px;max-height:55vh"></div>
-<div style="margin-top:10px;text-align:right"><button id="closeFeatManage">关闭</button></div>
+</div>
+<div style="font-size:12px;color:#666;margin-bottom:8px">
+  按品种大类分类。改名时若目标名已存在，会询问是否合并（把旧名替换为新名）。
+</div>
+<div class="feat-cat-tabs" id="featCatTabs"></div>
+<div class="feat-batch-bar">
+  <label><input type="checkbox" id="featSelectAll"> 全选本分类</label>
+  <span class="sel-count" id="featSelCount">已选 0 项</span>
+  <span class="spacer"></span>
+  <select id="featMoveTarget" title="移动到目标分类"></select>
+  <button class="ok" id="featBatchMove">移动到...</button>
+  <button class="danger" id="featBatchDelete">删除选中</button>
+</div>
+<div class="list-wrap" id="featListWrap" style="max-height:50vh"></div>
+<div style="margin-top:10px;display:flex;gap:6px;align-items:center;border-top:1px solid #eee;padding-top:10px">
+<input id="newFeatName" placeholder="新特征名" style="flex:1;min-width:120px">
+<input type="color" id="newFeatColor" value="#7eb6ff">
+<button id="addFeatBtn">添加到当前分类</button>
+</div>
 </div></div>
 
 <!-- 批量修改 -->
-<div class="modal hidden" id="batchModifyModal"><div class="modal-box" style="max-width:420px">
+<div class="modal hidden" id="batchModifyModal"><div class="modal-box" style="max-width:520px">
+<div class="modal-header">
 <h3>批量修改（<span id="bmCount">0</span> 只）</h3>
+<div class="modal-header-btns">
+<button class="primary" id="bmApply">应用</button>
+<button id="bmCancel">取消</button>
+</div>
+</div>
+<div style="font-size:12px;color:#666;margin-bottom:8px">
+  只对勾选的字段生效。选择一个值时会自动勾选对应字段。
+</div>
 <div class="form-row">
 <label class="chk-label"><input type="checkbox" id="bmAccEnable"> 修改账号</label>
 <select id="bmAcc" style="width:100%;margin-top:4px"></select>
@@ -322,10 +367,28 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <label class="chk-label"><input type="checkbox" id="bmBreedEnable"> 修改品种</label>
 <select id="bmBreed" style="width:100%;margin-top:4px"></select>
 </div>
-<div style="margin-top:12px;display:flex;gap:8px">
-<button class="primary" id="bmApply">应用</button>
-<button id="bmCancel">取消</button>
+<div class="form-row">
+<label class="chk-label"><input type="checkbox" id="bmStatusEnable"> 修改状态/计时</label>
+<select id="bmStatus" style="width:100%;margin-top:4px">
+  <option value="">--请选择--</option>
+  <option value="idle">设为空闲（清空计时，无CP时）</option>
+  <option value="4h">设为 4h 恢复（普通）</option>
+  <option value="144h-normal">设为 144h 恢复（普通）</option>
+  <option value="144h-female">设为 144h 恢复（母宠·72h 卡分娩）</option>
+  <option value="reset">重置计时（当前总时长）</option>
+  <option value="pause">暂停（若正在运行）</option>
+  <option value="start">开始/继续（若未运行且未锁定）</option>
+</select>
 </div>
+<div class="form-row">
+<label class="chk-label"><input type="checkbox" id="bmFeatAddEnable"> 添加特征</label>
+<input type="text" id="bmFeatAdd" placeholder="输入特征名，会自动加入对应分类" list="bmFeatList" style="width:100%;margin-top:4px">
+</div>
+<div class="form-row">
+<label class="chk-label"><input type="checkbox" id="bmFeatDelEnable"> 删除特征</label>
+<input type="text" id="bmFeatDel" placeholder="输入特征名，从选中宠物移除" list="bmFeatList" style="width:100%;margin-top:4px">
+</div>
+<datalist id="bmFeatList"></datalist>
 </div></div>
 
 <!-- 编辑宠物 -->
@@ -339,9 +402,9 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 </div>
 </div>
 
-<div class="form-row">
-<label>宠物图片</label>
-<input type="text" id="petImgUrl" placeholder="图片链接，或按 Ctrl+V 粘贴截图">
+<div class="form-row img-input-box">
+<label>🖼️ 宠物图片（图片链接 / Ctrl+V 粘贴截图）</label>
+<input type="text" id="petImgUrl" placeholder="🔗 在此粘贴图片链接，或点下方按钮上传">
 <input type="file" accept="image/*" id="uploadImg" style="margin-top:4px">
 <div id="formImgPreviewWrap"><img id="formImgPreview" alt="预览"><button type="button" id="btnClearImg" style="padding:3px 6px;font-size:12px">清除</button></div>
 </div>
@@ -357,7 +420,12 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <div class="chip-picker" id="categoryPicker"></div>
 </div>
 
-<div class="form-row"><label>品种</label><select id="selBreed"><option value="">--请先选大类--</option></select><input type="text" id="txtBreed" placeholder="可输入新品种" style="margin-top:3px;width:100%"></div>
+<div class="form-row">
+<label>品种（下拉选择或输入，输入会自动反选大类）</label>
+<select id="selBreed"><option value="">--请先选大类--</option></select>
+<input type="text" id="txtBreed" placeholder="输入品种名，自动匹配大类" style="margin-top:3px;width:100%">
+</div>
+
 <div class="form-row"><label>宠物昵称</label><input type="text" id="petName" style="width:100%"></div>
 
 <div class="form-row">
@@ -369,7 +437,12 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 </div>
 
 <div class="form-row"><label>宠物标签（一行一个）</label><textarea id="petTags" rows="3"></textarea></div>
-<div class="form-row"><label>宠物特征（一行一个，新特征会自动加入特征库）</label><textarea id="petFeatures" rows="4"></textarea></div>
+
+<div class="form-row">
+<label>宠物特征（一行一个，也可在下方快捷勾选）</label>
+<textarea id="petFeatures" rows="4" placeholder="一行一个特征名"></textarea>
+<div class="feat-quick-area" id="featQuickArea"></div>
+</div>
 
 <div class="form-row"><label>总时长</label>
 <div class="time-hint" id="timeStatusHint"></div>
@@ -383,19 +456,33 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <input type="number" id="tHour" value="0" min="0" style="width:70px"><span>小时</span>
 <input type="number" id="tMinute" value="0" min="0" max="59" style="width:70px"><span>分钟</span>
 </div></div>
-<div class="form-row"><label>计时器模式</label><select id="timerMode"><option value="normal">普通计时</option><option value="breedFemale">繁育母宠（剩余72h锁定待接生）</option></select></div>
+
+<div class="form-row">
+<label>计时器模式</label>
+<div class="mode-pick" id="timerModePick">
+    <div class="mode-opt selected" data-mode="normal">普通计时</div>
+    <div class="mode-opt" data-mode="breedFemale">繁育母宠（72h 卡分娩）</div>
+</div>
+</div>
 
 <div class="form-row"><label>备注</label><textarea id="petNote" rows="2"></textarea></div>
 
-<div class="cp-block"><h4>CP 第 1 段</h4>
+<div class="cp-block">
+<div class="cp-block-header">
+<h4>CP 第 1 段</h4>
+<div class="cp-block-actions">
+<button type="button" class="swap-btn" data-swap="cp1">🔄 交换</button>
+<button type="button" class="swap-btn clear-cp-btn" data-clear="cp1">🗑️ 清空</button>
+</div>
+</div>
 <div class="form-row"><label>CP 名字</label><input type="text" id="cp1Name" style="width:100%"></div>
 <div class="form-row"><label>CP 图片</label>
 <input type="file" accept="image/*" id="cp1File">
 <div class="paste-zone" id="cp1PasteZone" tabindex="0">📋 点击此处后按 Ctrl+V 粘贴图片</div>
-<div id="cp1PreviewWrap"><img id="cp1Preview" alt=""><button type="button" id="cp1Clear" style="padding:3px 6px;font-size:12px">清除</button></div>
+<div id="cp1PreviewWrap"><img id="cp1Preview" alt=""><button type="button" id="cp1Clear" style="padding:3px 6px;font-size:12px">清除图片</button></div>
 </div>
 <div class="form-row">
-<label>预计配对时间（直接选日期 或 用天数换算）</label>
+<label>预计配对时间</label>
 <input type="datetime-local" id="cp1PairTime" style="width:100%">
 <div style="margin-top:5px;display:flex;gap:5px;align-items:center;font-size:12px;flex-wrap:wrap">
 <span style="color:#888">或：从此刻起</span>
@@ -407,15 +494,22 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 </div>
 </div>
 
-<div class="cp-block"><h4>CP 第 2 段</h4>
+<div class="cp-block">
+<div class="cp-block-header">
+<h4>CP 第 2 段</h4>
+<div class="cp-block-actions">
+<button type="button" class="swap-btn" data-swap="cp2">🔄 交换</button>
+<button type="button" class="swap-btn clear-cp-btn" data-clear="cp2">🗑️ 清空</button>
+</div>
+</div>
 <div class="form-row"><label>CP 名字</label><input type="text" id="cp2Name" style="width:100%"></div>
 <div class="form-row"><label>CP 图片</label>
 <input type="file" accept="image/*" id="cp2File">
 <div class="paste-zone" id="cp2PasteZone" tabindex="0">📋 点击此处后按 Ctrl+V 粘贴图片</div>
-<div id="cp2PreviewWrap"><img id="cp2Preview" alt=""><button type="button" id="cp2Clear" style="padding:3px 6px;font-size:12px">清除</button></div>
+<div id="cp2PreviewWrap"><img id="cp2Preview" alt=""><button type="button" id="cp2Clear" style="padding:3px 6px;font-size:12px">清除图片</button></div>
 </div>
 <div class="form-row">
-<label>预计配对时间（直接选日期 或 用天数换算）</label>
+<label>预计配对时间</label>
 <input type="datetime-local" id="cp2PairTime" style="width:100%">
 <div style="margin-top:5px;display:flex;gap:5px;align-items:center;font-size:12px;flex-wrap:wrap">
 <span style="color:#888">或：从此刻起</span>
@@ -434,12 +528,22 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 const STORAGE_KEY = "petTimerTS_v15";
 const IMG_DB = "petTimerImages", IMG_STORE = "images";
 const DEFAULT_FEATURE_COLOR = "#7eb6ff";
+const CAT_COMMON = "_common";
+
 const DEFAULT_CATEGORIES = {
     "猫猫": ["英短金渐层","英短纯白","英短三花","英短蓝猫","英短银渐层","英短重色","英短蓝白","英短纯黑","英短虎斑"],
     "狐狸": ["火球狐","宝贝狐","彩虹虎威狐","沙之狐","雪绒狐","钛晶狐","夜月狐"],
     "兔兔": ["纯白大垂耳兔","玳瑁大垂耳兔","重点色大垂耳兔","道奇大垂耳兔","野兔色大垂耳兔","碎花大垂耳兔","碎花大耳兔","重点色大耳兔"],
     "荔枝喵": ["又睡了之喵","有实力之喵","玉笋灵竹喵","榆树林子喵","野参灵芝喵","严肃理智喵","一生浪子喵"],
     "狗狗": ["金毛"]
+};
+const DEFAULT_FEATURES_BY_CAT = {
+    "_common": ["美瞳","背","黑胡子","灰胡子"],
+    "狐狸": ["黑下巴","星围脖","雪糕帽","棒棒糖","挂围兜","宝贝帽","头戴雪花","雪球堆","雪花纹身","尾巴着火","斑点尾","星星纹脸","环纹耳","水晶底","黑肚皮","小火苗","小爱心纹身","水晶堆","头顶猪","云朵绕","银项链","月额饰","彩虹","云朵底"],
+    "猫猫": ["爱心鼻","戴眼罩","胸前爱心","胸前领结"],
+    "荔枝喵": ["垂泪脸","蝴蝶背","实力眼","豆豆眉","眯眯眼","嚼叶子","戴眼镜","鼻涕泡","背剪刀","戴睡帽","键盘底","纸箱壳","竹子壳","荔枝壳","叶子底","灵芝底","布料底","顶蘑菇","顶叶子","枕头底"],
+    "兔兔": ["假发套","蝴蝶结","花瓣背","偷吃嘴","戴手套","腮红脸"],
+    "狗狗": ["八嘎胡","爱心鼻","戴眼罩","胸前爱心","胸前领结"]
 };
 
 let petList = [];
@@ -450,20 +554,23 @@ let editId = null;
 let pendingImgBlob = null, pendingImgCleared = false;
 let pendingCp1Blob = null, pendingCp1Cleared = false;
 let pendingCp2Blob = null, pendingCp2Cleared = false;
+let editCp1ImgValue = "", editCp2ImgValue = "";
 let timeEditedByUser = false, editOrigH = "", editOrigM = "";
 let currentEditGender = "m";
 let currentEditAccount = "";
 let currentEditCategory = "";
+let currentEditTimerMode = "normal";
 let currentView = "card";
 let selectedIds = new Set();
 let benchSelectedIds = new Set();
 let chartRefs = {};
 let editInProgress = false;
 let showCpCols = false;
-/* 排序锁定：true 时冻结当前顺序，不自动重排 */
 let sortLocked = false;
-/* 冻结时的顺序快照（pet id 数组） */
 let frozenOrder = [];
+let currentFeatCat = CAT_COMMON;
+let featSelected = new Set();
+let lastSnapshot = null;
 const filterState = {
     status: new Set(), gender: new Set(), category: new Set(),
     breed: new Set(), account: new Set(), feature: new Set()
@@ -493,11 +600,166 @@ function hexToRgba(hex, alpha){
     }
     return "rgba("+r+","+g+","+b+","+alpha+")";
 }
-function getFeatureColor(name){ return featureMap[name] || DEFAULT_FEATURE_COLOR; }
+function getFeatureColor(name){
+    if(!name) return DEFAULT_FEATURE_COLOR;
+    if(featureMap[CAT_COMMON] && featureMap[CAT_COMMON][name]) return featureMap[CAT_COMMON][name];
+    for(const cat in featureMap){
+        if(cat === CAT_COMMON) continue;
+        if(featureMap[cat] && featureMap[cat][name]) return featureMap[cat][name];
+    }
+    return DEFAULT_FEATURE_COLOR;
+}
 function featureChip(name){
     const c = getFeatureColor(name);
     return '<span class="feature-chip" style="background:'+hexToRgba(c,0.15)+';border-color:'+hexToRgba(c,0.5)+';color:'+c+'">'+esc(name)+'</span>';
 }
+function ensureFeatureExists(featureName, petCategory){
+    if(!featureName) return;
+    if(featureMap[CAT_COMMON] && featureMap[CAT_COMMON][featureName]) return;
+    for(const cat in featureMap){
+        if(cat === CAT_COMMON) continue;
+        if(featureMap[cat] && featureMap[cat][featureName]) return;
+    }
+    let targetCat = CAT_COMMON;
+    if(petCategory && featureMap[petCategory]) targetCat = petCategory;
+    if(!featureMap[targetCat]) featureMap[targetCat] = {};
+    featureMap[targetCat][featureName] = DEFAULT_FEATURE_COLOR;
+}
+function removeFeatureEverywhere(featureName){
+    let found = false;
+    Object.keys(featureMap).forEach(cat => {
+        if(featureMap[cat] && featureMap[cat][featureName]){
+            delete featureMap[cat][featureName];
+            found = true;
+        }
+    });
+    return found;
+}
+function renameFeatureEverywhere(oldName, newName){
+    newName = (newName||"").trim();
+    if(!oldName || !newName || oldName === newName) return false;
+    /* 检查目标名是否已存在于某个分类 */
+    let existsCat = null;
+    for(const cat in featureMap){
+        if(featureMap[cat] && featureMap[cat][newName]){ existsCat = cat; break; }
+    }
+    if(existsCat){
+        /* 已存在 → 询问是否合并 */
+        const usedCount = countPetsByFeature(oldName);
+        const mergeMsg = "特征「"+newName+"」已存在于【"+getFeatCatLabel(existsCat)+"】分类中。\n\n"
+            + "是否将「"+oldName+"」合并到「"+newName+"」？\n\n"
+            + "合并后：\n"
+            + "  · 有 " + usedCount + " 只宠物使用「"+oldName+"」，将全部改为「"+newName+"」\n"
+            + "  · 特征库中「"+oldName+"」条目被删除\n"
+            + "  · 「"+newName+"」的颜色保持不变";
+        if(!confirm(mergeMsg)) return false;
+        takeSnapshot("合并特征「"+oldName+"」→「"+newName+"」");
+        petList.forEach(p => {
+            if(Array.isArray(p.features)){
+                p.features = p.features.map(f => f === oldName ? newName : f);
+            }
+        });
+        Object.keys(featureMap).forEach(cat => {
+            if(featureMap[cat] && featureMap[cat][oldName]) delete featureMap[cat][oldName];
+        });
+        if(filterState.feature.has(oldName)){
+            filterState.feature.delete(oldName);
+            filterState.feature.add(newName);
+        }
+        return true;
+    }
+    /* 正常改名 */
+    takeSnapshot("重命名特征「"+oldName+"」→「"+newName+"」");
+    let found = false;
+    Object.keys(featureMap).forEach(cat => {
+        if(featureMap[cat] && featureMap[cat][oldName]){
+            const color = featureMap[cat][oldName];
+            delete featureMap[cat][oldName];
+            featureMap[cat][newName] = color;
+            found = true;
+        }
+    });
+    if(!found) return false;
+    petList.forEach(p => {
+        if(Array.isArray(p.features)){
+            p.features = p.features.map(f => f === oldName ? newName : f);
+        }
+    });
+    if(filterState.feature.has(oldName)){
+        filterState.feature.delete(oldName);
+        filterState.feature.add(newName);
+    }
+    return true;
+}
+function getAllFeatureNames(){
+    const s = new Set();
+    Object.keys(featureMap).forEach(cat => {
+        Object.keys(featureMap[cat] || {}).forEach(n => s.add(n));
+    });
+    return [...s];
+}
+/* 获取当前筛选下可见的特征名列表 */
+function getVisibleFeatureNames(){
+    if(filterState.category.size === 0){
+        return getAllFeatureNames();
+    }
+    const set = new Set();
+    Object.keys(featureMap[CAT_COMMON] || {}).forEach(n => set.add(n));
+    filterState.category.forEach(cat => {
+        if(featureMap[cat]) Object.keys(featureMap[cat]).forEach(n => set.add(n));
+    });
+    return [...set];
+}
+function countPetsByFeature(name){
+    let n = 0;
+    petList.forEach(p => { if((p.features||[]).includes(name)) n++; });
+    return n;
+}
+function getFeatCatLabel(cat){
+    if(cat === CAT_COMMON) return "共有";
+    return cat;
+}
+
+/* ==================== 撤回机制 ==================== */
+function takeSnapshot(desc){
+    lastSnapshot = {
+        petList: JSON.parse(JSON.stringify(petList)),
+        featureMap: JSON.parse(JSON.stringify(featureMap)),
+        breedMap: JSON.parse(JSON.stringify(breedMap)),
+        accountOptions: [...accountOptions],
+        desc: desc,
+        ts: Date.now()
+    };
+    updateUndoBtn();
+}
+function undoLast(){
+    if(!lastSnapshot){ alert("没有可撤回的操作"); return; }
+    const d = lastSnapshot.desc;
+    if(!confirm("确认撤回：" + d + " ？")) return;
+    petList = lastSnapshot.petList;
+    featureMap = lastSnapshot.featureMap;
+    breedMap = lastSnapshot.breedMap;
+    accountOptions = lastSnapshot.accountOptions;
+    lastSnapshot = null;
+    saveLocal(); render();
+    updateUndoBtn();
+    alert("✓ 已撤回：" + d);
+}
+function updateUndoBtn(){
+    const btn = $("btnUndo");
+    if(!btn) return;
+    if(lastSnapshot){
+        btn.disabled = false;
+        btn.title = "撤回：" + lastSnapshot.desc;
+        const shortDesc = lastSnapshot.desc.length > 12 ? lastSnapshot.desc.slice(0, 12) + "..." : lastSnapshot.desc;
+        btn.textContent = "↶ 撤回（" + shortDesc + "）";
+    } else {
+        btn.disabled = true;
+        btn.title = "没有可撤回的操作";
+        btn.textContent = "↶ 撤回";
+    }
+}
+$("btnUndo").onclick = undoLast;
 
 function toLocalInputVal(dateStr){
     if(!dateStr) return "";
@@ -570,7 +832,6 @@ function compressToBlob(file, maxSize, quality){
         r.onerror = () => rej(new Error("读取失败")); r.readAsDataURL(file);
     });
 }
-/* 关键：判断图片是否被除 excludePetId 之外的宠物引用 */
 function isImgReferencedByOthers(imgId, excludePetId){
     if(!imgId) return false;
     return petList.some(p => {
@@ -581,7 +842,6 @@ function isImgReferencedByOthers(imgId, excludePetId){
         return false;
     });
 }
-/* 安全删除：只有没其他宠物引用时才真正删除 */
 function safeDeleteImg(imgId, excludePetId){
     if(!imgId || !isIndexedImg(imgId)) return;
     if(isImgReferencedByOthers(imgId, excludePetId)) return;
@@ -607,6 +867,22 @@ function safeSave(){
 }
 function saveLocal(){ safeSave(); }
 
+function initFeatureMapFromDefaults(){
+    const fm = {};
+    Object.keys(DEFAULT_FEATURES_BY_CAT).forEach(cat => {
+        fm[cat] = {};
+        DEFAULT_FEATURES_BY_CAT[cat].forEach(name => {
+            fm[cat][name] = DEFAULT_FEATURE_COLOR;
+        });
+    });
+    return fm;
+}
+function guessFeatureCategory(name){
+    for(const cat in DEFAULT_FEATURES_BY_CAT){
+        if(DEFAULT_FEATURES_BY_CAT[cat].includes(name)) return cat;
+    }
+    return null;
+}
 function normalizePet(p){
     if(!p || typeof p !== "object") p = {};
     const created = p.ctime || Date.now();
@@ -634,7 +910,7 @@ function normalizePet(p){
 function loadFromLocal(){
     try{
         const raw = localStorage.getItem(STORAGE_KEY);
-        if(!raw) return;
+        if(!raw){ featureMap = initFeatureMapFromDefaults(); return; }
         const obj = JSON.parse(raw);
         petList = (Array.isArray(obj.pets) ? obj.pets : []).map(normalizePet);
         accountOptions = Array.isArray(obj.accounts) ? obj.accounts : [];
@@ -643,12 +919,32 @@ function loadFromLocal(){
             Object.keys(DEFAULT_CATEGORIES).forEach(k => { if(!(k in breedMap)) breedMap[k] = DEFAULT_CATEGORIES[k]; });
         }
         if(obj.featureMap && typeof obj.featureMap === "object"){
-            featureMap = obj.featureMap;
+            const keys = Object.keys(obj.featureMap);
+            const isOldStruct = keys.length > 0 && typeof obj.featureMap[keys[0]] === "string";
+            if(isOldStruct){
+                featureMap = initFeatureMapFromDefaults();
+                Object.keys(obj.featureMap).forEach(name => {
+                    const color = obj.featureMap[name];
+                    const guess = guessFeatureCategory(name);
+                    if(guess){
+                        if(!featureMap[guess]) featureMap[guess] = {};
+                        featureMap[guess][name] = color;
+                    } else {
+                        if(!featureMap[CAT_COMMON]) featureMap[CAT_COMMON] = {};
+                        featureMap[CAT_COMMON][name] = color;
+                    }
+                });
+            } else {
+                featureMap = obj.featureMap;
+                if(!featureMap[CAT_COMMON]) featureMap[CAT_COMMON] = {};
+            }
+        } else {
+            featureMap = initFeatureMapFromDefaults();
         }
-        const allFeat = new Set();
-        petList.forEach(p => p.features.forEach(f => allFeat.add(f)));
-        allFeat.forEach(f => { if(!featureMap[f]) featureMap[f] = DEFAULT_FEATURE_COLOR; });
-    }catch(e){ console.error("加载失败", e); }
+        Object.keys(DEFAULT_FEATURES_BY_CAT).forEach(cat => {
+            if(!featureMap[cat]) featureMap[cat] = {};
+        });
+    }catch(e){ console.error("加载失败", e); featureMap = initFeatureMapFromDefaults(); }
 }
 
 /* ==================== 计时 ==================== */
@@ -727,14 +1023,28 @@ function buildCard(p, now){
     div.className = "pet-card" + (p.locked ? " locked" : "") + (p.inBench ? " bench-starred" : "");
     const rem = getRemain(p, now);
     const recover = getRecoverTime(p, now);
+    const cp1Name = (p.cp1 && p.cp1.name || "").trim();
+    const cp2Name = (p.cp2 && p.cp2.name || "").trim();
+    /* 待配对状态：空闲且CP1有名字且未锁定 */
+    const isWaitPair = !p.locked && rem <= 0 && cp1Name !== "";
+
     let status = "";
     if(p.locked) status = "🔒待手动接生";
     else if(rem <= 0){
-        const cpName = (p.cp1 && p.cp1.name || "").trim();
-        status = cpName ? '<span class="status-waitpair">💗待配对('+esc(cpName)+')</span>' : '<span class="status-idle">🟢空闲</span>';
+        status = cp1Name ? '<span class="status-waitpair">💗待配对('+esc(cp1Name)+')</span>' : '<span class="status-idle">🟢空闲</span>';
     }
     else if(p.isRunning) status = "⏱计时运行中";
     else status = "⏸托管暂停";
+
+    /* CP行：待配对状态时不再重复显示（已在状态里显示过名字） */
+    let cpLine = "";
+    if(!isWaitPair && (cp1Name || cp2Name)){
+        const parts = [];
+        if(cp1Name) parts.push('<b>CP1：</b>'+esc(cp1Name));
+        if(cp2Name) parts.push('<b>CP2：</b>'+esc(cp2Name));
+        cpLine = '<div class="cp-line">'+parts.join(' &nbsp; ')+'</div>';
+    }
+
     const gTag = p.gender === "m" ? '<span class="gender-m">公</span>' : '<span class="gender-f">母</span>';
     const tagHtml = (p.tags || []).map(t => '<span class="tag">'+esc(t)+'</span>').join("");
     const featHtml = (p.features || []).map(f => featureChip(f)).join("");
@@ -748,6 +1058,7 @@ function buildCard(p, now){
         '<div class="info-main">'+
             '<div class="pet-name">'+esc(p.name||"未命名")+' '+gTag+'</div>'+
             '<div style="font-size:12px;color:#666">'+esc(p.breed||"-")+'｜'+esc(p.account||"-")+'</div>'+
+            cpLine+
             '<div style="margin:3px 0">'+tagHtml+'</div>'+
             (featHtml ? '<div style="margin:3px 0">'+featHtml+'</div>' : '')+
             '<div class="timer-area">'+status+' · 剩余 '+msToHMS(rem)+
@@ -1034,7 +1345,6 @@ function getFilteredList(now){
         });
     }
 
-    /* 排序锁定：若锁定中且 frozenOrder 存在，按快照顺序排 */
     if(sortLocked && frozenOrder.length > 0){
         const orderMap = new Map();
         frozenOrder.forEach((id, idx) => orderMap.set(id, idx));
@@ -1059,8 +1369,6 @@ function getFilteredList(now){
     });
     return list;
 }
-
-/* 冻结当前顺序（用于排序锁定） */
 function freezeCurrentOrder(){
     const now = Date.now();
     const list = getFilteredList(now);
@@ -1124,11 +1432,9 @@ function renderBench(now){
         return;
     }
     $("benchEmpty").classList.add("hidden");
-    /* 按编辑时间倒序 */
     benchList.sort((a,b) => (b.utime||0) - (a.utime||0));
     benchList.forEach(p => {
         const card = buildCard(p, now);
-        /* 工作台内卡片左上角加选中框 */
         const chkWrap = document.createElement("label");
         chkWrap.style.cssText = "position:absolute;top:8px;left:8px;z-index:2;background:#fff;border:1px solid #ddd;border-radius:4px;padding:2px 5px;cursor:pointer;font-size:12px";
         chkWrap.innerHTML = '<input type="checkbox" class="bench-check" data-id="'+p.id+'"'+(benchSelectedIds.has(p.id)?" checked":"")+' style="margin:0 3px 0 0;vertical-align:middle">';
@@ -1172,19 +1478,13 @@ $("btnToggleCp").onclick = function(){
 $("sortLockChk").onchange = function(){
     sortLocked = this.checked;
     $("sortLockWrap").classList.toggle("locked", sortLocked);
-    if(sortLocked){
-        freezeCurrentOrder();
-    } else {
-        frozenOrder = [];
-    }
+    if(sortLocked) freezeCurrentOrder();
+    else frozenOrder = [];
     render();
 };
 $("btnApplySort").onclick = function(){
-    if(sortLocked){
-        freezeCurrentOrder();
-    }
+    if(sortLocked) freezeCurrentOrder();
     render();
-    /* 视觉反馈 */
     const btn = this;
     const old = btn.textContent;
     btn.textContent = "✓ 已重排";
@@ -1230,7 +1530,8 @@ function openFilterPanel(type, btn){
     } else if(type === "account"){
         options = accountOptions.map(a => ({ v:a, t:a }));
     } else if(type === "feature"){
-        options = Object.keys(featureMap).map(f => ({ v:f, t:f }));
+        /* 特征筛选：如果已筛选品种大类，只显示共有+对应大类特征 */
+        options = getVisibleFeatureNames().map(f => ({ v:f, t:f }));
     }
     panel.innerHTML = '<h5>勾选即生效</h5>';
     if(options.length === 0){
@@ -1293,7 +1594,6 @@ function closeFilterPanel(){
 
 /* ==================== 事件委托 ==================== */
 document.addEventListener("click", e => {
-    /* ⭐ 按钮 */
     const starBtn = e.target.closest("[data-star]");
     if(starBtn){
         e.stopPropagation();
@@ -1346,7 +1646,6 @@ document.addEventListener("click", e => {
         const tr = chk.closest("tr"); if(tr) tr.classList.toggle("selected", chk.checked);
         return;
     }
-    /* 工作台内的复选框 */
     const bchk = e.target.closest(".bench-check");
     if(bchk){
         const id = bchk.dataset.id;
@@ -1361,6 +1660,7 @@ document.addEventListener("click", e => {
             const cur = (pet.tags || []).join("\n");
             const v = prompt("编辑标签（一行一个）：", cur);
             if(v !== null){
+                takeSnapshot("编辑标签");
                 pet.tags = v.split("\n").map(s => s.trim()).filter(Boolean);
                 touchPet(pet); saveLocal(); render();
             }
@@ -1373,10 +1673,11 @@ document.addEventListener("click", e => {
         const pet = petList.find(x => x.id === id);
         if(pet){
             const cur = (pet.features || []).join("\n");
-            const v = prompt("编辑特征（一行一个，新特征会自动加入特征库）：", cur);
+            const v = prompt("编辑特征（一行一个）：", cur);
             if(v !== null){
+                takeSnapshot("编辑特征");
                 pet.features = v.split("\n").map(s => s.trim()).filter(Boolean);
-                pet.features.forEach(f => { if(!featureMap[f]) featureMap[f] = DEFAULT_FEATURE_COLOR; });
+                pet.features.forEach(f => ensureFeatureExists(f, pet.category));
                 touchPet(pet); saveLocal(); render();
             }
         }
@@ -1409,7 +1710,6 @@ function uploadRowImage(pet, field){
             await saveImage(nid, blob);
             const old = getFieldValue(pet, field);
             setFieldValue(pet, field, nid);
-            /* 只有没其他宠物引用时才删旧图 */
             if(old && isIndexedImg(old)) safeDeleteImg(old, pet.id);
             touchPet(pet); saveLocal(); render();
         }catch(err){ alert("图片处理失败：" + err.message); }
@@ -1424,13 +1724,11 @@ document.addEventListener("keydown", e => { if(e.key === "Escape") $("imgPreview
 function deletePet(id){
     const p = petList.find(x => x.id === id);
     if(!p) return;
-    /* 先记录要删的图片 */
+    takeSnapshot("删除宠物「" + (p.name||"未命名") + "」");
     const imgsToCheck = [p.img, p.cp1 && p.cp1.img, p.cp2 && p.cp2.img].filter(Boolean);
-    /* 先从列表移除 */
     petList = petList.filter(x => x.id !== id);
     selectedIds.delete(id);
     benchSelectedIds.delete(id);
-    /* 再检查每个图片是否还被引用 */
     imgsToCheck.forEach(imgId => {
         if(!isImgReferencedByOthers(imgId, null)){
             deleteImage(imgId).catch(()=>{});
@@ -1442,13 +1740,14 @@ function deletePet(id){
 function copyPet(id){
     const src = petList.find(x => x.id === id);
     if(!src) return;
+    takeSnapshot("复制宠物");
     const now = Date.now();
     const copy = JSON.parse(JSON.stringify(src));
     copy.id = genId(); copy.ctime = now; copy.utime = now;
     copy.name = (src.name||"未命名") + "（副本）";
     copy.isRunning = false; copy.startTs = null; copy.runStartRemain = null;
     copy.pausedAt = copy.totalMs || 0; copy.locked = false;
-    copy.inBench = false;   /* 副本不进工作台 */
+    copy.inBench = false;
     petList.push(copy);
     saveLocal(); render();
 }
@@ -1477,7 +1776,7 @@ $("batchClear").onclick = () => { selectedIds.clear(); render(); };
 $("batchDelete").onclick = () => {
     if(selectedIds.size === 0) return;
     if(!confirm("确定删除选中的 " + selectedIds.size + " 只宠物档案？不可恢复！")) return;
-    /* 先收集所有要检查的图片 */
+    takeSnapshot("批量删除 " + selectedIds.size + " 只");
     const imgsToCheck = [];
     selectedIds.forEach(id => {
         const p = petList.find(x => x.id === id);
@@ -1487,11 +1786,9 @@ $("batchDelete").onclick = () => {
             if(p.cp2 && p.cp2.img) imgsToCheck.push(p.cp2.img);
         }
     });
-    /* 从列表中移除 */
     petList = petList.filter(p => !selectedIds.has(p.id));
     selectedIds.forEach(id => benchSelectedIds.delete(id));
     selectedIds.clear();
-    /* 检查图片 */
     imgsToCheck.forEach(imgId => {
         if(!isImgReferencedByOthers(imgId, null)){
             deleteImage(imgId).catch(()=>{});
@@ -1513,12 +1810,10 @@ $("benchSelNone").onclick = () => {
 document.querySelectorAll("[data-bench]").forEach(btn => {
     btn.onclick = () => {
         const mode = btn.dataset.bench;
-        if(benchSelectedIds.size === 0){
-            alert("请先在工作台内勾选宠物");
-            return;
-        }
+        if(benchSelectedIds.size === 0){ alert("请先在工作台内勾选宠物"); return; }
         const now = Date.now();
         if(mode === "remove"){
+            takeSnapshot("工作台移除宠物");
             benchSelectedIds.forEach(id => {
                 const p = petList.find(x => x.id === id);
                 if(p){ p.inBench = false; touchPet(p, now); }
@@ -1528,24 +1823,18 @@ document.querySelectorAll("[data-bench]").forEach(btn => {
             return;
         }
         let confirmMsg = "";
-        if(mode === "4h") confirmMsg = "把选中的宠物设为【4 小时恢复】？\n（会重置计时并立即开始倒计时）";
-        else if(mode === "144h-normal") confirmMsg = "把选中的宠物设为【144 小时恢复（普通）】？\n（会重置计时并立即开始倒计时）";
-        else if(mode === "144h-female") confirmMsg = "把选中的宠物设为【144 小时恢复（母宠·72h 后卡分娩）】？\n（母宠在剩余 72 小时时自动暂停并锁定待接生）";
+        if(mode === "4h") confirmMsg = "把选中的宠物设为【4 小时恢复】？";
+        else if(mode === "144h-normal") confirmMsg = "把选中的宠物设为【144 小时恢复（普通）】？";
+        else if(mode === "144h-female") confirmMsg = "把选中的宠物设为【144 小时恢复（母宠·72h 后卡分娩）】？";
         if(!confirm(confirmMsg)) return;
+        takeSnapshot("工作台批量改时间 " + benchSelectedIds.size + " 只");
 
         benchSelectedIds.forEach(id => {
             const p = petList.find(x => x.id === id);
             if(!p) return;
-            if(mode === "4h"){
-                p.totalMs = hmToMs(4, 0);
-                p.timerMode = "normal";
-            } else if(mode === "144h-normal"){
-                p.totalMs = hmToMs(144, 0);
-                p.timerMode = "normal";
-            } else if(mode === "144h-female"){
-                p.totalMs = hmToMs(144, 0);
-                p.timerMode = "breedFemale";
-            }
+            if(mode === "4h"){ p.totalMs = hmToMs(4, 0); p.timerMode = "normal"; }
+            else if(mode === "144h-normal"){ p.totalMs = hmToMs(144, 0); p.timerMode = "normal"; }
+            else if(mode === "144h-female"){ p.totalMs = hmToMs(144, 0); p.timerMode = "breedFemale"; }
             p.pausedAt = p.totalMs;
             p.isRunning = false;
             p.startTs = null;
@@ -1624,12 +1913,13 @@ $("optManageModal").addEventListener("click", e => {
         const type = t.dataset.type;
         if(type === "acc"){
             const i = Number(t.dataset.idx);
-            if(confirm("确认删除账号【"+accountOptions[i]+"】？")){ accountOptions.splice(i,1); saveLocal(); renderOptManage(); render(); }
+            if(confirm("确认删除账号【"+accountOptions[i]+"】？")){ takeSnapshot("删除账号"); accountOptions.splice(i,1); saveLocal(); renderOptManage(); render(); }
         } else if(type === "cat"){
             const c = t.dataset.cat;
-            if(confirm("确认删除品种大类【"+c+"】及其所有品种？")){ delete breedMap[c]; saveLocal(); renderOptManage(); render(); }
+            if(confirm("确认删除品种大类【"+c+"】及其所有品种？")){ takeSnapshot("删除品种大类"); delete breedMap[c]; saveLocal(); renderOptManage(); render(); }
         } else if(type === "breed"){
             const c = t.dataset.cat, i = Number(t.dataset.idx);
+            takeSnapshot("删除品种");
             breedMap[c].splice(i,1); saveLocal(); renderOptManage(); render();
         }
         return;
@@ -1675,7 +1965,7 @@ $("addAccBtn").onclick = () => {
 };
 $("addCatBtn").onclick = () => {
     const cat = $("newCatInput").value.trim(), brd = $("newBreedInput").value.trim();
-    if(cat && !(cat in breedMap)) breedMap[cat] = [];
+    if(cat && !(cat in breedMap)) { breedMap[cat] = []; if(!featureMap[cat]) featureMap[cat] = {}; }
     if(cat && brd && !breedMap[cat].includes(brd)) breedMap[cat].push(brd);
     $("newCatInput").value = ""; $("newBreedInput").value = "";
     saveLocal(); renderOptManage(); render();
@@ -1684,46 +1974,49 @@ $("btnManageOpt").onclick = () => { renderOptManage(); $("optManageModal").class
 $("closeOptManage").onclick = () => $("optManageModal").classList.add("hidden");
 
 /* ==================== 管理特征 ==================== */
-function countPetsByFeature(name){
-    let n = 0;
-    petList.forEach(p => { if((p.features||[]).includes(name)) n++; });
-    return n;
-}
-function renameFeature(oldName, newName){
-    newName = (newName || "").trim();
-    if(!oldName || !newName || oldName === newName) return;
-    if(!(oldName in featureMap)) return;
-    if(newName in featureMap){ alert("已存在同名特征「"+newName+"」"); return; }
-    const color = featureMap[oldName];
-    delete featureMap[oldName];
-    featureMap[newName] = color;
-    petList.forEach(p => {
-        if(Array.isArray(p.features)){
-            p.features = p.features.map(f => f === oldName ? newName : f);
-        }
+function renderFeatCatTabs(){
+    const wrap = $("featCatTabs");
+    wrap.innerHTML = "";
+    const cats = [CAT_COMMON];
+    Object.keys(breedMap).forEach(c => { if(c !== CAT_COMMON) cats.push(c); });
+    cats.forEach(c => {
+        const tab = document.createElement("button");
+        tab.className = "feat-cat-tab" + (c === currentFeatCat ? " active" : "");
+        tab.textContent = getFeatCatLabel(c) + (featureMap[c] ? " ("+Object.keys(featureMap[c]).length+")" : " (0)");
+        tab.onclick = () => {
+            currentFeatCat = c;
+            featSelected.clear();
+            renderFeatCatTabs();
+            renderFeatManage();
+        };
+        wrap.appendChild(tab);
     });
-    if(filterState.feature.has(oldName)){
-        filterState.feature.delete(oldName);
-        filterState.feature.add(newName);
-    }
-    saveLocal();
-    render();
+    const moveSel = $("featMoveTarget");
+    moveSel.innerHTML = "";
+    cats.forEach(c => {
+        if(c === currentFeatCat) return;
+        const o = document.createElement("option"); o.value = c; o.textContent = "移动到：" + getFeatCatLabel(c);
+        moveSel.appendChild(o);
+    });
 }
 function renderFeatManage(){
     const wrap = $("featListWrap"); wrap.innerHTML = "";
-    const keys = Object.keys(featureMap);
+    const features = featureMap[currentFeatCat] || {};
+    const keys = Object.keys(features);
     if(keys.length === 0){
-        wrap.innerHTML = '<div style="color:#999;padding:8px;text-align:center">暂无特征，可在新增宠物档案时直接输入，或先添加一个</div>';
+        wrap.innerHTML = '<div style="color:#999;padding:12px;text-align:center">【'+getFeatCatLabel(currentFeatCat)+'】暂无特征，请在下方添加</div>';
+        updateFeatSelCount();
         return;
     }
     keys.sort((a,b) => countPetsByFeature(b) - countPetsByFeature(a));
-
     keys.forEach(name => {
-        const color = featureMap[name];
+        const color = features[name];
         const used = countPetsByFeature(name);
         const row = document.createElement("div");
         row.className = "feat-manage-row";
+        const checked = featSelected.has(name) ? " checked" : "";
         row.innerHTML =
+            '<input type="checkbox" data-featcheck="'+esc(name)+'"'+checked+'>'+
             '<input type="text" value="'+esc(name)+'" data-featname="'+esc(name)+'">'+
             '<input type="color" value="'+esc(color)+'" data-featcolor="'+esc(name)+'">'+
             '<span class="feat-count">'+used+' 只</span>'+
@@ -1731,6 +2024,14 @@ function renderFeatManage(){
         wrap.appendChild(row);
     });
 
+    wrap.querySelectorAll("[data-featcheck]").forEach(cb => {
+        cb.addEventListener("change", () => {
+            const name = cb.dataset.featcheck;
+            if(cb.checked) featSelected.add(name);
+            else featSelected.delete(name);
+            updateFeatSelCount();
+        });
+    });
     wrap.querySelectorAll("[data-featname]").forEach(inp => {
         const oldName = inp.dataset.featname;
         let committed = false;
@@ -1739,8 +2040,16 @@ function renderFeatManage(){
             committed = true;
             const nv = inp.value.trim();
             if(!nv || nv === oldName){ inp.value = oldName; return; }
-            renameFeature(oldName, nv);
-            renderFeatManage();
+            if(renameFeatureEverywhere(oldName, nv)){
+                if(featSelected.has(oldName)){ featSelected.delete(oldName); featSelected.add(nv); }
+                saveLocal();
+                renderFeatCatTabs();
+                renderFeatManage();
+                render();
+                updateUndoBtn();
+            } else {
+                inp.value = oldName;
+            }
         };
         inp.addEventListener("blur", commit);
         inp.addEventListener("keydown", ev => {
@@ -1751,9 +2060,11 @@ function renderFeatManage(){
     wrap.querySelectorAll("[data-featcolor]").forEach(inp => {
         inp.addEventListener("change", () => {
             const name = inp.dataset.featcolor;
-            featureMap[name] = inp.value;
-            saveLocal();
-            render();
+            if(featureMap[currentFeatCat] && featureMap[currentFeatCat][name]){
+                featureMap[currentFeatCat][name] = inp.value;
+                saveLocal();
+                render();
+            }
         });
     });
     wrap.querySelectorAll("[data-featdel]").forEach(btn => {
@@ -1763,15 +2074,103 @@ function renderFeatManage(){
             const msg = "确认删除特征【"+name+"】？\n"
                 + (used > 0 ? "当前有 "+used+" 只宠物勾选了它，删除后这些宠物仍会显示该特征，但不再出现在可选库里。" : "");
             if(!confirm(msg)) return;
-            delete featureMap[name];
+            takeSnapshot("删除特征「" + name + "」");
+            removeFeatureEverywhere(name);
             filterState.feature.delete(name);
+            featSelected.delete(name);
             saveLocal();
+            renderFeatCatTabs();
             renderFeatManage();
             render();
         };
     });
+    updateFeatSelCount();
 }
-$("btnManageFeat").onclick = () => { renderFeatManage(); $("featManageModal").classList.remove("hidden"); };
+function updateFeatSelCount(){
+    const n = featSelected.size;
+    $("featSelCount").textContent = "已选 " + n + " 项";
+    const allCb = $("featSelectAll");
+    const features = featureMap[currentFeatCat] || {};
+    const total = Object.keys(features).length;
+    allCb.checked = total > 0 && n === total;
+}
+$("featSelectAll").onchange = function(){
+    const features = featureMap[currentFeatCat] || {};
+    if(this.checked){
+        Object.keys(features).forEach(name => featSelected.add(name));
+    } else {
+        featSelected.clear();
+    }
+    renderFeatManage();
+};
+$("featBatchDelete").onclick = () => {
+    if(featSelected.size === 0){ alert("请先勾选要删除的特征"); return; }
+    const total = featSelected.size;
+    let totalUsed = 0;
+    featSelected.forEach(name => { totalUsed += countPetsByFeature(name); });
+    const msg = "确认删除选中的 " + total + " 个特征？\n"
+        + (totalUsed > 0 ? "这些特征被宠物引用共 " + totalUsed + " 次。删除后已勾选的宠物仍会显示，但不再出现在可选库里。" : "");
+    if(!confirm(msg)) return;
+    takeSnapshot("批量删除特征 " + total + " 个");
+    featSelected.forEach(name => {
+        removeFeatureEverywhere(name);
+        filterState.feature.delete(name);
+    });
+    featSelected.clear();
+    saveLocal();
+    renderFeatCatTabs();
+    renderFeatManage();
+    render();
+};
+$("featBatchMove").onclick = () => {
+    if(featSelected.size === 0){ alert("请先勾选要移动的特征"); return; }
+    const target = $("featMoveTarget").value;
+    if(!target){ alert("请选择目标分类"); return; }
+    if(target === currentFeatCat){ alert("目标分类与当前相同"); return; }
+    if(!featureMap[target]) featureMap[target] = {};
+    takeSnapshot("批量移动特征到 " + getFeatCatLabel(target));
+    let moved = 0, skipped = [];
+    const namesToMove = [...featSelected];
+    namesToMove.forEach(name => {
+        if(featureMap[target][name]){ skipped.push(name); return; }
+        const color = featureMap[currentFeatCat][name] || DEFAULT_FEATURE_COLOR;
+        delete featureMap[currentFeatCat][name];
+        featureMap[target][name] = color;
+        moved++;
+    });
+    featSelected.clear();
+    saveLocal();
+    renderFeatCatTabs();
+    renderFeatManage();
+    render();
+    let msg = "已移动 " + moved + " 个特征到【"+getFeatCatLabel(target)+"】";
+    if(skipped.length > 0) msg += "\n\n跳过了 " + skipped.length + " 个（目标分类已有同名）：" + skipped.join("、");
+    alert(msg);
+};
+$("addFeatBtn").onclick = () => {
+    const name = $("newFeatName").value.trim();
+    const color = $("newFeatColor").value || DEFAULT_FEATURE_COLOR;
+    if(!name){ alert("请输入特征名"); return; }
+    for(const cat in featureMap){
+        if(featureMap[cat] && featureMap[cat][name]){ alert("特征「"+name+"」已存在于【"+getFeatCatLabel(cat)+"】分类中"); return; }
+    }
+    takeSnapshot("添加特征「" + name + "」");
+    if(!featureMap[currentFeatCat]) featureMap[currentFeatCat] = {};
+    featureMap[currentFeatCat][name] = color;
+    $("newFeatName").value = "";
+    $("newFeatColor").value = DEFAULT_FEATURE_COLOR;
+    saveLocal();
+    renderFeatCatTabs();
+    renderFeatManage();
+    render();
+};
+$("btnManageFeat").onclick = () => {
+    currentFeatCat = CAT_COMMON;
+    featSelected.clear();
+    renderFeatCatTabs();
+    renderFeatManage();
+    $("featManageModal").classList.remove("hidden");
+};
 $("closeFeatManage").onclick = () => $("featManageModal").classList.add("hidden");
 
 /* ==================== 编辑弹窗 ==================== */
@@ -1810,6 +2209,7 @@ function renderCategoryPicker(){
             currentEditCategory = c;
             renderBreedSel(c, "");
             renderCategoryPicker();
+            renderFeatureQuickPick();
         };
         wrap.appendChild(item);
     });
@@ -1825,6 +2225,81 @@ function renderBreedSel(category, selected){
     });
 }
 
+function renderFeatureQuickPick(){
+    const wrap = $("featQuickArea");
+    wrap.innerHTML = "";
+    const cur = $("petFeatures").value.split("\n").map(s => s.trim()).filter(Boolean);
+    const curSet = new Set(cur);
+
+    const common = Object.keys(featureMap[CAT_COMMON] || {});
+    if(common.length > 0){
+        const g = document.createElement("div");
+        g.className = "feat-quick-group";
+        g.innerHTML = '<div class="feat-quick-title">共有特征（所有品种大类通用）</div>';
+        const chips = document.createElement("div");
+        chips.className = "feat-quick-chips";
+        common.forEach(name => {
+            const color = getFeatureColor(name);
+            const chip = document.createElement("div");
+            chip.className = "feat-quick-chip" + (curSet.has(name) ? " on" : "");
+            chip.textContent = name;
+            if(curSet.has(name)){
+                chip.style.background = color;
+                chip.style.borderColor = color;
+            } else {
+                chip.style.color = color;
+                chip.style.borderColor = hexToRgba(color, 0.4);
+            }
+            chip.onclick = () => toggleFeatureInTextarea(name);
+            chips.appendChild(chip);
+        });
+        g.appendChild(chips);
+        wrap.appendChild(g);
+    }
+
+    const cat = currentEditCategory;
+    if(cat && featureMap[cat]){
+        const arr = Object.keys(featureMap[cat]);
+        if(arr.length > 0){
+            const g = document.createElement("div");
+            g.className = "feat-quick-group";
+            g.innerHTML = '<div class="feat-quick-title"><span class="cat">'+esc(cat)+'</span> 专属特征</div>';
+            const chips = document.createElement("div");
+            chips.className = "feat-quick-chips";
+            arr.forEach(name => {
+                const color = getFeatureColor(name);
+                const chip = document.createElement("div");
+                chip.className = "feat-quick-chip" + (curSet.has(name) ? " on" : "");
+                chip.textContent = name;
+                if(curSet.has(name)){
+                    chip.style.background = color;
+                    chip.style.borderColor = color;
+                } else {
+                    chip.style.color = color;
+                    chip.style.borderColor = hexToRgba(color, 0.4);
+                }
+                chip.onclick = () => toggleFeatureInTextarea(name);
+                chips.appendChild(chip);
+            });
+            g.appendChild(chips);
+            wrap.appendChild(g);
+        }
+    }
+    if(!wrap.innerHTML){
+        wrap.innerHTML = '<div class="chip-empty">请先选择品种大类，或直接在上方文本框中输入特征</div>';
+    }
+}
+function toggleFeatureInTextarea(name){
+    const ta = $("petFeatures");
+    const cur = ta.value.split("\n").map(s => s.trim()).filter(Boolean);
+    const idx = cur.indexOf(name);
+    if(idx >= 0) cur.splice(idx, 1);
+    else cur.push(name);
+    ta.value = cur.join("\n");
+    renderFeatureQuickPick();
+}
+$("petFeatures").addEventListener("input", renderFeatureQuickPick);
+
 function setEditGender(g){
     currentEditGender = (g === "f") ? "f" : "m";
     document.querySelectorAll("#genderPick .gender-opt").forEach(el => {
@@ -1837,20 +2312,29 @@ $("genderPick").addEventListener("click", e => {
     setEditGender(opt.dataset.gender);
 });
 
-/* 总时长快捷按钮 */
+function setEditTimerMode(m){
+    currentEditTimerMode = (m === "breedFemale") ? "breedFemale" : "normal";
+    document.querySelectorAll("#timerModePick .mode-opt").forEach(el => {
+        el.classList.toggle("selected", el.dataset.mode === currentEditTimerMode);
+    });
+}
+$("timerModePick").addEventListener("click", e => {
+    const opt = e.target.closest(".mode-opt");
+    if(!opt) return;
+    setEditTimerMode(opt.dataset.mode);
+});
+
 document.querySelectorAll(".quick-time button").forEach(btn => {
     btn.onclick = () => {
         const h = Number(btn.dataset.quick);
         $("tHour").value = h;
         $("tMinute").value = 0;
-        /* 触发时间变更标记 */
         if(editId !== null){
             timeEditedByUser = String($("tHour").value) !== editOrigH || String($("tMinute").value) !== editOrigM;
         }
     };
 });
 
-/* 预计配对时间：天数换算 */
 function setupPairTimeCalc(prefix){
     const dtInput = $(prefix + "PairTime");
     const daysInput = $(prefix + "Days");
@@ -1878,6 +2362,78 @@ function setupPairTimeCalc(prefix){
 setupPairTimeCalc("cp1");
 setupPairTimeCalc("cp2");
 
+document.querySelectorAll(".swap-btn[data-swap]").forEach(btn => {
+    btn.onclick = () => {
+        const n1 = $("cp1Name").value, n2 = $("cp2Name").value;
+        $("cp1Name").value = n2; $("cp2Name").value = n1;
+        const t1 = $("cp1PairTime").value, t2 = $("cp2PairTime").value;
+        $("cp1PairTime").value = t2; $("cp2PairTime").value = t1;
+        const d1 = $("cp1Days").value, d2 = $("cp2Days").value;
+        $("cp1Days").value = d2; $("cp2Days").value = d1;
+        const h1 = $("cp1Hours").value, h2 = $("cp2Hours").value;
+        $("cp1Hours").value = h2; $("cp2Hours").value = h1;
+        [pendingCp1Blob, pendingCp2Blob] = [pendingCp2Blob, pendingCp1Blob];
+        [pendingCp1Cleared, pendingCp2Cleared] = [pendingCp2Cleared, pendingCp1Cleared];
+        [editCp1ImgValue, editCp2ImgValue] = [editCp2ImgValue, editCp1ImgValue];
+        updateCpPreview("cp1");
+        updateCpPreview("cp2");
+    };
+});
+/* CP 清空按钮 */
+document.querySelectorAll(".clear-cp-btn").forEach(btn => {
+    btn.onclick = () => {
+        const prefix = btn.dataset.clear;
+        const label = prefix === "cp1" ? "CP1" : "CP2";
+        if(!confirm("确认清空 " + label + " 的所有信息？\n（名字、图片、预计配对时间都会被清除）")) return;
+        $(prefix + "Name").value = "";
+        $(prefix + "PairTime").value = "";
+        $(prefix + "Days").value = "";
+        $(prefix + "Hours").value = "";
+        if(prefix === "cp1"){
+            pendingCp1Blob = null; pendingCp1Cleared = true; editCp1ImgValue = "";
+        } else {
+            pendingCp2Blob = null; pendingCp2Cleared = true; editCp2ImgValue = "";
+        }
+        updateCpPreview(prefix);
+    };
+});
+function updateCpPreview(prefix){
+    const wrap = $(prefix + "PreviewWrap");
+    const img = $(prefix + "Preview");
+    const pendingBlob = prefix === "cp1" ? pendingCp1Blob : pendingCp2Blob;
+    const cleared = prefix === "cp1" ? pendingCp1Cleared : pendingCp2Cleared;
+    const imgValue = prefix === "cp1" ? editCp1ImgValue : editCp2ImgValue;
+    if(pendingBlob){
+        img.src = URL.createObjectURL(pendingBlob);
+        wrap.classList.add("show");
+        updatePasteZoneState(prefix + "PasteZone", true);
+        return;
+    }
+    if(cleared){
+        img.src = "";
+        wrap.classList.remove("show");
+        updatePasteZoneState(prefix + "PasteZone", false);
+        return;
+    }
+    if(imgValue){
+        if(isIndexedImg(imgValue)){
+            const c = getImageUrlSync(imgValue);
+            if(c){ img.src = c; wrap.classList.add("show"); updatePasteZoneState(prefix + "PasteZone", true); }
+            else getImageUrl(imgValue).then(u => {
+                if(u && editId !== null){ img.src = u; wrap.classList.add("show"); updatePasteZoneState(prefix + "PasteZone", true); }
+            });
+        } else {
+            img.src = imgValue;
+            wrap.classList.add("show");
+            updatePasteZoneState(prefix + "PasteZone", true);
+        }
+    } else {
+        img.src = "";
+        wrap.classList.remove("show");
+        updatePasteZoneState(prefix + "PasteZone", false);
+    }
+}
+
 function setTimeHint(p){
     const h = $("timeStatusHint");
     if(!p){ h.textContent = "新增档案：填入总时长，保存后即为初始剩余时间。"; return; }
@@ -1902,19 +2458,21 @@ function openEdit(pid){
     pendingImgBlob = null; pendingImgCleared = false;
     pendingCp1Blob = null; pendingCp1Cleared = false;
     pendingCp2Blob = null; pendingCp2Cleared = false;
+    editCp1ImgValue = ""; editCp2ImgValue = "";
     timeEditedByUser = false; editOrigH = ""; editOrigM = "";
     currentEditAccount = ""; currentEditCategory = "";
+    currentEditTimerMode = "normal";
     $("editModal").classList.remove("hidden");
     $("modalTitle").textContent = pid ? "编辑宠物档案" : "新增宠物档案";
     $("btnDel").classList.toggle("hidden", !pid);
 
-    ["petImgUrl","txtAccount","petName","petNote",
+    ["petImgUrl","txtAccount","txtBreed","petName","petNote",
      "cp1Name","cp2Name","cp1PairTime","cp2PairTime",
      "cp1Days","cp1Hours","cp2Days","cp2Hours"].forEach(id => { if($(id)) $(id).value = ""; });
     $("petTags").value = "";
     $("petFeatures").value = "";
     setEditGender("m");
-    $("timerMode").value = "normal";
+    setEditTimerMode("normal");
     $("tHour").value = 0; $("tMinute").value = 0;
     showPreview("formImgPreviewWrap","formImgPreview", "");
     showPreview("cp1PreviewWrap","cp1Preview", "");
@@ -1922,6 +2480,7 @@ function openEdit(pid){
     updatePasteZoneState("cp1PasteZone", false);
     updatePasteZoneState("cp2PasteZone", false);
     renderAccountPicker(); renderCategoryPicker(); renderBreedSel("", "");
+    renderFeatureQuickPick();
     setTimeHint(null);
 
     if(pid){
@@ -1929,13 +2488,14 @@ function openEdit(pid){
         if(!p) return;
         currentEditAccount = p.account || "";
         currentEditCategory = p.category || "";
+        currentEditTimerMode = p.timerMode || "normal";
         $("txtAccount").value = "";
         $("petName").value = p.name || "";
         setEditGender(p.gender || "m");
+        setEditTimerMode(currentEditTimerMode);
         $("petTags").value = (p.tags||[]).join("\n");
         $("petFeatures").value = (p.features||[]).join("\n");
         $("petNote").value = p.note || "";
-        $("timerMode").value = p.timerMode || "normal";
         const totalMin = Math.round((p.totalMs||0)/60000);
         const hV = Math.floor(totalMin/60), mV = totalMin % 60;
         $("tHour").value = hV; $("tMinute").value = mV;
@@ -1947,7 +2507,10 @@ function openEdit(pid){
         $("cp1PairTime").value = toLocalInputVal(cp1.pairTime);
         $("cp2Name").value = cp2.name || "";
         $("cp2PairTime").value = toLocalInputVal(cp2.pairTime);
+        editCp1ImgValue = cp1.img || "";
+        editCp2ImgValue = cp2.img || "";
         setTimeHint(p);
+        renderFeatureQuickPick();
 
         if(p.img){
             if(isIndexedImg(p.img)){
@@ -1956,22 +2519,8 @@ function openEdit(pid){
                 else getImageUrl(p.img).then(u => { if(u && editId === pid) showPreview("formImgPreviewWrap","formImgPreview", u); });
             } else { $("petImgUrl").value = p.img; showPreview("formImgPreviewWrap","formImgPreview", p.img); }
         }
-        if(cp1.img){
-            updatePasteZoneState("cp1PasteZone", true);
-            if(isIndexedImg(cp1.img)){
-                const c = getImageUrlSync(cp1.img);
-                if(c) showPreview("cp1PreviewWrap","cp1Preview", c);
-                else getImageUrl(cp1.img).then(u => { if(u && editId === pid) showPreview("cp1PreviewWrap","cp1Preview", u); });
-            } else showPreview("cp1PreviewWrap","cp1Preview", cp1.img);
-        }
-        if(cp2.img){
-            updatePasteZoneState("cp2PasteZone", true);
-            if(isIndexedImg(cp2.img)){
-                const c = getImageUrlSync(cp2.img);
-                if(c) showPreview("cp2PreviewWrap","cp2Preview", c);
-                else getImageUrl(cp2.img).then(u => { if(u && editId === pid) showPreview("cp2PreviewWrap","cp2Preview", u); });
-            } else showPreview("cp2PreviewWrap","cp2Preview", cp2.img);
-        }
+        updateCpPreview("cp1");
+        updateCpPreview("cp2");
     }
 }
 function updatePasteZoneState(zoneId, hasImg){
@@ -1986,8 +2535,10 @@ function closeEdit(){
     pendingImgBlob = null; pendingImgCleared = false;
     pendingCp1Blob = null; pendingCp1Cleared = false;
     pendingCp2Blob = null; pendingCp2Cleared = false;
+    editCp1ImgValue = ""; editCp2ImgValue = "";
     timeEditedByUser = false; editOrigH = ""; editOrigM = "";
     currentEditAccount = ""; currentEditCategory = "";
+    currentEditTimerMode = "normal";
 }
 $("formImgPreview").addEventListener("click", function(){ if(this.src) openBigPreview(this.src); });
 $("cp1Preview").addEventListener("click", function(){ if(this.src) openBigPreview(this.src); });
@@ -2032,8 +2583,7 @@ $("cp1File").onchange = e => {
     const f = e.target.files[0]; if(!f) return;
     compressToBlob(f, 200, 0.7).then(blob => {
         pendingCp1Blob = blob; pendingCp1Cleared = false;
-        showPreview("cp1PreviewWrap","cp1Preview", URL.createObjectURL(blob));
-        updatePasteZoneState("cp1PasteZone", true);
+        updateCpPreview("cp1");
     }).catch(err => alert("CP图片处理失败："+err.message));
     e.target.value = "";
 };
@@ -2043,8 +2593,7 @@ $("cp1PasteZone").addEventListener("paste", e => {
             const f = it.getAsFile(); e.preventDefault();
             compressToBlob(f, 200, 0.7).then(blob => {
                 pendingCp1Blob = blob; pendingCp1Cleared = false;
-                showPreview("cp1PreviewWrap","cp1Preview", URL.createObjectURL(blob));
-                updatePasteZoneState("cp1PasteZone", true);
+                updateCpPreview("cp1");
             }).catch(err => alert("CP图片处理失败："+err.message));
             break;
         }
@@ -2052,16 +2601,15 @@ $("cp1PasteZone").addEventListener("paste", e => {
 });
 $("cp1Clear").onclick = () => {
     pendingCp1Blob = null; pendingCp1Cleared = true;
-    showPreview("cp1PreviewWrap","cp1Preview", "");
-    updatePasteZoneState("cp1PasteZone", false);
+    editCp1ImgValue = "";
+    updateCpPreview("cp1");
 };
 
 $("cp2File").onchange = e => {
     const f = e.target.files[0]; if(!f) return;
     compressToBlob(f, 200, 0.7).then(blob => {
         pendingCp2Blob = blob; pendingCp2Cleared = false;
-        showPreview("cp2PreviewWrap","cp2Preview", URL.createObjectURL(blob));
-        updatePasteZoneState("cp2PasteZone", true);
+        updateCpPreview("cp2");
     }).catch(err => alert("CP图片处理失败："+err.message));
     e.target.value = "";
 };
@@ -2071,8 +2619,7 @@ $("cp2PasteZone").addEventListener("paste", e => {
             const f = it.getAsFile(); e.preventDefault();
             compressToBlob(f, 200, 0.7).then(blob => {
                 pendingCp2Blob = blob; pendingCp2Cleared = false;
-                showPreview("cp2PreviewWrap","cp2Preview", URL.createObjectURL(blob));
-                updatePasteZoneState("cp2PasteZone", true);
+                updateCpPreview("cp2");
             }).catch(err => alert("CP图片处理失败："+err.message));
             break;
         }
@@ -2080,9 +2627,25 @@ $("cp2PasteZone").addEventListener("paste", e => {
 });
 $("cp2Clear").onclick = () => {
     pendingCp2Blob = null; pendingCp2Cleared = true;
-    showPreview("cp2PreviewWrap","cp2Preview", "");
-    updatePasteZoneState("cp2PasteZone", false);
+    editCp2ImgValue = "";
+    updateCpPreview("cp2");
 };
+
+$("txtBreed").addEventListener("input", function(){
+    const v = this.value.trim();
+    if(!v) return;
+    for(const cat in breedMap){
+        if(breedMap[cat] && breedMap[cat].includes(v)){
+            if(currentEditCategory !== cat){
+                currentEditCategory = cat;
+                renderCategoryPicker();
+                renderBreedSel(cat, v);
+                renderFeatureQuickPick();
+            }
+            return;
+        }
+    }
+});
 
 $("btnSave").onclick = async () => {
     const txtAcc = $("txtAccount").value.trim();
@@ -2093,7 +2656,7 @@ $("btnSave").onclick = async () => {
     const genderVal = currentEditGender;
     const tagsArr = $("petTags").value.split("\n").map(s => s.trim()).filter(Boolean);
     const featArr = $("petFeatures").value.split("\n").map(s => s.trim()).filter(Boolean);
-    const tMode = $("timerMode").value;
+    const tMode = currentEditTimerMode;
     const h = Number($("tHour").value || 0), m = Number($("tMinute").value || 0);
     const noteVal = $("petNote").value.trim();
     const imgUrlInput = $("petImgUrl").value.trim();
@@ -2104,7 +2667,7 @@ $("btnSave").onclick = async () => {
     const cp2Pair = fromLocalInputVal($("cp2PairTime").value);
 
     const oldPet = editId ? petList.find(x => x.id === editId) : null;
-    let finalImg = "", finalCp1Img = "", finalCp2Img = "";
+    let finalImg = "";
     let delImgs = [];
     try{
         if(pendingImgBlob){
@@ -2119,63 +2682,69 @@ $("btnSave").onclick = async () => {
             if(oldPet && isIndexedImg(oldPet.img) && oldPet.img !== imgUrlInput) delImgs.push(oldPet.img);
         } else finalImg = oldPet ? (oldPet.img || "") : "";
 
-        const oldCp1Img = oldPet && oldPet.cp1 ? oldPet.cp1.img : "";
+        let finalCp1Img;
         if(pendingCp1Blob){
             finalCp1Img = "img_" + genId();
-            if(oldCp1Img && isIndexedImg(oldCp1Img)) delImgs.push(oldCp1Img);
+            if(editCp1ImgValue && isIndexedImg(editCp1ImgValue)) delImgs.push(editCp1ImgValue);
             await saveImage(finalCp1Img, pendingCp1Blob);
         } else if(pendingCp1Cleared){
             finalCp1Img = "";
-            if(oldCp1Img && isIndexedImg(oldCp1Img)) delImgs.push(oldCp1Img);
-        } else finalCp1Img = oldCp1Img || "";
+            if(editCp1ImgValue && isIndexedImg(editCp1ImgValue)) delImgs.push(editCp1ImgValue);
+        } else {
+            finalCp1Img = editCp1ImgValue || "";
+        }
 
-        const oldCp2Img = oldPet && oldPet.cp2 ? oldPet.cp2.img : "";
+        let finalCp2Img;
         if(pendingCp2Blob){
             finalCp2Img = "img_" + genId();
-            if(oldCp2Img && isIndexedImg(oldCp2Img)) delImgs.push(oldCp2Img);
+            if(editCp2ImgValue && isIndexedImg(editCp2ImgValue)) delImgs.push(editCp2ImgValue);
             await saveImage(finalCp2Img, pendingCp2Blob);
         } else if(pendingCp2Cleared){
             finalCp2Img = "";
-            if(oldCp2Img && isIndexedImg(oldCp2Img)) delImgs.push(oldCp2Img);
-        } else finalCp2Img = oldCp2Img || "";
-    } catch(err){ alert("图片保存失败：" + err.message); return; }
+            if(editCp2ImgValue && isIndexedImg(editCp2ImgValue)) delImgs.push(editCp2ImgValue);
+        } else {
+            finalCp2Img = editCp2ImgValue || "";
+        }
 
-    if(accountVal && !accountOptions.includes(accountVal)) accountOptions.push(accountVal);
-    if(categoryVal && !(categoryVal in breedMap)) breedMap[categoryVal] = [];
-    if(categoryVal && breedVal && !breedMap[categoryVal].includes(breedVal)) breedMap[categoryVal].push(breedVal);
-    featArr.forEach(f => { if(!featureMap[f]) featureMap[f] = DEFAULT_FEATURE_COLOR; });
+        if(accountVal && !accountOptions.includes(accountVal)) accountOptions.push(accountVal);
+        if(categoryVal && !(categoryVal in breedMap)) {
+            breedMap[categoryVal] = [];
+            if(!featureMap[categoryVal]) featureMap[categoryVal] = {};
+        }
+        if(categoryVal && breedVal && !breedMap[categoryVal].includes(breedVal)) breedMap[categoryVal].push(breedVal);
+        featArr.forEach(f => ensureFeatureExists(f, categoryVal));
 
-    const cp1 = { name: $("cp1Name").value.trim(), img: finalCp1Img, pairTime: cp1Pair };
-    const cp2 = { name: $("cp2Name").value.trim(), img: finalCp2Img, pairTime: cp2Pair };
+        const cp1 = { name: $("cp1Name").value.trim(), img: finalCp1Img, pairTime: cp1Pair };
+        const cp2 = { name: $("cp2Name").value.trim(), img: finalCp2Img, pairTime: cp2Pair };
 
-    if(editId){
-        const idx = petList.findIndex(x => x.id === editId);
-        if(idx > -1){
-            const updated = Object.assign({}, petList[idx], {
+        if(editId){
+            const idx = petList.findIndex(x => x.id === editId);
+            if(idx > -1){
+                const updated = Object.assign({}, petList[idx], {
+                    img: finalImg, account: accountVal, category: categoryVal, breed: breedVal,
+                    name: nameVal, gender: genderVal, tags: tagsArr, features: featArr,
+                    cp1, cp2, timerMode: tMode, note: noteVal, utime: now
+                });
+                if(timeEditedByUser){
+                    updated.totalMs = totalMs; updated.pausedAt = totalMs;
+                    updated.isRunning = false; updated.startTs = null;
+                    updated.runStartRemain = null; updated.locked = false;
+                }
+                petList[idx] = updated;
+                delImgs.forEach(imgId => safeDeleteImg(imgId, editId));
+            }
+        } else {
+            petList.push({
+                id: genId(), ctime: now, utime: now,
                 img: finalImg, account: accountVal, category: categoryVal, breed: breedVal,
                 name: nameVal, gender: genderVal, tags: tagsArr, features: featArr,
-                cp1, cp2, timerMode: tMode, note: noteVal, utime: now
+                cp1, cp2, timerMode: tMode,
+                totalMs, pausedAt: totalMs, isRunning: false, startTs: null,
+                runStartRemain: null, locked: false, note: noteVal,
+                inBench: false
             });
-            if(timeEditedByUser){
-                updated.totalMs = totalMs; updated.pausedAt = totalMs;
-                updated.isRunning = false; updated.startTs = null;
-                updated.runStartRemain = null; updated.locked = false;
-            }
-            petList[idx] = updated;
-            /* 检查旧图片是否还被其他宠物引用 */
-            delImgs.forEach(imgId => safeDeleteImg(imgId, editId));
         }
-    } else {
-        petList.push({
-            id: genId(), ctime: now, utime: now,
-            img: finalImg, account: accountVal, category: categoryVal, breed: breedVal,
-            name: nameVal, gender: genderVal, tags: tagsArr, features: featArr,
-            cp1, cp2, timerMode: tMode,
-            totalMs, pausedAt: totalMs, isRunning: false, startTs: null,
-            runStartRemain: null, locked: false, note: noteVal,
-            inBench: false
-        });
-    }
+    } catch(err){ alert("保存失败：" + err.message); return; }
     closeEdit(); saveLocal(); render();
 };
 $("btnDel").onclick = () => { if(editId && confirm("确定删除？")){ deletePet(editId); closeEdit(); } };
@@ -2212,10 +2781,28 @@ $("btnImport").onclick = () => {
                 petList = migrated;
                 accountOptions = Array.isArray(obj.accounts) ? obj.accounts : [];
                 if(obj.breedMap && typeof obj.breedMap === "object") breedMap = obj.breedMap;
-                if(obj.featureMap && typeof obj.featureMap === "object") featureMap = obj.featureMap;
-                const allFeat = new Set();
-                petList.forEach(p => p.features.forEach(f => allFeat.add(f)));
-                allFeat.forEach(f => { if(!featureMap[f]) featureMap[f] = DEFAULT_FEATURE_COLOR; });
+                if(obj.featureMap && typeof obj.featureMap === "object"){
+                    const keys = Object.keys(obj.featureMap);
+                    const isOld = keys.length > 0 && typeof obj.featureMap[keys[0]] === "string";
+                    if(isOld){
+                        featureMap = initFeatureMapFromDefaults();
+                        Object.keys(obj.featureMap).forEach(name => {
+                            const color = obj.featureMap[name];
+                            const guess = guessFeatureCategory(name);
+                            if(guess){
+                                if(!featureMap[guess]) featureMap[guess] = {};
+                                featureMap[guess][name] = color;
+                            } else {
+                                if(!featureMap[CAT_COMMON]) featureMap[CAT_COMMON] = {};
+                                featureMap[CAT_COMMON][name] = color;
+                            }
+                        });
+                    } else {
+                        featureMap = obj.featureMap;
+                        if(!featureMap[CAT_COMMON]) featureMap[CAT_COMMON] = {};
+                    }
+                }
+                petList.forEach(p => p.features.forEach(f => ensureFeatureExists(f, p.category)));
                 saveLocal(); render();
                 alert("导入成功，共 "+migrated.length+" 只宠物");
             }).catch(err => alert("导入失败："+(err.message||"未知")));
@@ -2238,16 +2825,157 @@ $("btnExport").onclick = async () => {
     const blob = new Blob([JSON.stringify({pets:petList, accounts:accountOptions, breedMap, featureMap, images:imgMap})], {type:"application/json"});
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "pet-backup-v22.json";
+    a.download = "pet-backup-v25.json";
     a.click();
+};
+
+/* ==================== 批量修改 ==================== */
+function refreshBmBreedAll(){
+    const sel = $("bmBreed");
+    sel.innerHTML = '<option value="">--请选择--</option>';
+    const set = new Set();
+    Object.keys(breedMap).forEach(cat => (breedMap[cat]||[]).forEach(b => set.add(b)));
+    [...set].sort().forEach(b => {
+        const o = document.createElement("option"); o.value = b; o.textContent = b; sel.appendChild(o);
+    });
+}
+function refreshBmBreedByCat(cat){
+    const sel = $("bmBreed");
+    sel.innerHTML = '<option value="">--请选择--</option>';
+    if(cat){
+        (breedMap[cat]||[]).forEach(b => {
+            const o = document.createElement("option"); o.value = b; o.textContent = b; sel.appendChild(o);
+        });
+    } else {
+        refreshBmBreedAll();
+    }
+}
+$("batchModify").onclick = () => {
+    if(selectedIds.size === 0) return;
+    $("bmCount").textContent = selectedIds.size;
+    /* 账号 */
+    const accSel = $("bmAcc"); accSel.innerHTML = '<option value="">--请选择--</option>';
+    accountOptions.forEach(a => {
+        const o = document.createElement("option"); o.value = a; o.textContent = a; accSel.appendChild(o);
+    });
+    /* 大类 */
+    const catSel = $("bmCat"); catSel.innerHTML = '<option value="">--请选择--</option>';
+    Object.keys(breedMap).forEach(c => {
+        const o = document.createElement("option"); o.value = c; o.textContent = c; catSel.appendChild(o);
+    });
+    /* 品种 */
+    refreshBmBreedAll();
+    /* 特征 datalist */
+    const dl = $("bmFeatList");
+    dl.innerHTML = "";
+    getAllFeatureNames().forEach(f => {
+        const o = document.createElement("option"); o.value = f; dl.appendChild(o);
+    });
+    /* 重置 */
+    ["bmAccEnable","bmCatEnable","bmBreedEnable","bmStatusEnable","bmFeatAddEnable","bmFeatDelEnable"].forEach(id => $(id).checked = false);
+    $("bmStatus").value = "";
+    $("bmFeatAdd").value = "";
+    $("bmFeatDel").value = "";
+    $("batchModifyModal").classList.remove("hidden");
+};
+$("bmAcc").onchange = function(){ if(this.value) $("bmAccEnable").checked = true; };
+$("bmCat").onchange = function(){
+    if(this.value) $("bmCatEnable").checked = true;
+    refreshBmBreedByCat(this.value);
+};
+$("bmBreed").onchange = function(){ if(this.value) $("bmBreedEnable").checked = true; };
+$("bmStatus").onchange = function(){ if(this.value) $("bmStatusEnable").checked = true; };
+$("bmFeatAdd").oninput = function(){ if(this.value.trim()) $("bmFeatAddEnable").checked = true; };
+$("bmFeatDel").oninput = function(){ if(this.value.trim()) $("bmFeatDelEnable").checked = true; };
+
+$("bmCancel").onclick = () => $("batchModifyModal").classList.add("hidden");
+$("bmApply").onclick = () => {
+    const doAcc = $("bmAccEnable").checked && $("bmAcc").value;
+    const doCat = $("bmCatEnable").checked && $("bmCat").value;
+    const doBreed = $("bmBreedEnable").checked && $("bmBreed").value;
+    const doStatus = $("bmStatusEnable").checked && $("bmStatus").value;
+    const doFeatAdd = $("bmFeatAddEnable").checked && $("bmFeatAdd").value.trim();
+    const doFeatDel = $("bmFeatDelEnable").checked && $("bmFeatDel").value.trim();
+
+    if(!doAcc && !doCat && !doBreed && !doStatus && !doFeatAdd && !doFeatDel){
+        alert("请至少勾选一个要修改的字段，并选择目标值");
+        return;
+    }
+
+    const accVal = doAcc ? $("bmAcc").value : "";
+    const catVal = doCat ? $("bmCat").value : "";
+    const breedVal = doBreed ? $("bmBreed").value : "";
+    const statusVal = doStatus ? $("bmStatus").value : "";
+    const featAddVal = doFeatAdd ? $("bmFeatAdd").value.trim() : "";
+    const featDelVal = doFeatDel ? $("bmFeatDel").value.trim() : "";
+
+    takeSnapshot("批量修改 " + selectedIds.size + " 只");
+
+    const now = Date.now();
+    let count = 0;
+    selectedIds.forEach(id => {
+        const p = petList.find(x => x.id === id);
+        if(!p) return;
+        if(doAcc) p.account = accVal;
+        if(doCat){
+            p.category = catVal;
+            if(!doBreed){
+                if(!breedMap[catVal] || !breedMap[catVal].includes(p.breed)) p.breed = "";
+            }
+        }
+        if(doBreed) p.breed = breedVal;
+        if(doStatus){
+            if(statusVal === "idle"){
+                p.totalMs = 0; p.pausedAt = 0; p.isRunning = false; p.locked = false;
+                p.timerMode = "normal"; p.startTs = null; p.runStartRemain = null;
+            } else if(statusVal === "4h"){
+                p.totalMs = hmToMs(4, 0); p.timerMode = "normal";
+                p.pausedAt = p.totalMs; p.isRunning = false; p.startTs = null; p.runStartRemain = null; p.locked = false;
+                startTimer(p, now);
+            } else if(statusVal === "144h-normal"){
+                p.totalMs = hmToMs(144, 0); p.timerMode = "normal";
+                p.pausedAt = p.totalMs; p.isRunning = false; p.startTs = null; p.runStartRemain = null; p.locked = false;
+                startTimer(p, now);
+            } else if(statusVal === "144h-female"){
+                p.totalMs = hmToMs(144, 0); p.timerMode = "breedFemale";
+                p.pausedAt = p.totalMs; p.isRunning = false; p.startTs = null; p.runStartRemain = null; p.locked = false;
+                startTimer(p, now);
+            } else if(statusVal === "reset"){
+                resetTimer(p, now);
+            } else if(statusVal === "pause"){
+                if(p.isRunning) pauseTimer(p, now);
+            } else if(statusVal === "start"){
+                if(!p.isRunning && !p.locked) startTimer(p, now);
+            }
+        }
+        if(doFeatAdd){
+            if(!p.features) p.features = [];
+            if(!p.features.includes(featAddVal)){
+                p.features.push(featAddVal);
+                ensureFeatureExists(featAddVal, p.category);
+            }
+        }
+        if(doFeatDel){
+            if(p.features){
+                p.features = p.features.filter(f => f !== featDelVal);
+            }
+        }
+        touchPet(p, now); count++;
+    });
+    $("batchModifyModal").classList.add("hidden");
+    saveLocal(); render();
+    updateUndoBtn();
+    alert("已修改 " + count + " 只宠物");
 };
 
 $("searchInput").oninput = () => render();
 $("sortModeSel").onchange = () => render();
 
+/* 启动 */
 loadFromLocal();
 applyCpColVisibility();
 render();
+updateUndoBtn();
 setInterval(() => {
     if(editInProgress) return;
     if(currentView === "dashboard") return;
