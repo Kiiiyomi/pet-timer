@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>宠物档案管理 V25</title>
+<title>绒光宠物录 · 宠物繁育计时工具</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;font-family:system-ui,-apple-system}
-body{margin:10px;background:#f7f8fa;color:#222;max-width:1700px;margin-inline:auto;padding:6px}
+body{margin:0;background:#f7f8fa;color:#222;max-width:1700px;margin-inline:auto;padding:0 6px 6px}
 input,select,button,textarea{padding:6px 8px;border:1px solid #ccc;border-radius:6px;font-size:13px;font-family:inherit}
 button{cursor:pointer;background:#fff}
 button.primary{background:#4080ff;color:#fff;border-color:#3070ee}
@@ -16,7 +16,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .mini-btn{padding:1px 6px;font-size:11px;background:#f0f4fa;border:1px solid #d0dae8;border-radius:4px;color:#4a6b93;cursor:pointer;margin-left:2px}
 .mini-btn:hover:not(:disabled){background:#e0ecff;border-color:#3070ee;color:#3070ee}
 .mini-btn:disabled{opacity:.3;cursor:not-allowed}
-.top-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;align-items:center}
+.top-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;padding-top:8px;align-items:center}
 .view-tabs{display:flex;gap:4px;margin-bottom:8px;border-bottom:2px solid #e3e8ef}
 .view-tab{background:transparent;border:none;padding:8px 16px;font-size:14px;color:#666;border-bottom:2px solid transparent;margin-bottom:-2px}
 .view-tab.active{color:#3070ee;border-bottom-color:#3070ee;font-weight:bold}
@@ -53,7 +53,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .star-btn.on{color:#f0b840}
 .table-wrap{overflow:auto;max-height:calc(100vh - 300px);border:1px solid #e3e8ef;border-radius:8px}
 .pet-table{width:100%;border-collapse:collapse;font-size:13px;background:#fff}
-.pet-table th,.pet-table td{padding:6px 6px;border-bottom:1px solid #eef1f5;text-align:left;vertical-align:middle;white-space:nowrap}
+.pet-table th,.pet-table td{padding:6px;border-bottom:1px solid #eef1f5;text-align:left;vertical-align:middle;white-space:nowrap}
 .pet-table th{background:#f4f6fa;position:sticky;top:0;z-index:2;font-weight:600;font-size:12px}
 .pet-table tr:hover{background:#f8faff}
 .pet-table tr.selected{background:#e8f0ff}
@@ -169,11 +169,65 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .btn-undo{background:#fff8e6;border-color:#f0b840;color:#a06a10}
 .btn-undo:hover:not(:disabled){background:#ffefc0}
 .btn-undo:disabled{opacity:.4;cursor:not-allowed;background:#fff;border-color:#ddd;color:#aaa}
+.backup-banner{background:linear-gradient(135deg,#fff8e6 0%,#fff2d8 100%);border-bottom:1px solid #f0e0a0;padding:8px 12px;font-size:12px;color:#8a6a10;display:flex;align-items:center;gap:8px;justify-content:center;position:relative}
+.backup-banner .close-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#8a6a10;font-size:18px;cursor:pointer;padding:0 6px;line-height:1}
+.backup-banner .close-btn:hover{color:#c82424}
+
+/* 猫爪按钮：粉圈 + emoji 猫爪 */
+.paw-btn{position:fixed;right:20px;bottom:20px;width:52px;height:52px;border-radius:50%;background:#fff;border:2px solid #f5c8d8;box-shadow:0 3px 12px rgba(245,200,216,.5);cursor:pointer;z-index:700;display:flex;align-items:center;justify-content:center;transition:.2s;padding:0;opacity:.9;font-size:24px;line-height:1}
+.paw-btn:hover{opacity:1;border-color:#e9a8be;box-shadow:0 5px 18px rgba(245,200,216,.75);transform:scale(1.05)}
+.paw-btn:active{transform:scale(.95)}
+.paw-menu{position:fixed;right:20px;bottom:84px;background:#fff;border:1px solid #e8e8e8;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.12);z-index:701;padding:6px;min-width:170px;display:flex;flex-direction:column;gap:2px;animation:pawIn .18s ease-out}
+@keyframes pawIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.paw-menu button{background:transparent;border:none;text-align:left;padding:10px 14px;font-size:14px;border-radius:8px;color:#444;cursor:pointer;display:flex;align-items:center;gap:10px}
+.paw-menu button:hover{background:#fff0f5}
+.paw-menu button .ico{font-size:16px;width:20px;text-align:center}
+
+.tip-tabs{display:flex;gap:6px;justify-content:center;margin:10px 0}
+.tip-tab{padding:6px 22px;border-radius:16px;border:1px solid #ddd;background:#fff;cursor:pointer;font-size:13px;color:#666}
+.tip-tab.active{background:#4080ff;color:#fff;border-color:#4080ff;font-weight:500}
+.tip-amounts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}
+.tip-amt{padding:10px 8px;border:1.5px solid #e8e8ee;border-radius:10px;cursor:pointer;text-align:center;background:#fff;transition:.15s;font-size:12px;color:#666;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.tip-amt:hover{border-color:#b8c8e0;background:#f8faff}
+.tip-amt.active{border-color:#4080ff;background:#f0f6ff;color:#3070ee;font-weight:500}
+.tip-amt .emoji{font-size:20px}
+.tip-amt .price{font-weight:bold;color:#4080ff;font-size:13px}
+.tip-amt.active .price{color:#3070ee}
+.tip-qr-panel{margin:12px 0;padding:12px;background:#f8f9fb;border-radius:10px;border:1px solid #e8e8ee;position:relative;animation:tipIn .2s ease-out}
+@keyframes tipIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.tip-qr-panel.hidden{display:none}
+.tip-qr-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13px;color:#555}
+.tip-qr-header .tip-qr-close{background:transparent;border:none;font-size:20px;color:#999;cursor:pointer;padding:0 6px;line-height:1}
+.tip-qr-header .tip-qr-close:hover{color:#c82424}
+.tip-qr-panel img{max-width:220px;width:100%;border-radius:8px;display:block;margin:0 auto}
+.tip-footer{text-align:center;color:#aaa;font-size:12px;margin-top:8px;line-height:1.6}
+
+.feedback-row{margin:14px 0;padding:10px 12px;background:#f8f9fb;border-radius:8px}
+.feedback-row label{display:block;font-size:12px;color:#888;margin-bottom:6px;font-weight:500}
+.email-wrap{display:flex;gap:6px;align-items:center}
+.email-wrap input{flex:1;padding:8px 10px;font-size:13px;background:#fff;border:1px solid #ddd;color:#444;font-family:Consolas,Monaco,monospace}
+.email-wrap button{padding:8px 14px;font-size:13px;background:#4080ff;color:#fff;border-color:#3070ee;white-space:nowrap}
+.email-wrap button:hover{background:#3070ee}
+.email-wrap button.copied{background:#28c76f;border-color:#1fa85a}
+.feedback-row .q-btn{width:100%;padding:10px;font-size:14px;background:#4080ff;color:#fff;border-color:#3070ee}
+.feedback-row .q-btn:hover{background:#3070ee}
+
+/* ========== 使用教程蒙版 ========== */
+.tour-highlight{position:fixed;border-radius:10px;box-shadow:0 0 0 4px rgba(245,200,216,.9), 0 0 0 9999px rgba(0,0,0,.55);z-index:2000;pointer-events:none;transition:left .3s ease, top .3s ease, width .3s ease, height .3s ease}
+.tour-tip{position:fixed;z-index:2001;background:#fff;padding:14px 18px;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.18);max-width:320px;font-size:14px;line-height:1.6;transition:left .25s ease, top .25s ease}
+.tour-tip::before{content:"";position:absolute;width:0;height:0;border:8px solid transparent}
+.tour-tip.arrow-top::before{top:-16px;left:30px;border-bottom-color:#fff}
+.tour-tip.arrow-bottom::before{bottom:-16px;left:30px;border-top-color:#fff}
 </style>
 </head>
 <body>
 
-<div id="globalAlertBox" style="display:none;background:#ffe9e9;border:1px solid #ffb0b0;padding:8px;border-radius:8px;margin-bottom:8px"></div>
+<div class="backup-banner" id="backupBanner" style="display:none">
+  <span>💾 数据保存在你本机浏览器里，建议定期导出备份，换设备时用导入恢复</span>
+  <button class="close-btn" id="closeBackupBanner" title="关闭（7 天内不再提示）">×</button>
+</div>
+
+<div id="globalAlertBox" style="display:none;background:#ffe9e9;border:1px solid #ffb0b0;padding:8px;border-radius:8px;margin:8px 0"></div>
 
 <div class="top-bar">
 <button class="primary" id="btnAdd">➕新增宠物</button>
@@ -292,7 +346,6 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 
 <div class="img-preview-modal" id="imgPreviewModal"><img id="previewBigImg"></div>
 
-<!-- 账号/品种管理 -->
 <div class="modal hidden" id="optManageModal"><div class="modal-box" style="max-width:720px">
 <h3>管理账号 / 品种层级</h3>
 <div style="font-size:12px;color:#666;margin-top:4px">用 ↑ ↓ 调整顺序，顺序会影响编辑宠物档案时的下拉框展示顺序。</div>
@@ -315,7 +368,6 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <div style="margin-top:12px;text-align:right"><button id="closeOptManage">关闭</button></div>
 </div></div>
 
-<!-- 管理特征 -->
 <div class="modal hidden" id="featManageModal"><div class="modal-box" style="max-width:780px">
 <div class="modal-header">
 <h3>管理宠物特征</h3>
@@ -343,7 +395,6 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 </div>
 </div></div>
 
-<!-- 批量修改 -->
 <div class="modal hidden" id="batchModifyModal"><div class="modal-box" style="max-width:520px">
 <div class="modal-header">
 <h3>批量修改（<span id="bmCount">0</span> 只）</h3>
@@ -391,7 +442,6 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <datalist id="bmFeatList"></datalist>
 </div></div>
 
-<!-- 编辑宠物 -->
 <div class="modal hidden" id="editModal"><div class="modal-box">
 <div class="modal-header">
 <h3 id="modalTitle">新增宠物档案</h3>
@@ -523,6 +573,80 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 
 </div></div>
 
+<!-- 猫爪按钮：粉圈 + emoji 猫爪 -->
+<button class="paw-btn" id="pawBtn" title="更多">🐾</button>
+
+<div class="modal hidden" id="tipModal"><div class="modal-box" style="max-width:400px">
+<div class="modal-header">
+<h3>投喂小咪 🐱</h3>
+<div class="modal-header-btns">
+<button id="closeTipModal">关闭</button>
+</div>
+</div>
+<div style="text-align:center;color:#a06080;font-size:13px;margin:4px 0 12px">
+  (≧∇≦)ﾉ 谢谢你愿意投喂小咪
+</div>
+<div class="tip-tabs">
+  <button class="tip-tab active" data-tab="wechat">微信</button>
+  <button class="tip-tab" data-tab="alipay">支付宝</button>
+</div>
+<div class="tip-amounts">
+  <div class="tip-amt" data-amt="1.00"><span class="emoji">👍</span>好评点赞<span class="price">¥1.00</span></div>
+  <div class="tip-amt" data-amt="3.00"><span class="emoji">🥤</span>一瓶可乐<span class="price">¥3.00</span></div>
+  <div class="tip-amt" data-amt="6.66"><span class="emoji">🍗</span>加个鸡腿<span class="price">¥6.66</span></div>
+  <div class="tip-amt" data-amt="9.90"><span class="emoji">☕</span>一杯咖啡<span class="price">¥9.90</span></div>
+  <div class="tip-amt" data-amt="custom" style="grid-column:span 2"><span class="emoji">✨</span>自定义金额</div>
+</div>
+<div class="tip-qr-panel hidden" id="tipQrPanel">
+  <div class="tip-qr-header">
+    <span id="tipQrTitle">扫码投喂</span>
+    <button class="tip-qr-close" id="tipQrClose" title="收起">×</button>
+  </div>
+  <img id="tipQrImg" src="" alt="收款码" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+  <div style="display:none;color:#999;font-size:12px;padding:30px 10px;text-align:center">图片未找到，请把收款码图片放到 HTML 同目录</div>
+</div>
+<div class="tip-footer">投喂完全自愿 💗 用起来开心就好</div>
+</div></div>
+
+<div class="modal hidden" id="feedbackModal"><div class="modal-box" style="max-width:440px">
+<div class="modal-header">
+<h3>反馈建议</h3>
+<div class="modal-header-btns">
+<button id="closeFeedbackModal">关闭</button>
+</div>
+</div>
+<div style="font-size:13px;color:#666;margin-top:6px;line-height:1.7">
+  遇到问题或有想法，随时告诉我。你的每一条反馈我都会看。
+</div>
+<div class="feedback-row">
+  <label>📧 邮箱</label>
+  <div class="email-wrap">
+    <input type="text" id="feedbackEmailInput" readonly value="pet_timer_feedback@163.com">
+    <button id="copyEmailBtn">复制</button>
+  </div>
+  <div style="font-size:11px;color:#aaa;margin-top:5px">点击"复制"可粘贴到任意邮箱客户端</div>
+</div>
+<div class="feedback-row">
+  <label>📋 在线问卷</label>
+  <button class="q-btn" id="openQuestionnaireBtn">填写问卷（匿名可选）</button>
+</div>
+</div></div>
+
+<div class="modal hidden" id="aboutModal"><div class="modal-box" style="max-width:480px">
+<div class="modal-header">
+<h3>关于绒光宠物录</h3>
+<div class="modal-header-btns">
+<button id="closeAboutModal">关闭</button>
+</div>
+</div>
+<div style="font-size:13px;color:#444;line-height:1.9">
+  <p>🐾 绒光宠物录 · 一个用于管理宠物档案和繁育计时的小工具。</p>
+  <p>💾 <b>你的数据只保存在本机浏览器里</b>，不会上传到任何服务器。请定期导出备份，换设备时用导入恢复。</p>
+  <p>💌 反馈入口在右下角 🐾 菜单里。</p>
+  <p style="color:#a06080;margin-top:16px">如果这个工具帮到了你，欢迎投喂小咪 🐱</p>
+</div>
+</div></div>
+
 <script>
 /* ==================== 常量 ==================== */
 const STORAGE_KEY = "petTimerTS_v15";
@@ -530,20 +654,52 @@ const IMG_DB = "petTimerImages", IMG_STORE = "images";
 const DEFAULT_FEATURE_COLOR = "#7eb6ff";
 const CAT_COMMON = "_common";
 
+const PAYMENT_QR = {
+  wechat: {
+    "default": "./wechat-default.png",
+    "1.00": "./wechat-1.png",
+    "3.00": "./wechat-3.png",
+    "6.66": "./wechat-6.66.png",
+    "9.90": "./wechat-9.9.png"
+  },
+  alipay: {
+    "default": "./alipay-default.png",
+    "1.00": "./alipay-1.png",
+    "3.00": "./alipay-3.png",
+    "6.66": "./alipay-6.66.png",
+    "9.90": "./alipay-9.9.png"
+  }
+};
+const FEEDBACK_EMAIL = "pet_timer_feedback@163.com";
+const FEEDBACK_URL = "https://wj.qq.com/s2/27978561/omr3/";
+const BACKUP_BANNER_KEY = "petTimerBackupBannerClosed";
+const BENCH_GUIDE_KEY = "petTimerBenchGuideShown";
+
 const DEFAULT_CATEGORIES = {
     "猫猫": ["英短金渐层","英短纯白","英短三花","英短蓝猫","英短银渐层","英短重色","英短蓝白","英短纯黑","英短虎斑"],
     "狐狸": ["火球狐","宝贝狐","彩虹虎威狐","沙之狐","雪绒狐","钛晶狐","夜月狐"],
-    "兔兔": ["纯白大垂耳兔","玳瑁大垂耳兔","重点色大垂耳兔","道奇大垂耳兔","野兔色大垂耳兔","碎花大垂耳兔","碎花大耳兔","重点色大耳兔"],
+    "兔兔": [
+        "纯白垂耳兔","纯白大垂耳兔","纯白大耳兔",
+        "野兔色垂耳兔","野兔色大垂耳兔","野兔色大耳兔",
+        "重点垂耳兔","重点大垂耳兔","重点大耳兔",
+        "玳瑁垂耳兔","玳瑁大垂耳兔","玳瑁大耳兔",
+        "道奇大垂耳兔","道奇大耳兔",
+        "碎花大垂耳兔","碎花大耳兔"
+    ],
     "荔枝喵": ["又睡了之喵","有实力之喵","玉笋灵竹喵","榆树林子喵","野参灵芝喵","严肃理智喵","一生浪子喵"],
-    "狗狗": ["金毛"]
+    "狗狗": ["金毛","萨摩耶"]
 };
 const DEFAULT_FEATURES_BY_CAT = {
     "_common": ["美瞳","背","黑胡子","灰胡子"],
-    "狐狸": ["黑下巴","星围脖","雪糕帽","棒棒糖","挂围兜","宝贝帽","头戴雪花","雪球堆","雪花纹身","尾巴着火","斑点尾","星星纹脸","环纹耳","水晶底","黑肚皮","小火苗","小爱心纹身","水晶堆","头顶猪","云朵绕","银项链","月额饰","彩虹","云朵底"],
-    "猫猫": ["爱心鼻","戴眼罩","胸前爱心","胸前领结"],
+    "狐狸": [
+        "黑下巴","星围脖","雪糕帽","棒棒糖","挂围兜","宝贝帽","头戴雪花","雪球",
+        "雪花纹身","狐火","斑点尾","星星脸","环纹耳","水晶底","黑肚皮","额头火苗",
+        "胸前三爱心","水晶块","头顶猪","云朵飘飘","银项链","月亮","彩虹","云朵底","后背四叶草"
+    ],
+    "猫猫": ["爱心鼻","戴眼罩","胸背爱心","胸前领结","囧囧眉","凶凶眉","八嘎胡"],
     "荔枝喵": ["垂泪脸","蝴蝶背","实力眼","豆豆眉","眯眯眼","嚼叶子","戴眼镜","鼻涕泡","背剪刀","戴睡帽","键盘底","纸箱壳","竹子壳","荔枝壳","叶子底","灵芝底","布料底","顶蘑菇","顶叶子","枕头底"],
-    "兔兔": ["假发套","蝴蝶结","花瓣背","偷吃嘴","戴手套","腮红脸"],
-    "狗狗": ["八嘎胡","爱心鼻","戴眼罩","胸前爱心","胸前领结"]
+    "兔兔": ["戴帽子","蝴蝶结","花瓣背","贪吃嘴","戴手套","腮红脸","爱心耳"],
+    "狗狗": ["八嘎胡","爱心鼻","戴眼罩","胸背爱心","胸前领结","囧囧眉","凶凶眉"]
 };
 
 let petList = [];
@@ -571,6 +727,8 @@ let frozenOrder = [];
 let currentFeatCat = CAT_COMMON;
 let featSelected = new Set();
 let lastSnapshot = null;
+let tipCurrentTab = "wechat";
+let tipCurrentAmt = null;
 const filterState = {
     status: new Set(), gender: new Set(), category: new Set(),
     breed: new Set(), account: new Set(), feature: new Set()
@@ -638,13 +796,11 @@ function removeFeatureEverywhere(featureName){
 function renameFeatureEverywhere(oldName, newName){
     newName = (newName||"").trim();
     if(!oldName || !newName || oldName === newName) return false;
-    /* 检查目标名是否已存在于某个分类 */
     let existsCat = null;
     for(const cat in featureMap){
         if(featureMap[cat] && featureMap[cat][newName]){ existsCat = cat; break; }
     }
     if(existsCat){
-        /* 已存在 → 询问是否合并 */
         const usedCount = countPetsByFeature(oldName);
         const mergeMsg = "特征「"+newName+"」已存在于【"+getFeatCatLabel(existsCat)+"】分类中。\n\n"
             + "是否将「"+oldName+"」合并到「"+newName+"」？\n\n"
@@ -668,7 +824,6 @@ function renameFeatureEverywhere(oldName, newName){
         }
         return true;
     }
-    /* 正常改名 */
     takeSnapshot("重命名特征「"+oldName+"」→「"+newName+"」");
     let found = false;
     Object.keys(featureMap).forEach(cat => {
@@ -698,11 +853,8 @@ function getAllFeatureNames(){
     });
     return [...s];
 }
-/* 获取当前筛选下可见的特征名列表 */
 function getVisibleFeatureNames(){
-    if(filterState.category.size === 0){
-        return getAllFeatureNames();
-    }
+    if(filterState.category.size === 0) return getAllFeatureNames();
     const set = new Set();
     Object.keys(featureMap[CAT_COMMON] || {}).forEach(n => set.add(n));
     filterState.category.forEach(cat => {
@@ -719,8 +871,6 @@ function getFeatCatLabel(cat){
     if(cat === CAT_COMMON) return "共有";
     return cat;
 }
-
-/* ==================== 撤回机制 ==================== */
 function takeSnapshot(desc){
     lastSnapshot = {
         petList: JSON.parse(JSON.stringify(petList)),
@@ -871,9 +1021,7 @@ function initFeatureMapFromDefaults(){
     const fm = {};
     Object.keys(DEFAULT_FEATURES_BY_CAT).forEach(cat => {
         fm[cat] = {};
-        DEFAULT_FEATURES_BY_CAT[cat].forEach(name => {
-            fm[cat][name] = DEFAULT_FEATURE_COLOR;
-        });
+        DEFAULT_FEATURES_BY_CAT[cat].forEach(name => { fm[cat][name] = DEFAULT_FEATURE_COLOR; });
     });
     return fm;
 }
@@ -1025,7 +1173,6 @@ function buildCard(p, now){
     const recover = getRecoverTime(p, now);
     const cp1Name = (p.cp1 && p.cp1.name || "").trim();
     const cp2Name = (p.cp2 && p.cp2.name || "").trim();
-    /* 待配对状态：空闲且CP1有名字且未锁定 */
     const isWaitPair = !p.locked && rem <= 0 && cp1Name !== "";
 
     let status = "";
@@ -1036,7 +1183,6 @@ function buildCard(p, now){
     else if(p.isRunning) status = "⏱计时运行中";
     else status = "⏸托管暂停";
 
-    /* CP行：待配对状态时不再重复显示（已在状态里显示过名字） */
     let cpLine = "";
     if(!isWaitPair && (cp1Name || cp2Name)){
         const parts = [];
@@ -1162,11 +1308,14 @@ function startEditCell(td){
             let v = input.value.trim();
             if(field === "cp1.pairTime" || field === "cp2.pairTime"){
                 if(v && v.indexOf("T") === -1 && v.indexOf(" ") > -1) v = v.replace(" ", "T");
-                setFieldValue(pet, field, v.replace("T", " "));
-            } else {
-                setFieldValue(pet, field, v);
+                v = v.replace("T", " ");
             }
-            touchPet(pet); saveLocal();
+            const oldV = getFieldValue(pet, field) || "";
+            if(v !== oldV){
+                takeSnapshot("表格编辑「" + field + "」");
+                setFieldValue(pet, field, v);
+                touchPet(pet); saveLocal();
+            }
         } else {
             td.innerHTML = oldHtml;
         }
@@ -1200,9 +1349,13 @@ function startSelectCell(td){
     const finish = save => {
         if(save){
             const v = sel.value;
-            setFieldValue(pet, field, v);
-            if(field === "category") pet.breed = "";
-            touchPet(pet); saveLocal();
+            const oldV = getFieldValue(pet, field) || "";
+            if(v !== oldV){
+                takeSnapshot("表格编辑「" + field + "」");
+                setFieldValue(pet, field, v);
+                if(field === "category") pet.breed = "";
+                touchPet(pet); saveLocal();
+            }
         } else {
             td.innerHTML = oldHtml;
         }
@@ -1530,7 +1683,6 @@ function openFilterPanel(type, btn){
     } else if(type === "account"){
         options = accountOptions.map(a => ({ v:a, t:a }));
     } else if(type === "feature"){
-        /* 特征筛选：如果已筛选品种大类，只显示共有+对应大类特征 */
         options = getVisibleFeatureNames().map(f => ({ v:f, t:f }));
     }
     panel.innerHTML = '<h5>勾选即生效</h5>';
@@ -1660,9 +1812,12 @@ document.addEventListener("click", e => {
             const cur = (pet.tags || []).join("\n");
             const v = prompt("编辑标签（一行一个）：", cur);
             if(v !== null){
-                takeSnapshot("编辑标签");
-                pet.tags = v.split("\n").map(s => s.trim()).filter(Boolean);
-                touchPet(pet); saveLocal(); render();
+                const newTags = v.split("\n").map(s => s.trim()).filter(Boolean);
+                if(JSON.stringify(newTags) !== JSON.stringify(pet.tags)){
+                    takeSnapshot("编辑标签");
+                    pet.tags = newTags;
+                    touchPet(pet); saveLocal(); render();
+                }
             }
         }
         return;
@@ -1675,10 +1830,13 @@ document.addEventListener("click", e => {
             const cur = (pet.features || []).join("\n");
             const v = prompt("编辑特征（一行一个）：", cur);
             if(v !== null){
-                takeSnapshot("编辑特征");
-                pet.features = v.split("\n").map(s => s.trim()).filter(Boolean);
-                pet.features.forEach(f => ensureFeatureExists(f, pet.category));
-                touchPet(pet); saveLocal(); render();
+                const newFeats = v.split("\n").map(s => s.trim()).filter(Boolean);
+                if(JSON.stringify(newFeats) !== JSON.stringify(pet.features)){
+                    takeSnapshot("编辑特征");
+                    pet.features = newFeats;
+                    pet.features.forEach(f => ensureFeatureExists(f, pet.category));
+                    touchPet(pet); saveLocal(); render();
+                }
             }
         }
         return;
@@ -1690,10 +1848,22 @@ document.addEventListener("click", e => {
     const pet = petList.find(x => x.id === pid);
     if(!pet) return;
     const now = Date.now();
-    if(act === "start"){ startTimer(pet, now); saveLocal(); render(); }
-    else if(act === "pause"){ pauseTimer(pet, now); saveLocal(); render(); }
-    else if(act === "reset"){ resetTimer(pet, now); saveLocal(); render(); }
-    else if(act === "deliver"){ deliverBaby(pet, now); saveLocal(); render(); }
+    if(act === "start"){
+        takeSnapshot("开始计时「" + (pet.name||"未命名") + "」");
+        startTimer(pet, now); saveLocal(); render();
+    }
+    else if(act === "pause"){
+        takeSnapshot("暂停「" + (pet.name||"未命名") + "」");
+        pauseTimer(pet, now); saveLocal(); render();
+    }
+    else if(act === "reset"){
+        takeSnapshot("重置「" + (pet.name||"未命名") + "」");
+        resetTimer(pet, now); saveLocal(); render();
+    }
+    else if(act === "deliver"){
+        takeSnapshot("接生「" + (pet.name||"未命名") + "」");
+        deliverBaby(pet, now); saveLocal(); render();
+    }
     else if(act === "edit"){ openEdit(pid); }
     else if(act === "copy"){ copyPet(pid); }
     else if(act === "del"){ if(confirm("确定删除【"+(pet.name||"未命名")+"】？")) deletePet(pid); }
@@ -1708,6 +1878,7 @@ function uploadRowImage(pet, field){
             const blob = await compressToBlob(f, isCp ? 200 : 2000, isCp ? 0.7 : 0.9);
             const nid = "img_" + genId();
             await saveImage(nid, blob);
+            takeSnapshot("上传图片");
             const old = getFieldValue(pet, field);
             setFieldValue(pet, field, nid);
             if(old && isIndexedImg(old)) safeDeleteImg(old, pet.id);
@@ -1761,6 +1932,12 @@ document.querySelectorAll(".view-tab").forEach(tab => {
         $("tableView").classList.toggle("hidden", currentView !== "table");
         $("dashboardView").classList.toggle("hidden", currentView !== "dashboard");
         $("benchView").classList.toggle("hidden", currentView !== "bench");
+        if(currentView === "bench" && !localStorage.getItem(BENCH_GUIDE_KEY)){
+            setTimeout(() => {
+                alert("⭐ 工作台小提示\n\n点宠物卡片右上角的 ⭐ 就能把宠物加进工作台，方便集中管理要配对的宠物。");
+                localStorage.setItem(BENCH_GUIDE_KEY, "1");
+            }, 300);
+        }
         render();
     };
 });
@@ -1798,7 +1975,6 @@ $("batchDelete").onclick = () => {
     saveLocal(); render();
 };
 
-/* 工作台批量操作 */
 $("benchSelAll").onclick = () => {
     petList.filter(p => p.inBench).forEach(p => benchSelectedIds.add(p.id));
     renderBench(Date.now());
@@ -1828,7 +2004,6 @@ document.querySelectorAll("[data-bench]").forEach(btn => {
         else if(mode === "144h-female") confirmMsg = "把选中的宠物设为【144 小时恢复（母宠·72h 后卡分娩）】？";
         if(!confirm(confirmMsg)) return;
         takeSnapshot("工作台批量改时间 " + benchSelectedIds.size + " 只");
-
         benchSelectedIds.forEach(id => {
             const p = petList.find(x => x.id === id);
             if(!p) return;
@@ -2224,7 +2399,6 @@ function renderBreedSel(category, selected){
         sel.appendChild(o);
     });
 }
-
 function renderFeatureQuickPick(){
     const wrap = $("featQuickArea");
     wrap.innerHTML = "";
@@ -2379,7 +2553,6 @@ document.querySelectorAll(".swap-btn[data-swap]").forEach(btn => {
         updateCpPreview("cp2");
     };
 });
-/* CP 清空按钮 */
 document.querySelectorAll(".clear-cp-btn").forEach(btn => {
     btn.onclick = () => {
         const prefix = btn.dataset.clear;
@@ -2666,6 +2839,8 @@ $("btnSave").onclick = async () => {
     const cp1Pair = fromLocalInputVal($("cp1PairTime").value);
     const cp2Pair = fromLocalInputVal($("cp2PairTime").value);
 
+    takeSnapshot(editId ? "编辑宠物「" + nameVal + "」" : "新增宠物「" + nameVal + "」");
+
     const oldPet = editId ? petList.find(x => x.id === editId) : null;
     let finalImg = "";
     let delImgs = [];
@@ -2769,6 +2944,7 @@ $("btnImport").onclick = () => {
                 if(p.cp2 && isBase64Img(p.cp2.img)) base64List.push({ p, field:"cp2.img" });
             });
             if(!confirm("导入将覆盖当前全部数据，确认继续？\n宠物数量："+migrated.length+"\n图片："+(imgIds.length + base64List.length)+" 张")) return;
+            takeSnapshot("导入备份");
             Object.keys(imgUrlCache).forEach(forgetImgUrl);
             const tasks = [];
             base64List.forEach(item => tasks.push(
@@ -2825,7 +3001,7 @@ $("btnExport").onclick = async () => {
     const blob = new Blob([JSON.stringify({pets:petList, accounts:accountOptions, breedMap, featureMap, images:imgMap})], {type:"application/json"});
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "pet-backup-v25.json";
+    a.download = "绒光宠物录-backup.json";
     a.click();
 };
 
@@ -2853,25 +3029,20 @@ function refreshBmBreedByCat(cat){
 $("batchModify").onclick = () => {
     if(selectedIds.size === 0) return;
     $("bmCount").textContent = selectedIds.size;
-    /* 账号 */
     const accSel = $("bmAcc"); accSel.innerHTML = '<option value="">--请选择--</option>';
     accountOptions.forEach(a => {
         const o = document.createElement("option"); o.value = a; o.textContent = a; accSel.appendChild(o);
     });
-    /* 大类 */
     const catSel = $("bmCat"); catSel.innerHTML = '<option value="">--请选择--</option>';
     Object.keys(breedMap).forEach(c => {
         const o = document.createElement("option"); o.value = c; o.textContent = c; catSel.appendChild(o);
     });
-    /* 品种 */
     refreshBmBreedAll();
-    /* 特征 datalist */
     const dl = $("bmFeatList");
     dl.innerHTML = "";
     getAllFeatureNames().forEach(f => {
         const o = document.createElement("option"); o.value = f; dl.appendChild(o);
     });
-    /* 重置 */
     ["bmAccEnable","bmCatEnable","bmBreedEnable","bmStatusEnable","bmFeatAddEnable","bmFeatDelEnable"].forEach(id => $(id).checked = false);
     $("bmStatus").value = "";
     $("bmFeatAdd").value = "";
@@ -2971,9 +3142,262 @@ $("bmApply").onclick = () => {
 $("searchInput").oninput = () => render();
 $("sortModeSel").onchange = () => render();
 
-/* 启动 */
+/* ==================== 备份提醒横幅 ==================== */
+function initBackupBanner(){
+    const closedAt = localStorage.getItem(BACKUP_BANNER_KEY);
+    if(closedAt){
+        const diff = Date.now() - Number(closedAt);
+        if(diff < 7 * 86400000) return;
+    }
+    $("backupBanner").style.display = "flex";
+}
+$("closeBackupBanner").onclick = () => {
+    localStorage.setItem(BACKUP_BANNER_KEY, String(Date.now()));
+    $("backupBanner").style.display = "none";
+};
+
+/* ==================== 猫爪菜单 ==================== */
+let pawMenuEl = null;
+function closePawMenu(){
+    if(pawMenuEl){ pawMenuEl.remove(); pawMenuEl = null; }
+}
+$("pawBtn").onclick = e => {
+    e.stopPropagation();
+    if(pawMenuEl){ closePawMenu(); return; }
+    const menu = document.createElement("div");
+    menu.className = "paw-menu";
+    menu.innerHTML =
+        '<button data-action="tip"><span class="ico">🐱</span>投喂小咪</button>' +
+        '<button data-action="feedback"><span class="ico">💬</span>反馈建议</button>' +
+        '<button data-action="tour"><span class="ico">📖</span>使用教程</button>' +
+        '<button data-action="about"><span class="ico">ℹ️</span>关于工具</button>';
+    document.body.appendChild(menu);
+    pawMenuEl = menu;
+    menu.addEventListener("click", ev => {
+        const btn = ev.target.closest("button[data-action]");
+        if(!btn) return;
+        const a = btn.dataset.action;
+        closePawMenu();
+        if(a === "tip") openTipModal();
+        else if(a === "feedback") $("feedbackModal").classList.remove("hidden");
+        else if(a === "tour") startTour();
+        else if(a === "about") $("aboutModal").classList.remove("hidden");
+    });
+};
+document.addEventListener("click", e => {
+    if(pawMenuEl && !e.target.closest(".paw-menu") && !e.target.closest("#pawBtn")) closePawMenu();
+});
+
+/* ==================== 打赏弹窗 ==================== */
+function openTipModal(){
+    tipCurrentTab = "wechat";
+    tipCurrentAmt = null;
+    document.querySelectorAll(".tip-tab").forEach(t => {
+        t.classList.toggle("active", t.dataset.tab === "wechat");
+    });
+    document.querySelectorAll(".tip-amt").forEach(a => a.classList.remove("active"));
+    $("tipQrPanel").classList.add("hidden");
+    $("tipModal").classList.remove("hidden");
+}
+function showTipQr(){
+    const key = tipCurrentAmt === "custom" ? "default" : tipCurrentAmt;
+    const url = PAYMENT_QR[tipCurrentTab][key] || PAYMENT_QR[tipCurrentTab]["default"];
+    const img = $("tipQrImg");
+    img.style.display = "block";
+    img.nextElementSibling.style.display = "none";
+    img.src = url;
+    let title = "扫码投喂";
+    if(tipCurrentAmt === "custom") title = "自定义金额 · 扫码投喂";
+    else if(tipCurrentAmt) title = "扫码投喂 ¥" + tipCurrentAmt;
+    $("tipQrTitle").textContent = title;
+    $("tipQrPanel").classList.remove("hidden");
+}
+document.querySelectorAll(".tip-tab").forEach(tab => {
+    tab.onclick = () => {
+        tipCurrentTab = tab.dataset.tab;
+        document.querySelectorAll(".tip-tab").forEach(t => t.classList.toggle("active", t === tab));
+        if(tipCurrentAmt) showTipQr();
+    };
+});
+document.querySelectorAll(".tip-amt").forEach(amt => {
+    amt.onclick = () => {
+        const v = amt.dataset.amt;
+        if(tipCurrentAmt === v){
+            tipCurrentAmt = null;
+            document.querySelectorAll(".tip-amt").forEach(a => a.classList.remove("active"));
+            $("tipQrPanel").classList.add("hidden");
+        } else {
+            tipCurrentAmt = v;
+            document.querySelectorAll(".tip-amt").forEach(a => a.classList.toggle("active", a === amt));
+            showTipQr();
+        }
+    };
+});
+$("tipQrClose").onclick = () => {
+    tipCurrentAmt = null;
+    document.querySelectorAll(".tip-amt").forEach(a => a.classList.remove("active"));
+    $("tipQrPanel").classList.add("hidden");
+};
+$("closeTipModal").onclick = () => $("tipModal").classList.add("hidden");
+$("closeAboutModal").onclick = () => $("aboutModal").classList.add("hidden");
+$("tipModal").addEventListener("click", e => { if(e.target === $("tipModal")) $("tipModal").classList.add("hidden"); });
+$("aboutModal").addEventListener("click", e => { if(e.target === $("aboutModal")) $("aboutModal").classList.add("hidden"); });
+
+/* ==================== 反馈弹窗 ==================== */
+$("closeFeedbackModal").onclick = () => $("feedbackModal").classList.add("hidden");
+$("feedbackModal").addEventListener("click", e => { if(e.target === $("feedbackModal")) $("feedbackModal").classList.add("hidden"); });
+$("copyEmailBtn").onclick = async () => {
+    const input = $("feedbackEmailInput");
+    try{
+        await navigator.clipboard.writeText(input.value);
+        const btn = $("copyEmailBtn");
+        btn.textContent = "✓ 已复制";
+        btn.classList.add("copied");
+        setTimeout(() => {
+            btn.textContent = "复制";
+            btn.classList.remove("copied");
+        }, 1500);
+    }catch(e){
+        input.select();
+        document.execCommand("copy");
+        const btn = $("copyEmailBtn");
+        btn.textContent = "✓ 已复制";
+        btn.classList.add("copied");
+        setTimeout(() => {
+            btn.textContent = "复制";
+            btn.classList.remove("copied");
+        }, 1500);
+    }
+};
+$("openQuestionnaireBtn").onclick = () => {
+    window.open(FEEDBACK_URL, "_blank");
+};
+
+/* ==================== 使用教程 ==================== */
+const TOUR_STEPS = [
+    { target: "#btnAdd",      text: "开始你的宠物记录", tipPos: "bottom" },
+    { target: ".view-tabs",   text: "不同的功能区助力你更了解你的宠物", tipPos: "bottom" },
+    { target: ".filter-row",  text: "用好筛选更方便找到对应的宠物", tipPos: "bottom" },
+    { target: "#sortLockWrap", text: "编辑和改动时别忘了勾选哦", tipPos: "bottom" }
+];
+let tourStep = 0;
+let tourHl = null;
+let tourTip = null;
+
+function startTour(){
+    tourStep = 0;
+    if(!tourHl){
+        tourHl = document.createElement("div");
+        tourHl.className = "tour-highlight";
+        tourHl.id = "__tourHl";
+        document.body.appendChild(tourHl);
+    }
+    if(!tourTip){
+        tourTip = document.createElement("div");
+        tourTip.className = "tour-tip arrow-top";
+        tourTip.id = "__tourTip";
+        document.body.appendChild(tourTip);
+    }
+    showTourStep(0);
+    window.addEventListener("resize", repositionTour);
+    window.addEventListener("scroll", repositionTour, true);
+}
+
+function showTourStep(idx){
+    if(idx < 0 || idx >= TOUR_STEPS.length){
+        endTour();
+        return;
+    }
+    tourStep = idx;
+    const step = TOUR_STEPS[idx];
+    const el = document.querySelector(step.target);
+    if(!el){
+        showTourStep(idx + 1);
+        return;
+    }
+    /* 先把元素滚动到可视区 */
+    try{ el.scrollIntoView({block: "center", behavior: "smooth"}); }catch(e){ el.scrollIntoView(); }
+
+    setTimeout(() => {
+        repositionTour();
+        const total = TOUR_STEPS.length;
+        tourTip.innerHTML = `
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+                <span style="font-size:12px;color:#a06080">第 ${idx+1} / ${total} 步</span>
+                <button id="__tourSkip" style="background:transparent;border:none;color:#999;font-size:12px;cursor:pointer;padding:2px 6px">跳过</button>
+            </div>
+            <div style="color:#333;line-height:1.7;margin-bottom:12px">${step.text}</div>
+            <div style="display:flex;gap:8px;justify-content:flex-end">
+                <button id="__tourPrev" style="padding:5px 14px;font-size:13px;border-radius:6px;background:${idx===0?'#f0f0f0':'#fff'};color:${idx===0?'#bbb':'#444'};border:1px solid #ccc" ${idx===0?'disabled':''}>上一步</button>
+                <button id="__tourNext" style="padding:5px 14px;font-size:13px;border-radius:6px;background:#4080ff;color:#fff;border:1px solid #3070ee">${idx === total - 1 ? '完成' : '下一步'}</button>
+            </div>
+        `;
+        document.getElementById("__tourSkip").onclick = endTour;
+        document.getElementById("__tourNext").onclick = () => showTourStep(idx + 1);
+        document.getElementById("__tourPrev").onclick = () => showTourStep(idx - 1);
+        repositionTour();
+    }, 260);
+}
+
+function repositionTour(){
+    if(!tourHl || !tourTip) return;
+    const step = TOUR_STEPS[tourStep];
+    if(!step) return;
+    const el = document.querySelector(step.target);
+    if(!el) return;
+    const rect = el.getBoundingClientRect();
+    const pad = 6;
+    tourHl.style.left = (rect.left - pad) + "px";
+    tourHl.style.top = (rect.top - pad) + "px";
+    tourHl.style.width = (rect.width + pad*2) + "px";
+    tourHl.style.height = (rect.height + pad*2) + "px";
+
+    /* tooltip 位置 */
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const tipW = tourTip.offsetWidth || 300;
+    const tipH = tourTip.offsetHeight || 160;
+    const gap = 14;
+
+    let tipLeft, tipTop, arrow;
+    if(step.tipPos === "bottom"){
+        tipLeft = rect.left;
+        tipTop = rect.bottom + gap;
+        arrow = "top";
+        /* 如果下方放不下就放上方 */
+        if(tipTop + tipH > vh - 12){
+            tipTop = rect.top - tipH - gap;
+            arrow = "bottom";
+        }
+    } else {
+        tipLeft = rect.left;
+        tipTop = rect.top - tipH - gap;
+        arrow = "bottom";
+        if(tipTop < 12){
+            tipTop = rect.bottom + gap;
+            arrow = "top";
+        }
+    }
+    if(tipLeft + tipW > vw - 12) tipLeft = vw - tipW - 12;
+    if(tipLeft < 12) tipLeft = 12;
+    if(tipTop < 12) tipTop = 12;
+
+    tourTip.style.left = tipLeft + "px";
+    tourTip.style.top = tipTop + "px";
+    tourTip.className = "tour-tip arrow-" + arrow;
+}
+
+function endTour(){
+    if(tourHl){ tourHl.remove(); tourHl = null; }
+    if(tourTip){ tourTip.remove(); tourTip = null; }
+    window.removeEventListener("resize", repositionTour);
+    window.removeEventListener("scroll", repositionTour, true);
+}
+
+/* ==================== 启动 ==================== */
 loadFromLocal();
 applyCpColVisibility();
+initBackupBanner();
 render();
 updateUndoBtn();
 setInterval(() => {
