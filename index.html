@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>宠物档案管理 V21</title>
+<title>宠物档案管理 V22</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;font-family:system-ui,-apple-system}
@@ -16,7 +16,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .mini-btn{padding:1px 6px;font-size:11px;background:#f0f4fa;border:1px solid #d0dae8;border-radius:4px;color:#4a6b93;cursor:pointer;margin-left:2px}
 .mini-btn:hover:not(:disabled){background:#e0ecff;border-color:#3070ee;color:#3070ee}
 .mini-btn:disabled{opacity:.3;cursor:not-allowed}
-.top-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.top-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;align-items:center}
 .view-tabs{display:flex;gap:4px;margin-bottom:8px;border-bottom:2px solid #e3e8ef}
 .view-tab{background:transparent;border:none;padding:8px 16px;font-size:14px;color:#666;border-bottom:2px solid transparent;margin-bottom:-2px}
 .view-tab.active{color:#3070ee;border-bottom-color:#3070ee;font-weight:bold}
@@ -32,8 +32,9 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .filter-hint{background:#eef6ff;border:1px solid #b8d4ff;color:#3070ee;padding:5px 10px;border-radius:6px;font-size:12px;margin-bottom:8px}
 .filter-hint b{font-size:14px}
 #petContainer{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
-.pet-card{border:1px solid #d8dee6;border-radius:10px;padding:10px;background:#fff}
+.pet-card{border:1px solid #d8dee6;border-radius:10px;padding:10px;background:#fff;position:relative}
 .pet-card.locked{border:2px solid #ff4444;background:#fff3f3}
+.pet-card.bench-starred{border-color:#f0b840;box-shadow:0 0 0 2px rgba(240,184,64,.2)}
 .card-head{display:flex;gap:10px;margin-bottom:6px}
 .avatar-wrap{width:60px;height:60px;border-radius:8px;overflow:hidden;border:1px solid #eee;flex-shrink:0;cursor:pointer;background:#f0f2f5}
 .avatar-wrap img{width:100%;height:100%;object-fit:cover;display:block}
@@ -45,6 +46,9 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .status-waitpair{color:#e04080;font-weight:bold}
 .gender-m{color:#348ede;font-weight:bold}
 .gender-f{color:#e85496;font-weight:bold}
+.star-btn{position:absolute;top:6px;right:6px;background:transparent;border:none;font-size:18px;cursor:pointer;padding:2px 4px;line-height:1;color:#ddd;transition:.15s}
+.star-btn:hover{color:#f0b840}
+.star-btn.on{color:#f0b840}
 .table-wrap{overflow:auto;max-height:calc(100vh - 300px);border:1px solid #e3e8ef;border-radius:8px}
 .pet-table{width:100%;border-collapse:collapse;font-size:13px;background:#fff}
 .pet-table th,.pet-table td{padding:6px 6px;border-bottom:1px solid #eef1f5;text-align:left;vertical-align:middle;white-space:nowrap}
@@ -58,7 +62,6 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .pet-table td.select-cell:hover{background:#eef6ff}
 .pet-table td input,.pet-table td select{width:100%;min-width:60px;padding:3px 4px;font-size:13px;border:1px solid #3070ee;border-radius:3px}
 .cell-tag{background:#e8edf4;padding:1px 4px;border-radius:3px;font-size:11px;margin-right:2px}
-/* 折叠 CP 相关列 */
 .pet-table.hide-cp .cp-col{display:none !important}
 
 .dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
@@ -78,9 +81,11 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .batch-bar button.warn:hover{background:#c23333}
 .batch-bar button.hl{background:#3070ee}
 .batch-bar button.hl:hover{background:#2560d0}
+.batch-bar button.gold{background:#d99f30}
+.batch-bar button.gold:hover{background:#c28b20}
 
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:999}
-.modal-box{background:#fff;border-radius:10px;padding:14px;max-width:560px;width:94%;max-height:92vh;overflow:auto}
+.modal-box{background:#fff;border-radius:10px;padding:14px;max-width:600px;width:94%;max-height:92vh;overflow:auto}
 .form-row{margin:7px 0}
 .form-row label{display:block;margin-bottom:3px;font-size:13px;color:#555}
 .form-row .chk-label{display:flex;align-items:center;gap:6px;font-size:13px;color:#222;cursor:pointer}
@@ -103,28 +108,49 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .list-row{display:flex;align-items:center;gap:6px;margin:3px 0;padding:3px 6px;border-radius:4px;font-size:13px}
 .list-row:hover{background:#f7f8fa}
 
-/* 特征色块 / 标签 */
 .feature-chip{display:inline-block;padding:1px 7px;border-radius:10px;font-size:11px;margin:0 3px 3px 0;border:1px solid;line-height:1.6}
 
-/* 管理特征弹窗内的行 */
 .feat-manage-row{display:flex;align-items:center;gap:6px;padding:5px 6px;border-radius:5px;font-size:13px;border-bottom:1px solid #f2f5f9}
 .feat-manage-row:hover{background:#f7f8fa}
 .feat-manage-row input[type="text"]{flex:1;min-width:80px;padding:4px 6px}
 .feat-manage-row input[type="color"]{width:36px;height:28px;padding:0;border:1px solid #ccc;border-radius:4px;cursor:pointer;background:#fff}
 .feat-count{color:#94a3b8;font-size:11px;margin-left:4px}
 
-/* 编辑弹窗标题栏 */
 .modal-header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:-4px 0 10px;padding-bottom:8px;border-bottom:1px solid #eef1f5;position:sticky;top:-14px;background:#fff;z-index:10;padding-top:4px}
 .modal-header h3{margin:0;font-size:16px;flex:1;min-width:0}
 .modal-header-btns{display:flex;gap:6px;flex-shrink:0}
 
-/* 性别按钮组 */
 .gender-pick{display:inline-flex;border:1px solid #cbd5e1;border-radius:6px;overflow:hidden}
 .gender-opt{padding:6px 22px;cursor:pointer;background:#fff;color:#666;font-size:13px;user-select:none;transition:.15s}
 .gender-opt:first-child{border-right:1px solid #cbd5e1}
 .gender-opt:hover{background:#f4f7fb}
 .gender-opt.selected[data-gender="m"]{background:#348ede;color:#fff}
 .gender-opt.selected[data-gender="f"]{background:#e85496;color:#fff}
+
+/* chip 选择器（账号、品种大类） */
+.chip-picker{display:flex;flex-wrap:wrap;gap:5px;max-height:120px;overflow:auto;border:1px solid #e3e8ef;border-radius:6px;padding:6px;background:#fafbfd;min-height:36px}
+.chip-pick-item{padding:3px 12px;border-radius:14px;border:1.5px solid #ccd6e2;cursor:pointer;font-size:12px;background:#fff;transition:.15s;user-select:none}
+.chip-pick-item:hover{border-color:#3070ee;background:#f4f9ff}
+.chip-pick-item.selected{background:#3070ee;border-color:#3070ee;color:#fff;font-weight:500}
+.chip-empty{color:#999;font-size:12px;padding:6px}
+
+/* 总时长快捷按钮 */
+.quick-time{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px}
+.quick-time button{padding:4px 12px;font-size:12px;border:1px solid #cbd5e1;border-radius:14px;background:#fff;color:#444}
+.quick-time button:hover{background:#e8f0ff;border-color:#3070ee;color:#3070ee}
+
+/* 排序锁定 */
+.sort-lock{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#666;background:#fff;border:1px solid #cbd5e1;border-radius:6px;padding:5px 10px}
+.sort-lock.locked{background:#fff8e6;border-color:#f0b840;color:#a06a10}
+.sort-lock input{margin:0}
+
+/* 工作台批量操作条 */
+.bench-actions{display:flex;gap:6px;flex-wrap:wrap;padding:8px 10px;background:#fffaf0;border:1px solid #f0e0c0;border-radius:8px;margin-bottom:8px;align-items:center;font-size:13px}
+.bench-actions .lbl{color:#a06a10;font-weight:500;margin-right:4px}
+.bench-actions button{padding:5px 12px;font-size:12px;border-radius:6px;border:1px solid #d0dae8;background:#fff}
+.bench-actions button:hover{background:#fff3d8;border-color:#f0b840}
+.bench-actions .primary-sm{background:#3070ee;color:#fff;border-color:#3070ee}
+.bench-actions .primary-sm:hover{background:#2560d0}
 </style>
 </head>
 <body>
@@ -137,12 +163,17 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <button id="btnImport">📂导入备份</button>
 <button id="btnManageOpt">⚙️管理账号/品种</button>
 <button id="btnManageFeat">🎨管理特征</button>
+<label class="sort-lock" id="sortLockWrap" title="锁定后，数据修改不会自动重排顺序。改完后点「应用排序」才生效。">
+    <input type="checkbox" id="sortLockChk"> 🔒 锁定排序
+</label>
+<button id="btnApplySort" style="font-size:12px;padding:5px 10px">↻ 应用排序</button>
 </div>
 
 <div class="view-tabs">
 <button class="view-tab active" data-view="card">📇 卡片</button>
 <button class="view-tab" data-view="table">📊 表格</button>
 <button class="view-tab" data-view="dashboard">📈 仪表盘</button>
+<button class="view-tab" data-view="bench">⭐ 工作台<span id="benchCount" style="color:#d99f30;font-weight:bold;margin-left:4px"></span></button>
 </div>
 
 <div class="search-row">
@@ -177,6 +208,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <thead>
 <tr>
 <th style="width:30px"><input type="checkbox" id="checkAll"></th>
+<th style="width:36px">⭐</th>
 <th style="width:44px">图片</th>
 <th style="min-width:90px">昵称</th>
 <th style="width:48px">性别</th>
@@ -211,6 +243,24 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <div class="dash-card"><h4>状态分布</h4><div class="chart-box"><canvas id="chartStatus"></canvas></div></div>
 <div class="dash-card"><h4>性别比例</h4><div class="chart-box"><canvas id="chartGender"></canvas></div></div>
 <div class="dash-card" style="grid-column:span 2"><h4>未来 72 小时内到期（当前筛选）</h4><div id="dashExpiring" style="max-height:220px;overflow:auto;font-size:13px"></div></div>
+</div>
+</div>
+
+<div id="benchView" class="hidden">
+<div class="bench-actions">
+<span class="lbl">⭐ 工作台批量操作：</span>
+<button id="benchSelAll" style="padding:4px 10px;font-size:12px">全选</button>
+<button id="benchSelNone" style="padding:4px 10px;font-size:12px">取消全选</button>
+<span style="color:#ccc">|</span>
+<button data-bench="4h" style="color:#348ede;font-weight:500">设为 4h 恢复</button>
+<button data-bench="144h-normal" style="color:#20b060;font-weight:500">设为 144h 恢复（普通）</button>
+<button data-bench="144h-female" style="color:#e85496;font-weight:500">设为 144h 恢复（母宠·72h 卡分娩）</button>
+<span style="color:#ccc">|</span>
+<button data-bench="remove" class="warn" style="color:#c82424;border-color:#ffb4b4">从工作台移除</button>
+</div>
+<div id="benchContainer" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px"></div>
+<div id="benchEmpty" class="hidden" style="text-align:center;color:#999;padding:40px 0;font-size:14px">
+    工作台为空。在卡片或表格里点 ⭐ 把宠物加入工作台。
 </div>
 </div>
 
@@ -295,9 +345,19 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <input type="file" accept="image/*" id="uploadImg" style="margin-top:4px">
 <div id="formImgPreviewWrap"><img id="formImgPreview" alt="预览"><button type="button" id="btnClearImg" style="padding:3px 6px;font-size:12px">清除</button></div>
 </div>
-<div class="form-row"><label>账号</label><select id="selAccount"><option value="">--请选择或输入--</option></select><input type="text" id="txtAccount" placeholder="可输入新账号" style="margin-top:3px"></div>
-<div class="form-row"><label>品种大类</label><select id="selCategory"><option value="">--请选择--</option></select></div>
-<div class="form-row"><label>品种</label><select id="selBreed"><option value="">--请先选大类--</option></select><input type="text" id="txtBreed" placeholder="可输入新品种" style="margin-top:3px"></div>
+
+<div class="form-row">
+<label>账号（点击选择，或下方输入新账号）</label>
+<div class="chip-picker" id="accountPicker"></div>
+<input type="text" id="txtAccount" placeholder="可输入新账号" style="margin-top:4px;width:100%">
+</div>
+
+<div class="form-row">
+<label>品种大类（点击选择）</label>
+<div class="chip-picker" id="categoryPicker"></div>
+</div>
+
+<div class="form-row"><label>品种</label><select id="selBreed"><option value="">--请先选大类--</option></select><input type="text" id="txtBreed" placeholder="可输入新品种" style="margin-top:3px;width:100%"></div>
 <div class="form-row"><label>宠物昵称</label><input type="text" id="petName" style="width:100%"></div>
 
 <div class="form-row">
@@ -313,6 +373,12 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 
 <div class="form-row"><label>总时长</label>
 <div class="time-hint" id="timeStatusHint"></div>
+<div class="quick-time">
+    <button type="button" data-quick="4">4 小时</button>
+    <button type="button" data-quick="72">72 小时</button>
+    <button type="button" data-quick="144">144 小时</button>
+    <button type="button" data-quick="264">264 小时</button>
+</div>
 <div style="display:flex;gap:6px;align-items:center">
 <input type="number" id="tHour" value="0" min="0" style="width:70px"><span>小时</span>
 <input type="number" id="tMinute" value="0" min="0" max="59" style="width:70px"><span>分钟</span>
@@ -328,7 +394,17 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <div class="paste-zone" id="cp1PasteZone" tabindex="0">📋 点击此处后按 Ctrl+V 粘贴图片</div>
 <div id="cp1PreviewWrap"><img id="cp1Preview" alt=""><button type="button" id="cp1Clear" style="padding:3px 6px;font-size:12px">清除</button></div>
 </div>
-<div class="form-row"><label>预计配对时间</label><input type="datetime-local" id="cp1PairTime" style="width:100%"></div>
+<div class="form-row">
+<label>预计配对时间（直接选日期 或 用天数换算）</label>
+<input type="datetime-local" id="cp1PairTime" style="width:100%">
+<div style="margin-top:5px;display:flex;gap:5px;align-items:center;font-size:12px;flex-wrap:wrap">
+<span style="color:#888">或：从此刻起</span>
+<input type="number" id="cp1Days" placeholder="0" min="0" style="width:60px;padding:3px 6px">天
+<input type="number" id="cp1Hours" placeholder="0" min="0" max="23" style="width:60px;padding:3px 6px">小时后
+<button type="button" id="cp1CalcBtn" style="padding:3px 10px;font-size:12px">换算</button>
+<button type="button" id="cp1BackBtn" style="padding:3px 10px;font-size:12px;color:#666">反算天数</button>
+</div>
+</div>
 </div>
 
 <div class="cp-block"><h4>CP 第 2 段</h4>
@@ -338,7 +414,17 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <div class="paste-zone" id="cp2PasteZone" tabindex="0">📋 点击此处后按 Ctrl+V 粘贴图片</div>
 <div id="cp2PreviewWrap"><img id="cp2Preview" alt=""><button type="button" id="cp2Clear" style="padding:3px 6px;font-size:12px">清除</button></div>
 </div>
-<div class="form-row"><label>预计配对时间</label><input type="datetime-local" id="cp2PairTime" style="width:100%"></div>
+<div class="form-row">
+<label>预计配对时间（直接选日期 或 用天数换算）</label>
+<input type="datetime-local" id="cp2PairTime" style="width:100%">
+<div style="margin-top:5px;display:flex;gap:5px;align-items:center;font-size:12px;flex-wrap:wrap">
+<span style="color:#888">或：从此刻起</span>
+<input type="number" id="cp2Days" placeholder="0" min="0" style="width:60px;padding:3px 6px">天
+<input type="number" id="cp2Hours" placeholder="0" min="0" max="23" style="width:60px;padding:3px 6px">小时后
+<button type="button" id="cp2CalcBtn" style="padding:3px 10px;font-size:12px">换算</button>
+<button type="button" id="cp2BackBtn" style="padding:3px 10px;font-size:12px;color:#666">反算天数</button>
+</div>
+</div>
 </div>
 
 </div></div>
@@ -366,12 +452,18 @@ let pendingCp1Blob = null, pendingCp1Cleared = false;
 let pendingCp2Blob = null, pendingCp2Cleared = false;
 let timeEditedByUser = false, editOrigH = "", editOrigM = "";
 let currentEditGender = "m";
+let currentEditAccount = "";
+let currentEditCategory = "";
 let currentView = "card";
 let selectedIds = new Set();
+let benchSelectedIds = new Set();
 let chartRefs = {};
 let editInProgress = false;
-/* 表格 CP 列是否展开（默认折叠） */
 let showCpCols = false;
+/* 排序锁定：true 时冻结当前顺序，不自动重排 */
+let sortLocked = false;
+/* 冻结时的顺序快照（pet id 数组） */
+let frozenOrder = [];
 const filterState = {
     status: new Set(), gender: new Set(), category: new Set(),
     breed: new Set(), account: new Set(), feature: new Set()
@@ -478,6 +570,24 @@ function compressToBlob(file, maxSize, quality){
         r.onerror = () => rej(new Error("读取失败")); r.readAsDataURL(file);
     });
 }
+/* 关键：判断图片是否被除 excludePetId 之外的宠物引用 */
+function isImgReferencedByOthers(imgId, excludePetId){
+    if(!imgId) return false;
+    return petList.some(p => {
+        if(p.id === excludePetId) return false;
+        if(p.img === imgId) return true;
+        if(p.cp1 && p.cp1.img === imgId) return true;
+        if(p.cp2 && p.cp2.img === imgId) return true;
+        return false;
+    });
+}
+/* 安全删除：只有没其他宠物引用时才真正删除 */
+function safeDeleteImg(imgId, excludePetId){
+    if(!imgId || !isIndexedImg(imgId)) return;
+    if(isImgReferencedByOthers(imgId, excludePetId)) return;
+    deleteImage(imgId).catch(()=>{});
+    forgetImgUrl(imgId);
+}
 
 /* ==================== localStorage ==================== */
 function safeSave(){
@@ -517,7 +627,8 @@ function normalizePet(p){
         totalMs: p.totalMs || 0, pausedAt: p.pausedAt || 0,
         isRunning: !!p.isRunning, startTs: p.startTs || null,
         runStartRemain: p.runStartRemain !== undefined ? p.runStartRemain : null,
-        locked: !!p.locked, note: p.note || ""
+        locked: !!p.locked, note: p.note || "",
+        inBench: !!p.inBench
     };
 }
 function loadFromLocal(){
@@ -613,7 +724,7 @@ function calcWaitTime(p, now){
 /* ==================== 卡片 ==================== */
 function buildCard(p, now){
     const div = document.createElement("div");
-    div.className = "pet-card" + (p.locked ? " locked" : "");
+    div.className = "pet-card" + (p.locked ? " locked" : "") + (p.inBench ? " bench-starred" : "");
     const rem = getRemain(p, now);
     const recover = getRecoverTime(p, now);
     let status = "";
@@ -632,6 +743,7 @@ function buildCard(p, now){
         : '<div class="avatar-wrap"></div>';
     const noteHtml = p.note ? '<div style="margin-top:6px;font-size:12px;color:#555">备注：'+esc(p.note)+'</div>' : '';
     div.innerHTML =
+        '<button class="star-btn'+(p.inBench?' on':'')+'" data-star="'+p.id+'" title="加入/移出工作台">'+(p.inBench?'★':'☆')+'</button>'+
         '<div class="card-head">'+imgHtml+
         '<div class="info-main">'+
             '<div class="pet-name">'+esc(p.name||"未命名")+' '+gTag+'</div>'+
@@ -688,6 +800,7 @@ function buildTableRow(p, now){
 
     tr.innerHTML =
         '<td><input type="checkbox" class="row-check" data-id="'+p.id+'"'+(selectedIds.has(p.id)?" checked":"")+'></td>'+
+        '<td><button class="star-btn'+(p.inBench?' on':'')+'" data-star="'+p.id+'" style="position:static;font-size:16px">'+(p.inBench?'★':'☆')+'</button></td>'+
         '<td data-img="1" data-id="'+p.id+'" style="cursor:pointer">'+imgHtml+'</td>'+
         '<td class="edit-cell" data-field="name" data-id="'+p.id+'"><b>'+esc(p.name||"未命名")+'</b></td>'+
         '<td>'+gTag+'</td>'+
@@ -921,6 +1034,19 @@ function getFilteredList(now){
         });
     }
 
+    /* 排序锁定：若锁定中且 frozenOrder 存在，按快照顺序排 */
+    if(sortLocked && frozenOrder.length > 0){
+        const orderMap = new Map();
+        frozenOrder.forEach((id, idx) => orderMap.set(id, idx));
+        list.sort((a,b) => {
+            const ia = orderMap.has(a.id) ? orderMap.get(a.id) : 999999;
+            const ib = orderMap.has(b.id) ? orderMap.get(b.id) : 999999;
+            if(ia !== ib) return ia - ib;
+            return (b.utime||0) - (a.utime||0);
+        });
+        return list;
+    }
+
     if(sortMode === "editTime") list.sort((a,b) => (b.utime||0) - (a.utime||0));
     else if(sortMode === "remain") list.sort((a,b) => getRemain(a, now) - getRemain(b, now));
     else if(sortMode === "recoverTime") list.sort((a,b) => {
@@ -934,6 +1060,13 @@ function getFilteredList(now){
     return list;
 }
 
+/* 冻结当前顺序（用于排序锁定） */
+function freezeCurrentOrder(){
+    const now = Date.now();
+    const list = getFilteredList(now);
+    frozenOrder = list.map(p => p.id);
+}
+
 function render(){
     const now = Date.now();
     if(checkAutoLock(now)) saveLocal();
@@ -945,10 +1078,16 @@ function render(){
     const hintEl = $("filterHint");
     if(hasFilter){
         hintEl.classList.remove("hidden");
-        hintEl.innerHTML = '当前筛选：<b>'+list.length+'</b> 只（全库 '+petList.length+' 只）';
+        let extra = sortLocked ? ' · 🔒排序已锁定' : '';
+        hintEl.innerHTML = '当前筛选：<b>'+list.length+'</b> 只（全库 '+petList.length+' 只）'+extra;
     } else {
-        hintEl.classList.add("hidden");
-        hintEl.innerHTML = "";
+        if(sortLocked){
+            hintEl.classList.remove("hidden");
+            hintEl.innerHTML = '🔒 排序已锁定，数据修改不会自动重排。点顶部「↻ 应用排序」才会重排。';
+        } else {
+            hintEl.classList.add("hidden");
+            hintEl.innerHTML = "";
+        }
     }
 
     if(currentView === "card"){
@@ -961,11 +1100,42 @@ function render(){
         fillImgElements(tb);
         const allChecked = list.length > 0 && list.every(p => selectedIds.has(p.id));
         $("checkAll").checked = allChecked;
-    } else {
+    } else if(currentView === "dashboard"){
         renderDashboard();
+    } else if(currentView === "bench"){
+        renderBench(now);
     }
     updateBatchBar();
     updateFilterButtons();
+    updateBenchCount();
+}
+
+function updateBenchCount(){
+    const n = petList.filter(p => p.inBench).length;
+    $("benchCount").textContent = n > 0 ? " (" + n + ")" : "";
+}
+
+function renderBench(now){
+    const benchList = petList.filter(p => p.inBench);
+    const cont = $("benchContainer");
+    cont.innerHTML = "";
+    if(benchList.length === 0){
+        $("benchEmpty").classList.remove("hidden");
+        return;
+    }
+    $("benchEmpty").classList.add("hidden");
+    /* 按编辑时间倒序 */
+    benchList.sort((a,b) => (b.utime||0) - (a.utime||0));
+    benchList.forEach(p => {
+        const card = buildCard(p, now);
+        /* 工作台内卡片左上角加选中框 */
+        const chkWrap = document.createElement("label");
+        chkWrap.style.cssText = "position:absolute;top:8px;left:8px;z-index:2;background:#fff;border:1px solid #ddd;border-radius:4px;padding:2px 5px;cursor:pointer;font-size:12px";
+        chkWrap.innerHTML = '<input type="checkbox" class="bench-check" data-id="'+p.id+'"'+(benchSelectedIds.has(p.id)?" checked":"")+' style="margin:0 3px 0 0;vertical-align:middle">';
+        card.appendChild(chkWrap);
+        cont.appendChild(card);
+    });
+    fillImgElements(cont);
 }
 
 function updateBatchBar(){
@@ -986,7 +1156,7 @@ function updateFilterButtons(){
     });
 }
 
-/* ==================== CP 列折叠控制 ==================== */
+/* ==================== CP 列折叠 ==================== */
 function applyCpColVisibility(){
     const tbl = $("petTable");
     if(tbl) tbl.classList.toggle("hide-cp", !showCpCols);
@@ -996,6 +1166,29 @@ function applyCpColVisibility(){
 $("btnToggleCp").onclick = function(){
     showCpCols = !showCpCols;
     applyCpColVisibility();
+};
+
+/* ==================== 排序锁定 ==================== */
+$("sortLockChk").onchange = function(){
+    sortLocked = this.checked;
+    $("sortLockWrap").classList.toggle("locked", sortLocked);
+    if(sortLocked){
+        freezeCurrentOrder();
+    } else {
+        frozenOrder = [];
+    }
+    render();
+};
+$("btnApplySort").onclick = function(){
+    if(sortLocked){
+        freezeCurrentOrder();
+    }
+    render();
+    /* 视觉反馈 */
+    const btn = this;
+    const old = btn.textContent;
+    btn.textContent = "✓ 已重排";
+    setTimeout(() => { btn.textContent = old; }, 800);
 };
 
 /* ==================== 多选筛选面板 ==================== */
@@ -1100,6 +1293,19 @@ function closeFilterPanel(){
 
 /* ==================== 事件委托 ==================== */
 document.addEventListener("click", e => {
+    /* ⭐ 按钮 */
+    const starBtn = e.target.closest("[data-star]");
+    if(starBtn){
+        e.stopPropagation();
+        const id = starBtn.dataset.star;
+        const pet = petList.find(x => x.id === id);
+        if(pet){
+            pet.inBench = !pet.inBench;
+            if(!pet.inBench) benchSelectedIds.delete(id);
+            touchPet(pet); saveLocal(); render();
+        }
+        return;
+    }
     const wrap = e.target.closest(".avatar-wrap");
     if(wrap){
         const src = wrap.dataset.bigimg;
@@ -1138,6 +1344,13 @@ document.addEventListener("click", e => {
         if(chk.checked) selectedIds.add(id); else selectedIds.delete(id);
         updateBatchBar();
         const tr = chk.closest("tr"); if(tr) tr.classList.toggle("selected", chk.checked);
+        return;
+    }
+    /* 工作台内的复选框 */
+    const bchk = e.target.closest(".bench-check");
+    if(bchk){
+        const id = bchk.dataset.id;
+        if(bchk.checked) benchSelectedIds.add(id); else benchSelectedIds.delete(id);
         return;
     }
     const tagCell = e.target.closest(".tags-cell");
@@ -1195,8 +1408,9 @@ function uploadRowImage(pet, field){
             const nid = "img_" + genId();
             await saveImage(nid, blob);
             const old = getFieldValue(pet, field);
-            if(old && isIndexedImg(old)){ deleteImage(old).catch(()=>{}); forgetImgUrl(old); }
             setFieldValue(pet, field, nid);
+            /* 只有没其他宠物引用时才删旧图 */
+            if(old && isIndexedImg(old)) safeDeleteImg(old, pet.id);
             touchPet(pet); saveLocal(); render();
         }catch(err){ alert("图片处理失败：" + err.message); }
     };
@@ -1209,14 +1423,20 @@ document.addEventListener("keydown", e => { if(e.key === "Escape") $("imgPreview
 
 function deletePet(id){
     const p = petList.find(x => x.id === id);
-    if(p){
-        ["img","cp1.img","cp2.img"].forEach(f => {
-            const v = getFieldValue(p, f);
-            if(v && isIndexedImg(v)){ deleteImage(v).catch(()=>{}); forgetImgUrl(v); }
-        });
-    }
+    if(!p) return;
+    /* 先记录要删的图片 */
+    const imgsToCheck = [p.img, p.cp1 && p.cp1.img, p.cp2 && p.cp2.img].filter(Boolean);
+    /* 先从列表移除 */
     petList = petList.filter(x => x.id !== id);
     selectedIds.delete(id);
+    benchSelectedIds.delete(id);
+    /* 再检查每个图片是否还被引用 */
+    imgsToCheck.forEach(imgId => {
+        if(!isImgReferencedByOthers(imgId, null)){
+            deleteImage(imgId).catch(()=>{});
+            forgetImgUrl(imgId);
+        }
+    });
     saveLocal(); render();
 }
 function copyPet(id){
@@ -1228,6 +1448,7 @@ function copyPet(id){
     copy.name = (src.name||"未命名") + "（副本）";
     copy.isRunning = false; copy.startTs = null; copy.runStartRemain = null;
     copy.pausedAt = copy.totalMs || 0; copy.locked = false;
+    copy.inBench = false;   /* 副本不进工作台 */
     petList.push(copy);
     saveLocal(); render();
 }
@@ -1240,6 +1461,7 @@ document.querySelectorAll(".view-tab").forEach(tab => {
         $("cardView").classList.toggle("hidden", currentView !== "card");
         $("tableView").classList.toggle("hidden", currentView !== "table");
         $("dashboardView").classList.toggle("hidden", currentView !== "dashboard");
+        $("benchView").classList.toggle("hidden", currentView !== "bench");
         render();
     };
 });
@@ -1255,75 +1477,91 @@ $("batchClear").onclick = () => { selectedIds.clear(); render(); };
 $("batchDelete").onclick = () => {
     if(selectedIds.size === 0) return;
     if(!confirm("确定删除选中的 " + selectedIds.size + " 只宠物档案？不可恢复！")) return;
+    /* 先收集所有要检查的图片 */
+    const imgsToCheck = [];
     selectedIds.forEach(id => {
         const p = petList.find(x => x.id === id);
-        if(p) ["img","cp1.img","cp2.img"].forEach(f => {
-            const v = getFieldValue(p, f);
-            if(v && isIndexedImg(v)){ deleteImage(v).catch(()=>{}); forgetImgUrl(v); }
-        });
+        if(p){
+            if(p.img) imgsToCheck.push(p.img);
+            if(p.cp1 && p.cp1.img) imgsToCheck.push(p.cp1.img);
+            if(p.cp2 && p.cp2.img) imgsToCheck.push(p.cp2.img);
+        }
     });
+    /* 从列表中移除 */
     petList = petList.filter(p => !selectedIds.has(p.id));
+    selectedIds.forEach(id => benchSelectedIds.delete(id));
     selectedIds.clear();
+    /* 检查图片 */
+    imgsToCheck.forEach(imgId => {
+        if(!isImgReferencedByOthers(imgId, null)){
+            deleteImage(imgId).catch(()=>{});
+            forgetImgUrl(imgId);
+        }
+    });
     saveLocal(); render();
 };
 
-function refreshBmBreed(){
-    const cat = $("bmCat").value;
-    const sel = $("bmBreed");
-    sel.innerHTML = '<option value="">--</option>';
-    if(cat){
-        (breedMap[cat] || []).forEach(b => {
-            const o = document.createElement("option"); o.value = b; o.textContent = b; sel.appendChild(o);
+/* 工作台批量操作 */
+$("benchSelAll").onclick = () => {
+    petList.filter(p => p.inBench).forEach(p => benchSelectedIds.add(p.id));
+    renderBench(Date.now());
+};
+$("benchSelNone").onclick = () => {
+    benchSelectedIds.clear();
+    renderBench(Date.now());
+};
+document.querySelectorAll("[data-bench]").forEach(btn => {
+    btn.onclick = () => {
+        const mode = btn.dataset.bench;
+        if(benchSelectedIds.size === 0){
+            alert("请先在工作台内勾选宠物");
+            return;
+        }
+        const now = Date.now();
+        if(mode === "remove"){
+            benchSelectedIds.forEach(id => {
+                const p = petList.find(x => x.id === id);
+                if(p){ p.inBench = false; touchPet(p, now); }
+            });
+            benchSelectedIds.clear();
+            saveLocal(); render();
+            return;
+        }
+        let confirmMsg = "";
+        if(mode === "4h") confirmMsg = "把选中的宠物设为【4 小时恢复】？\n（会重置计时并立即开始倒计时）";
+        else if(mode === "144h-normal") confirmMsg = "把选中的宠物设为【144 小时恢复（普通）】？\n（会重置计时并立即开始倒计时）";
+        else if(mode === "144h-female") confirmMsg = "把选中的宠物设为【144 小时恢复（母宠·72h 后卡分娩）】？\n（母宠在剩余 72 小时时自动暂停并锁定待接生）";
+        if(!confirm(confirmMsg)) return;
+
+        benchSelectedIds.forEach(id => {
+            const p = petList.find(x => x.id === id);
+            if(!p) return;
+            if(mode === "4h"){
+                p.totalMs = hmToMs(4, 0);
+                p.timerMode = "normal";
+            } else if(mode === "144h-normal"){
+                p.totalMs = hmToMs(144, 0);
+                p.timerMode = "normal";
+            } else if(mode === "144h-female"){
+                p.totalMs = hmToMs(144, 0);
+                p.timerMode = "breedFemale";
+            }
+            p.pausedAt = p.totalMs;
+            p.isRunning = false;
+            p.startTs = null;
+            p.runStartRemain = null;
+            p.locked = false;
+            startTimer(p, now);
+            touchPet(p, now);
         });
-    }
-}
-$("bmCat").onchange = refreshBmBreed;
+        const count = benchSelectedIds.size;
+        benchSelectedIds.clear();
+        saveLocal(); render();
+        alert("已对 " + count + " 只宠物应用批量操作");
+    };
+});
 
-$("batchModify").onclick = () => {
-    if(selectedIds.size === 0) return;
-    $("bmCount").textContent = selectedIds.size;
-    const accSel = $("bmAcc"); accSel.innerHTML = '<option value="">--</option>';
-    accountOptions.forEach(a => {
-        const o = document.createElement("option"); o.value = a; o.textContent = a; accSel.appendChild(o);
-    });
-    const catSel = $("bmCat"); catSel.innerHTML = '<option value="">--</option>';
-    Object.keys(breedMap).forEach(c => {
-        const o = document.createElement("option"); o.value = c; o.textContent = c; catSel.appendChild(o);
-    });
-    $("bmBreed").innerHTML = '<option value="">--</option>';
-    $("bmAccEnable").checked = false;
-    $("bmCatEnable").checked = false;
-    $("bmBreedEnable").checked = false;
-    $("batchModifyModal").classList.remove("hidden");
-};
-$("bmCancel").onclick = () => $("batchModifyModal").classList.add("hidden");
-$("bmApply").onclick = () => {
-    const doAcc = $("bmAccEnable").checked;
-    const doCat = $("bmCatEnable").checked;
-    const doBreed = $("bmBreedEnable").checked;
-    if(!doAcc && !doCat && !doBreed){ alert("请至少勾选一个要修改的字段"); return; }
-    const accVal = $("bmAcc").value;
-    const catVal = $("bmCat").value;
-    const breedVal = $("bmBreed").value;
-    if(doAcc && !accVal){ alert("请选择要修改成的账号"); return; }
-    if(doCat && !catVal){ alert("请选择要修改成的品种大类"); return; }
-    if(doBreed && !doCat && !breedVal){ alert("请选择要修改成的品种"); return; }
-    const now = Date.now();
-    let count = 0;
-    selectedIds.forEach(id => {
-        const p = petList.find(x => x.id === id);
-        if(!p) return;
-        if(doAcc) p.account = accVal;
-        if(doCat){ p.category = catVal; p.breed = breedVal || ""; }
-        else if(doBreed){ p.breed = breedVal; }
-        touchPet(p, now); count++;
-    });
-    $("batchModifyModal").classList.add("hidden");
-    saveLocal(); render();
-    alert("已修改 " + count + " 只宠物");
-};
-
-/* ==================== 管理账号/品种（含排序） ==================== */
+/* ==================== 管理账号/品种 ==================== */
 function moveInArray(arr, fromIdx, toIdx){
     if(toIdx < 0 || toIdx >= arr.length) return false;
     const [item] = arr.splice(fromIdx, 1);
@@ -1537,13 +1775,43 @@ $("btnManageFeat").onclick = () => { renderFeatManage(); $("featManageModal").cl
 $("closeFeatManage").onclick = () => $("featManageModal").classList.add("hidden");
 
 /* ==================== 编辑弹窗 ==================== */
-function renderCategorySel(selected){
-    const sel = $("selCategory");
-    sel.innerHTML = '<option value="">--请选择--</option>';
-    Object.keys(breedMap).forEach(c => {
-        const o = document.createElement("option"); o.value = c; o.textContent = c;
-        if(c === selected) o.selected = true;
-        sel.appendChild(o);
+function renderAccountPicker(){
+    const wrap = $("accountPicker");
+    wrap.innerHTML = "";
+    if(accountOptions.length === 0){
+        wrap.innerHTML = '<div class="chip-empty">还没有账号，可在下方输入新账号</div>';
+        return;
+    }
+    accountOptions.forEach(a => {
+        const item = document.createElement("div");
+        item.className = "chip-pick-item" + (a === currentEditAccount ? " selected" : "");
+        item.textContent = a;
+        item.onclick = () => {
+            currentEditAccount = a;
+            $("txtAccount").value = "";
+            renderAccountPicker();
+        };
+        wrap.appendChild(item);
+    });
+}
+function renderCategoryPicker(){
+    const wrap = $("categoryPicker");
+    wrap.innerHTML = "";
+    const keys = Object.keys(breedMap);
+    if(keys.length === 0){
+        wrap.innerHTML = '<div class="chip-empty">还没有品种大类</div>';
+        return;
+    }
+    keys.forEach(c => {
+        const item = document.createElement("div");
+        item.className = "chip-pick-item" + (c === currentEditCategory ? " selected" : "");
+        item.textContent = c;
+        item.onclick = () => {
+            currentEditCategory = c;
+            renderBreedSel(c, "");
+            renderCategoryPicker();
+        };
+        wrap.appendChild(item);
     });
 }
 function renderBreedSel(category, selected){
@@ -1556,16 +1824,6 @@ function renderBreedSel(category, selected){
         sel.appendChild(o);
     });
 }
-function renderAccountSel(selected){
-    const sel = $("selAccount");
-    sel.innerHTML = '<option value="">--请选择或输入--</option>';
-    accountOptions.forEach(a => {
-        const o = document.createElement("option"); o.value = a; o.textContent = a;
-        if(a === selected) o.selected = true;
-        sel.appendChild(o);
-    });
-}
-$("selCategory").onchange = () => renderBreedSel($("selCategory").value, "");
 
 function setEditGender(g){
     currentEditGender = (g === "f") ? "f" : "m";
@@ -1578,6 +1836,47 @@ $("genderPick").addEventListener("click", e => {
     if(!opt) return;
     setEditGender(opt.dataset.gender);
 });
+
+/* 总时长快捷按钮 */
+document.querySelectorAll(".quick-time button").forEach(btn => {
+    btn.onclick = () => {
+        const h = Number(btn.dataset.quick);
+        $("tHour").value = h;
+        $("tMinute").value = 0;
+        /* 触发时间变更标记 */
+        if(editId !== null){
+            timeEditedByUser = String($("tHour").value) !== editOrigH || String($("tMinute").value) !== editOrigM;
+        }
+    };
+});
+
+/* 预计配对时间：天数换算 */
+function setupPairTimeCalc(prefix){
+    const dtInput = $(prefix + "PairTime");
+    const daysInput = $(prefix + "Days");
+    const hoursInput = $(prefix + "Hours");
+    $(prefix + "CalcBtn").onclick = () => {
+        const d = Number(daysInput.value || 0);
+        const h = Number(hoursInput.value || 0);
+        if(d === 0 && h === 0){ alert("请输入天数或小时数"); return; }
+        const target = Date.now() + d*86400000 + h*3600000;
+        dtInput.value = toLocalInputVal(new Date(target).toISOString());
+    };
+    $(prefix + "BackBtn").onclick = () => {
+        const v = dtInput.value;
+        if(!v){ alert("请先选择预计配对时间"); return; }
+        const t = new Date(v).getTime();
+        if(isNaN(t)){ alert("时间格式不对"); return; }
+        let diff = t - Date.now();
+        if(diff < 0){ alert("该时间已过"); return; }
+        const d = Math.floor(diff / 86400000);
+        const h = Math.floor((diff % 86400000) / 3600000);
+        daysInput.value = d;
+        hoursInput.value = h;
+    };
+}
+setupPairTimeCalc("cp1");
+setupPairTimeCalc("cp2");
 
 function setTimeHint(p){
     const h = $("timeStatusHint");
@@ -1604,12 +1903,14 @@ function openEdit(pid){
     pendingCp1Blob = null; pendingCp1Cleared = false;
     pendingCp2Blob = null; pendingCp2Cleared = false;
     timeEditedByUser = false; editOrigH = ""; editOrigM = "";
+    currentEditAccount = ""; currentEditCategory = "";
     $("editModal").classList.remove("hidden");
     $("modalTitle").textContent = pid ? "编辑宠物档案" : "新增宠物档案";
     $("btnDel").classList.toggle("hidden", !pid);
 
     ["petImgUrl","txtAccount","petName","petNote",
-     "cp1Name","cp2Name","cp1PairTime","cp2PairTime"].forEach(id => $(id).value = "");
+     "cp1Name","cp2Name","cp1PairTime","cp2PairTime",
+     "cp1Days","cp1Hours","cp2Days","cp2Hours"].forEach(id => { if($(id)) $(id).value = ""; });
     $("petTags").value = "";
     $("petFeatures").value = "";
     setEditGender("m");
@@ -1620,13 +1921,15 @@ function openEdit(pid){
     showPreview("cp2PreviewWrap","cp2Preview", "");
     updatePasteZoneState("cp1PasteZone", false);
     updatePasteZoneState("cp2PasteZone", false);
-    renderAccountSel(""); renderCategorySel(""); renderBreedSel("", "");
+    renderAccountPicker(); renderCategoryPicker(); renderBreedSel("", "");
     setTimeHint(null);
 
     if(pid){
         const p = petList.find(x => x.id === pid);
         if(!p) return;
-        $("txtAccount").value = p.account || "";
+        currentEditAccount = p.account || "";
+        currentEditCategory = p.category || "";
+        $("txtAccount").value = "";
         $("petName").value = p.name || "";
         setEditGender(p.gender || "m");
         $("petTags").value = (p.tags||[]).join("\n");
@@ -1637,8 +1940,7 @@ function openEdit(pid){
         const hV = Math.floor(totalMin/60), mV = totalMin % 60;
         $("tHour").value = hV; $("tMinute").value = mV;
         editOrigH = String(hV); editOrigM = String(mV);
-        renderAccountSel(p.account || "");
-        renderCategorySel(p.category || "");
+        renderAccountPicker(); renderCategoryPicker();
         renderBreedSel(p.category || "", p.breed || "");
         const cp1 = p.cp1 || {}, cp2 = p.cp2 || {};
         $("cp1Name").value = cp1.name || "";
@@ -1685,6 +1987,7 @@ function closeEdit(){
     pendingCp1Blob = null; pendingCp1Cleared = false;
     pendingCp2Blob = null; pendingCp2Cleared = false;
     timeEditedByUser = false; editOrigH = ""; editOrigM = "";
+    currentEditAccount = ""; currentEditCategory = "";
 }
 $("formImgPreview").addEventListener("click", function(){ if(this.src) openBigPreview(this.src); });
 $("cp1Preview").addEventListener("click", function(){ if(this.src) openBigPreview(this.src); });
@@ -1782,8 +2085,9 @@ $("cp2Clear").onclick = () => {
 };
 
 $("btnSave").onclick = async () => {
-    const accountVal = $("selAccount").value.trim() || $("txtAccount").value.trim();
-    const categoryVal = $("selCategory").value.trim();
+    const txtAcc = $("txtAccount").value.trim();
+    const accountVal = txtAcc || currentEditAccount;
+    const categoryVal = currentEditCategory;
     const breedVal = $("selBreed").value.trim() || $("txtBreed").value.trim();
     const nameVal = $("petName").value.trim() || "未命名";
     const genderVal = currentEditGender;
@@ -1835,7 +2139,6 @@ $("btnSave").onclick = async () => {
             if(oldCp2Img && isIndexedImg(oldCp2Img)) delImgs.push(oldCp2Img);
         } else finalCp2Img = oldCp2Img || "";
     } catch(err){ alert("图片保存失败：" + err.message); return; }
-    delImgs.forEach(id => { deleteImage(id).catch(()=>{}); forgetImgUrl(id); });
 
     if(accountVal && !accountOptions.includes(accountVal)) accountOptions.push(accountVal);
     if(categoryVal && !(categoryVal in breedMap)) breedMap[categoryVal] = [];
@@ -1859,6 +2162,8 @@ $("btnSave").onclick = async () => {
                 updated.runStartRemain = null; updated.locked = false;
             }
             petList[idx] = updated;
+            /* 检查旧图片是否还被其他宠物引用 */
+            delImgs.forEach(imgId => safeDeleteImg(imgId, editId));
         }
     } else {
         petList.push({
@@ -1867,7 +2172,8 @@ $("btnSave").onclick = async () => {
             name: nameVal, gender: genderVal, tags: tagsArr, features: featArr,
             cp1, cp2, timerMode: tMode,
             totalMs, pausedAt: totalMs, isRunning: false, startTs: null,
-            runStartRemain: null, locked: false, note: noteVal
+            runStartRemain: null, locked: false, note: noteVal,
+            inBench: false
         });
     }
     closeEdit(); saveLocal(); render();
@@ -1932,7 +2238,7 @@ $("btnExport").onclick = async () => {
     const blob = new Blob([JSON.stringify({pets:petList, accounts:accountOptions, breedMap, featureMap, images:imgMap})], {type:"application/json"});
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "pet-backup-v21.json";
+    a.download = "pet-backup-v22.json";
     a.click();
 };
 
