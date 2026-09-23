@@ -222,6 +222,11 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 
 .compat-warn{background:#fff3cd;border:1px solid #ffc107;color:#856404;padding:12px 16px;border-radius:8px;margin:12px;font-size:14px;line-height:1.7}
 .compat-warn b{color:#a06000}
+
+.hint-block{font-size:12px;color:#666;background:#f8f9fb;padding:10px 12px;border-radius:6px;margin-bottom:8px;line-height:1.8}
+.hint-block code{background:#eef3fa;padding:1px 5px;border-radius:3px;font-family:Consolas,Monaco,monospace;color:#3070ee}
+.hint-block .warn-text{color:#c82424;font-weight:500}
+.hint-block .title{font-weight:600;color:#444;margin-bottom:4px;display:block}
 </style>
 </head>
 <body>
@@ -438,7 +443,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 </div></div>
 
 <!-- 批量新建宠物 -->
-<div class="modal hidden" id="batchAddModal"><div class="modal-box" style="max-width:640px">
+<div class="modal hidden" id="batchAddModal"><div class="modal-box" style="max-width:680px">
 <div class="modal-header">
 <h3>⚡ 批量新建宠物</h3>
 <div class="modal-header-btns">
@@ -453,22 +458,32 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <label class="chk-label"><input type="radio" name="batchMode" value="simple" checked> 简单模式（一行只填昵称，其他字段用默认值）</label>
 </div>
 <div class="form-row">
-<label class="chk-label"><input type="radio" name="batchMode" value="detail"> 详细模式（一行 5 个字段，逗号分隔）</label>
+<label class="chk-label"><input type="radio" name="batchMode" value="detail"> 详细模式（固定 5 段，逗号分隔）</label>
 </div>
-<div id="batchHintSimple" style="font-size:12px;color:#888;background:#f8f9fb;padding:8px;border-radius:6px;margin-bottom:8px">
-  示例：<br>
-  小白<br>
-  小黄<br>
-  小灰<br>
-  <br>默认值：性别公、账号默认第一个、品种大类默认第一个、时长 0 小时。创建后可在表格里快速改。
+<div id="batchHintSimple" class="hint-block">
+  <span class="title">简单模式示例（一行一个昵称即可）：</span>
+  <code>小白</code><br>
+  <code>小黄</code><br>
+  <code>小灰</code><br>
+  <br>默认值：性别公、账号取第一个、品种大类取第一个、时长 0 小时（空闲）。<br>创建完成后可在表格视图里快速修改。
 </div>
-<div id="batchHintDetail" class="hidden" style="font-size:12px;color:#888;background:#f8f9fb;padding:8px;border-radius:6px;margin-bottom:8px">
-  格式：<b>昵称, 性别, 账号, 品种大类/品种, 小时数</b><br>
-  示例：<br>
-  小白, 母, 账号A, 猫猫/英短金渐层, 144<br>
-  小黄, 公, 账号A, 猫猫/英短金渐层, 4<br>
-  小灰, 母, 账号B, 狐狸/沙之狐, 72<br>
-  <br>性别填"公"或"母"；账号可以是不存在的（会自动新建）；品种大类/品种用斜杠分隔。
+<div id="batchHintDetail" class="hint-block hidden">
+  <span class="title">详细模式：固定 5 段，逗号分隔</span>
+  <code>昵称, 性别, 账号, 品种大类/品种, 小时数</code>
+  <br>
+  <br><b>多账号用户示例：</b><br>
+  <code>小白, 母, 账号A, 猫猫/英短金渐层, 144</code><br>
+  <code>小黄, 公, 账号A, 猫猫/英短金渐层, 4</code><br>
+  <code>小灰, 母, 账号B, 狐狸/沙之狐, 72</code>
+  <br>
+  <br><b>单账号用户示例（账号段直接填那个账号名）：</b><br>
+  <code>小白, 母, 我的账号, 猫猫/英短金渐层, 144</code><br>
+  <code>小黄, 公, 我的账号, 猫猫/英短金渐层, 4</code>
+  <br>
+  <br><span class="warn-text">⚠️ 5 段都要写，逗号不能省。</span>如果某个字段想留空，<b>逗号也要保留</b>，例如：<br>
+  <code>小白, 母, , 猫猫/英短金渐层, 144</code>（账号留空，但保留两个逗号）
+  <br>
+  <br>时长支持 <code>144</code> / <code>144小时</code> / <code>144h</code> 三种写法。
 </div>
 <textarea id="batchAddText" rows="12" placeholder="一行一只宠物..." style="width:100%;font-family:Consolas,Monaco,monospace;font-size:13px;line-height:1.6"></textarea>
 <div style="font-size:12px;color:#888;margin-top:6px">提示：可以先在电脑上用 Excel/记事本整理好，再粘贴进来。</div>
@@ -514,7 +529,8 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
   <b>建议：</b><br>
   · 首次迁移到新设备：选"全部 + 含图片"<br>
   · 日常增量备份：选"最近改动过的 + 不含图片"<br>
-  · 两台设备间同步：导出最近改动 + 不含图片，然后到另一台设备用"智能合并"导入
+  · 两台设备间同步：导出最近改动 + 不含图片，然后到另一台设备用"智能合并"导入<br>
+  <br><span style="color:#a06080">iPhone/iPad 用户：导出后请在「文件」App →「下载」文件夹里查找。</span>
 </div>
 </div></div>
 
@@ -3096,6 +3112,7 @@ $("batchAddApply").onclick = () => {
             });
             created++;
         } else {
+            /* 固定 5 段：昵称, 性别, 账号, 品种大类/品种, 小时数 */
             const parts = line.split(/[,，]/).map(s => s.trim());
             if(parts.length < 1 || !parts[0]){
                 errors.push("第 " + (i+1) + " 行：昵称为空");
@@ -3120,7 +3137,9 @@ $("batchAddApply").onclick = () => {
                 if(!(category in breedMap)) breedMap[category] = [];
                 if(breed && breedMap[category].indexOf(breed) === -1) breedMap[category].push(breed);
             }
-            const hours = Number(parts[4] || 0);
+            /* 时长：剥离单位后取数字 */
+            const rawHours = String(parts[4] || "0").trim();
+            const hours = Number(rawHours.replace(/[^\d.]/g, "")) || 0;
             const totalMs = hmToMs(hours, 0);
             petList.push({
                 id: genId(), ctime: now, utime: now,
@@ -3152,7 +3171,6 @@ $("btnExport").onclick = () => {
     $("exportSelectedCount").textContent = selectedCount;
     $("exportScope").value = "all";
     $("exportRecentDaysWrap").classList.add("hidden");
-    /* 重置 recent 计数显示 */
     const opt = $("exportScope").querySelector('option[value="recent"]');
     opt.textContent = "最近改动过的";
     $("exportModal").classList.remove("hidden");
@@ -3222,7 +3240,21 @@ $("exportApply").onclick = async () => {
         const scopeTag = scope === "recent" ? ("recent" + $("exportRecentDays").value + "d") : scope;
         a.href = URL.createObjectURL(blob);
         a.download = "绒光宠物录-backup-" + scopeTag + "-" + pets.length + "只-" + stamp + (withImages ? "" : "-无图") + ".json";
+        a.style.display = "none";
+        document.body.appendChild(a);
         a.click();
+        /* iOS Safari 和部分手机浏览器要求 <a> 挂到 DOM 里再 click，并且延迟清理 */
+        setTimeout(() => {
+            try{ document.body.removeChild(a); }catch(e){}
+            try{ URL.revokeObjectURL(a.href); }catch(e){}
+        }, 2000);
+
+        /* iOS 用户提示去哪里找文件 */
+        if(/iPad|iPhone|iPod/.test(navigator.userAgent)){
+            setTimeout(() => {
+                alert("文件已开始下载。\niPhone/iPad 用户请在「文件」App → 「下载」文件夹里查找。");
+            }, 800);
+        }
     }catch(e){
         alert("导出失败：" + e.message);
     }finally{
@@ -3262,7 +3294,6 @@ $("importApply").onclick = () => {
             if(mode === "replace"){
                 confirmMsg = "覆盖导入将清空现有 " + petList.length + " 只宠物，用备份文件里的 " + migrated.length + " 只替换。\n\n确认继续？";
             } else {
-                /* 智能合并：按 utime 预估 */
                 const localMap = new Map();
                 petList.forEach(p => localMap.set(p.id, p.utime || 0));
                 let willAdd = 0, willUpdate = 0, willKeep = 0;
@@ -3296,7 +3327,6 @@ $("importApply").onclick = () => {
             ));
             imgIds.forEach(id => tasks.push(base64ToBlob(images[id]).then(blob => saveImage(id, blob)).catch(()=>{})));
             Promise.all(tasks).then(() => {
-                /* 合并或覆盖 */
                 let stat = { added: 0, updated: 0, kept: 0 };
                 if(mode === "replace"){
                     petList = migrated;
@@ -3312,7 +3342,6 @@ $("importApply").onclick = () => {
                             const backupTime = mp.utime || 0;
                             const localTime = exist.utime || 0;
                             if(backupTime > localTime){
-                                /* 备份更新：用备份，但备份没图时保留本地图 */
                                 const merged = Object.assign({}, mp);
                                 if(!merged.img && exist.img) merged.img = exist.img;
                                 if(merged.cp1 && !merged.cp1.img && exist.cp1 && exist.cp1.img) merged.cp1.img = exist.cp1.img;
@@ -3325,7 +3354,6 @@ $("importApply").onclick = () => {
                         }
                     });
                 }
-                /* 账号 / 品种 / 特征：合并模式做并集，覆盖模式直接替换 */
                 if(mode === "replace"){
                     accountOptions = Array.isArray(obj.accounts) ? obj.accounts : [];
                     if(obj.breedMap && typeof obj.breedMap === "object") breedMap = obj.breedMap;
