@@ -3164,16 +3164,35 @@ $("batchAddApply").onclick = () => {
 };
 
 /* ==================== 导出 ==================== */
-$("btnExport").onclick = () => {
-    const filteredCount = getFilteredList().length;
-    const selectedCount = selectedIds.size;
-    $("exportFilteredCount").textContent = filteredCount;
-    $("exportSelectedCount").textContent = selectedCount;
-    $("exportScope").value = "all";
-    $("exportRecentDaysWrap").classList.add("hidden");
-    const opt = $("exportScope").querySelector('option[value="recent"]');
-    opt.textContent = "最近改动过的";
-    $("exportModal").classList.remove("hidden");
+$("btnExport").onclick = function(){
+    try{
+        const filteredCount = (typeof getFilteredList === "function") ? getFilteredList().length : 0;
+        const selectedCount = selectedIds ? selectedIds.size : 0;
+
+        const elF = $("exportFilteredCount");
+        const elS = $("exportSelectedCount");
+        if(elF) elF.textContent = filteredCount;
+        if(elS) elS.textContent = selectedCount;
+
+        const scopeSel = $("exportScope");
+        if(!scopeSel){ alert("BUG: 找不到 exportScope"); return; }
+        scopeSel.value = "all";
+        const opt = scopeSel.querySelector('option[value="recent"]');
+        if(opt) opt.textContent = "最近改动过的";
+
+        const wrap = $("exportRecentDaysWrap");
+        if(wrap) wrap.classList.add("hidden");
+
+        const modal = $("exportModal");
+        if(!modal){ alert("BUG: 找不到 exportModal，弹窗无法显示"); return; }
+        modal.classList.remove("hidden");
+        // 显示后立刻确认一下
+        if(getComputedStyle(modal).display === "none"){
+            modal.style.display = "flex";
+        }
+    }catch(e){
+        alert("点击导出按钮出错：\n\n" + e.message);
+    }
 };
 $("exportScope").onchange = function(){
     const isRecent = this.value === "recent";
