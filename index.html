@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>绒光宠物录 · 宠物繁育计时工具</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -132,10 +133,12 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .chip-pick-item:hover{border-color:#3070ee;background:#f4f9ff}
 .chip-pick-item.selected{background:#3070ee;border-color:#3070ee;color:#fff;font-weight:500}
 .chip-empty{color:#999;font-size:12px;padding:6px}
+.chip-add-btn{padding:3px 12px;border-radius:14px;border:1.5px dashed #b8c8dc;cursor:pointer;font-size:12px;background:#fff;color:#5a7ba0}
+.chip-add-btn:hover{border-color:#3070ee;color:#3070ee;background:#f4f9ff}
 .quick-time{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:5px}
 .quick-time button{padding:4px 12px;font-size:12px;border:1px solid #cbd5e1;border-radius:14px;background:#fff;color:#444}
 .quick-time button:hover{background:#e8f0ff;border-color:#3070ee;color:#3070ee}
-.sort-lock{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#666;background:#fff;border:1px solid #cbd5e1;border-radius:6px;padding:5px 10px}
+.sort-lock{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#666;background:#fff;border:1px solid #cbd5e1;border-radius:6px;padding:5px 10px;cursor:pointer}
 .sort-lock.locked{background:#fff8e6;border-color:#f0b840;color:#a06a10}
 .sort-lock input{margin:0}
 .bench-actions{display:flex;gap:6px;flex-wrap:wrap;padding:8px 10px;background:#fffaf0;border:1px solid #f0e0c0;border-radius:8px;margin-bottom:8px;align-items:center;font-size:13px}
@@ -145,7 +148,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .img-input-box{background:#fffdf3;border:1.5px solid #f0c870;border-radius:6px;padding:8px}
 .img-input-box label{color:#a06a10;font-weight:500}
 .img-input-box input[type="text"]{background:#fff;border-color:#e8c060}
-.feat-quick-area{margin-top:6px;border:1px solid #e3e8ef;border-radius:6px;padding:8px;background:#fafbfd;max-height:220px;overflow:auto}
+.feat-quick-area{margin-top:6px;border:1px solid #e3e8ef;border-radius:6px;padding:8px;background:#fafbfd;max-height:180px;overflow:auto}
 .feat-quick-group{margin-bottom:8px}
 .feat-quick-group:last-child{margin-bottom:0}
 .feat-quick-title{font-size:12px;color:#666;margin-bottom:4px;font-weight:500}
@@ -169,16 +172,16 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .btn-undo{background:#fff8e6;border-color:#f0b840;color:#a06a10}
 .btn-undo:hover:not(:disabled){background:#ffefc0}
 .btn-undo:disabled{opacity:.4;cursor:not-allowed;background:#fff;border-color:#ddd;color:#aaa}
+.btn-clear-filter{background:#fff0f0;border-color:#ffc8c8;color:#c82424}
+.btn-clear-filter:hover{background:#ffe0e0;border-color:#ff9090}
 .backup-banner{background:linear-gradient(135deg,#fff8e6 0%,#fff2d8 100%);border-bottom:1px solid #f0e0a0;padding:8px 12px;font-size:12px;color:#8a6a10;display:flex;align-items:center;gap:8px;justify-content:center;position:relative}
 .backup-banner .close-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#8a6a10;font-size:18px;cursor:pointer;padding:0 6px;line-height:1}
 .backup-banner .close-btn:hover{color:#c82424}
 
-/* 猫爪按钮：粉圈 + emoji 猫爪 */
 .paw-btn{position:fixed;right:20px;bottom:20px;width:52px;height:52px;border-radius:50%;background:#fff;border:2px solid #f5c8d8;box-shadow:0 3px 12px rgba(245,200,216,.5);cursor:pointer;z-index:700;display:flex;align-items:center;justify-content:center;transition:.2s;padding:0;opacity:.9;font-size:24px;line-height:1}
 .paw-btn:hover{opacity:1;border-color:#e9a8be;box-shadow:0 5px 18px rgba(245,200,216,.75);transform:scale(1.05)}
 .paw-btn:active{transform:scale(.95)}
-.paw-menu{position:fixed;right:20px;bottom:84px;background:#fff;border:1px solid #e8e8e8;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.12);z-index:701;padding:6px;min-width:170px;display:flex;flex-direction:column;gap:2px;animation:pawIn .18s ease-out}
-@keyframes pawIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.paw-menu{position:fixed;right:20px;bottom:84px;background:#fff;border:1px solid #e8e8e8;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.12);z-index:701;padding:6px;min-width:170px;display:flex;flex-direction:column;gap:2px}
 .paw-menu button{background:transparent;border:none;text-align:left;padding:10px 14px;font-size:14px;border-radius:8px;color:#444;cursor:pointer;display:flex;align-items:center;gap:10px}
 .paw-menu button:hover{background:#fff0f5}
 .paw-menu button .ico{font-size:16px;width:20px;text-align:center}
@@ -193,8 +196,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .tip-amt .emoji{font-size:20px}
 .tip-amt .price{font-weight:bold;color:#4080ff;font-size:13px}
 .tip-amt.active .price{color:#3070ee}
-.tip-qr-panel{margin:12px 0;padding:12px;background:#f8f9fb;border-radius:10px;border:1px solid #e8e8ee;position:relative;animation:tipIn .2s ease-out}
-@keyframes tipIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.tip-qr-panel{margin:12px 0;padding:12px;background:#f8f9fb;border-radius:10px;border:1px solid #e8e8ee;position:relative}
 .tip-qr-panel.hidden{display:none}
 .tip-qr-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13px;color:#555}
 .tip-qr-header .tip-qr-close{background:transparent;border:none;font-size:20px;color:#999;cursor:pointer;padding:0 6px;line-height:1}
@@ -212,15 +214,25 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .feedback-row .q-btn{width:100%;padding:10px;font-size:14px;background:#4080ff;color:#fff;border-color:#3070ee}
 .feedback-row .q-btn:hover{background:#3070ee}
 
-/* ========== 使用教程蒙版 ========== */
-.tour-highlight{position:fixed;border-radius:10px;box-shadow:0 0 0 4px rgba(245,200,216,.9), 0 0 0 9999px rgba(0,0,0,.55);z-index:2000;pointer-events:none;transition:left .3s ease, top .3s ease, width .3s ease, height .3s ease}
-.tour-tip{position:fixed;z-index:2001;background:#fff;padding:14px 18px;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.18);max-width:320px;font-size:14px;line-height:1.6;transition:left .25s ease, top .25s ease}
+.tour-highlight{position:fixed;border-radius:10px;box-shadow:0 0 0 4px rgba(245,200,216,.9), 0 0 0 9999px rgba(0,0,0,.55);z-index:2000;pointer-events:none}
+.tour-tip{position:fixed;z-index:2001;background:#fff;padding:14px 18px;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.18);max-width:320px;font-size:14px;line-height:1.6}
 .tour-tip::before{content:"";position:absolute;width:0;height:0;border:8px solid transparent}
 .tour-tip.arrow-top::before{top:-16px;left:30px;border-bottom-color:#fff}
 .tour-tip.arrow-bottom::before{bottom:-16px;left:30px;border-top-color:#fff}
+
+.compat-warn{background:#fff3cd;border:1px solid #ffc107;color:#856404;padding:12px 16px;border-radius:8px;margin:12px;font-size:14px;line-height:1.7}
+.compat-warn b{color:#a06000}
 </style>
 </head>
 <body>
+
+<div id="compatWarn" class="compat-warn hidden">
+  <b>⚠️ 检测到你的浏览器版本较旧</b><br>
+  当前使用的浏览器可能无法正常使用本工具。请改用以下浏览器打开：<br>
+  · 手机：系统自带浏览器（如华为/小米/OPPO/VIVO 自带浏览器）、Chrome、Safari、Edge、夸克<br>
+  · 电脑：Chrome、Edge、Firefox、Safari<br>
+  <br>如果是通过微信/QQ 打开的，请点右上角"…" → "在浏览器中打开"。
+</div>
 
 <div class="backup-banner" id="backupBanner" style="display:none">
   <span>💾 数据保存在你本机浏览器里，建议定期导出备份，换设备时用导入恢复</span>
@@ -231,14 +243,11 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 
 <div class="top-bar">
 <button class="primary" id="btnAdd">➕新增宠物</button>
+<button id="btnBatchAdd" style="background:#f0f7ff;border-color:#a8c8f0;color:#3070ee">⚡批量新建</button>
 <button id="btnExport">💾导出备份</button>
 <button id="btnImport">📂导入备份</button>
 <button id="btnManageOpt">⚙️管理账号/品种</button>
 <button id="btnManageFeat">🎨管理特征</button>
-<label class="sort-lock" id="sortLockWrap" title="锁定后，数据修改不会自动重排顺序。改完后点「应用排序」才生效。">
-    <input type="checkbox" id="sortLockChk"> 🔒 锁定排序
-</label>
-<button id="btnApplySort" style="font-size:12px;padding:5px 10px">↻ 应用排序</button>
 <button id="btnUndo" class="btn-undo" style="font-size:12px;padding:5px 10px" disabled>↶ 撤回</button>
 </div>
 
@@ -260,12 +269,16 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <button class="mf-btn" data-type="breed">品种</button>
 <button class="mf-btn" data-type="account">账号</button>
 <button class="mf-btn" data-type="feature">特征</button>
+<button id="btnClearFilter" class="btn-clear-filter" style="font-size:12px;padding:5px 10px" title="一键清除所有筛选条件">🗑️ 清除筛选</button>
 <select id="sortModeSel">
 <option value="editTime">排序：编辑时间</option>
 <option value="remain">排序：剩余时间</option>
 <option value="recoverTime">排序：预计恢复时间</option>
 <option value="pairTime">排序：预计配对时间</option>
 </select>
+<label class="sort-lock" id="sortLockWrap" title="勾选后，编辑宠物时列表顺序不会自动重排">
+    <input type="checkbox" id="sortLockChk"> 🔒 锁定排序
+</label>
 </div>
 
 <div class="filter-hint hidden" id="filterHint"></div>
@@ -346,6 +359,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 
 <div class="img-preview-modal" id="imgPreviewModal"><img id="previewBigImg"></div>
 
+<!-- 管理账号/品种 -->
 <div class="modal hidden" id="optManageModal"><div class="modal-box" style="max-width:720px">
 <h3>管理账号 / 品种层级</h3>
 <div style="font-size:12px;color:#666;margin-top:4px">用 ↑ ↓ 调整顺序，顺序会影响编辑宠物档案时的下拉框展示顺序。</div>
@@ -368,6 +382,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <div style="margin-top:12px;text-align:right"><button id="closeOptManage">关闭</button></div>
 </div></div>
 
+<!-- 管理特征 -->
 <div class="modal hidden" id="featManageModal"><div class="modal-box" style="max-width:780px">
 <div class="modal-header">
 <h3>管理宠物特征</h3>
@@ -375,15 +390,13 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <button id="closeFeatManage">关闭</button>
 </div>
 </div>
-<div style="font-size:12px;color:#666;margin-bottom:8px">
-  按品种大类分类。改名时若目标名已存在，会询问是否合并（把旧名替换为新名）。
-</div>
+<div style="font-size:12px;color:#666;margin-bottom:8px">按品种大类分类。改名时若目标名已存在，会询问是否合并。</div>
 <div class="feat-cat-tabs" id="featCatTabs"></div>
 <div class="feat-batch-bar">
   <label><input type="checkbox" id="featSelectAll"> 全选本分类</label>
   <span class="sel-count" id="featSelCount">已选 0 项</span>
   <span class="spacer"></span>
-  <select id="featMoveTarget" title="移动到目标分类"></select>
+  <select id="featMoveTarget"></select>
   <button class="ok" id="featBatchMove">移动到...</button>
   <button class="danger" id="featBatchDelete">删除选中</button>
 </div>
@@ -395,6 +408,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 </div>
 </div></div>
 
+<!-- 批量修改 -->
 <div class="modal hidden" id="batchModifyModal"><div class="modal-box" style="max-width:520px">
 <div class="modal-header">
 <h3>批量修改（<span id="bmCount">0</span> 只）</h3>
@@ -403,23 +417,11 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <button id="bmCancel">取消</button>
 </div>
 </div>
-<div style="font-size:12px;color:#666;margin-bottom:8px">
-  只对勾选的字段生效。选择一个值时会自动勾选对应字段。
-</div>
-<div class="form-row">
-<label class="chk-label"><input type="checkbox" id="bmAccEnable"> 修改账号</label>
-<select id="bmAcc" style="width:100%;margin-top:4px"></select>
-</div>
-<div class="form-row">
-<label class="chk-label"><input type="checkbox" id="bmCatEnable"> 修改品种大类</label>
-<select id="bmCat" style="width:100%;margin-top:4px"></select>
-</div>
-<div class="form-row">
-<label class="chk-label"><input type="checkbox" id="bmBreedEnable"> 修改品种</label>
-<select id="bmBreed" style="width:100%;margin-top:4px"></select>
-</div>
-<div class="form-row">
-<label class="chk-label"><input type="checkbox" id="bmStatusEnable"> 修改状态/计时</label>
+<div style="font-size:12px;color:#666;margin-bottom:8px">只对勾选的字段生效。选择一个值时会自动勾选对应字段。</div>
+<div class="form-row"><label class="chk-label"><input type="checkbox" id="bmAccEnable"> 修改账号</label><select id="bmAcc" style="width:100%;margin-top:4px"></select></div>
+<div class="form-row"><label class="chk-label"><input type="checkbox" id="bmCatEnable"> 修改品种大类</label><select id="bmCat" style="width:100%;margin-top:4px"></select></div>
+<div class="form-row"><label class="chk-label"><input type="checkbox" id="bmBreedEnable"> 修改品种</label><select id="bmBreed" style="width:100%;margin-top:4px"></select></div>
+<div class="form-row"><label class="chk-label"><input type="checkbox" id="bmStatusEnable"> 修改状态/计时</label>
 <select id="bmStatus" style="width:100%;margin-top:4px">
   <option value="">--请选择--</option>
   <option value="idle">设为空闲（清空计时，无CP时）</option>
@@ -429,19 +431,120 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
   <option value="reset">重置计时（当前总时长）</option>
   <option value="pause">暂停（若正在运行）</option>
   <option value="start">开始/继续（若未运行且未锁定）</option>
-</select>
-</div>
-<div class="form-row">
-<label class="chk-label"><input type="checkbox" id="bmFeatAddEnable"> 添加特征</label>
-<input type="text" id="bmFeatAdd" placeholder="输入特征名，会自动加入对应分类" list="bmFeatList" style="width:100%;margin-top:4px">
-</div>
-<div class="form-row">
-<label class="chk-label"><input type="checkbox" id="bmFeatDelEnable"> 删除特征</label>
-<input type="text" id="bmFeatDel" placeholder="输入特征名，从选中宠物移除" list="bmFeatList" style="width:100%;margin-top:4px">
-</div>
+</select></div>
+<div class="form-row"><label class="chk-label"><input type="checkbox" id="bmFeatAddEnable"> 添加特征</label><input type="text" id="bmFeatAdd" placeholder="输入特征名" list="bmFeatList" style="width:100%;margin-top:4px"></div>
+<div class="form-row"><label class="chk-label"><input type="checkbox" id="bmFeatDelEnable"> 删除特征</label><input type="text" id="bmFeatDel" placeholder="输入特征名" list="bmFeatList" style="width:100%;margin-top:4px"></div>
 <datalist id="bmFeatList"></datalist>
 </div></div>
 
+<!-- 批量新建宠物 -->
+<div class="modal hidden" id="batchAddModal"><div class="modal-box" style="max-width:640px">
+<div class="modal-header">
+<h3>⚡ 批量新建宠物</h3>
+<div class="modal-header-btns">
+<button class="primary" id="batchAddApply">批量创建</button>
+<button id="batchAddCancel">取消</button>
+</div>
+</div>
+<div style="font-size:13px;color:#555;line-height:1.7;margin-bottom:10px">
+  <b>两种模式任选一种，一行一只宠物：</b>
+</div>
+<div class="form-row">
+<label class="chk-label"><input type="radio" name="batchMode" value="simple" checked> 简单模式（一行只填昵称，其他字段用默认值）</label>
+</div>
+<div class="form-row">
+<label class="chk-label"><input type="radio" name="batchMode" value="detail"> 详细模式（一行 5 个字段，逗号分隔）</label>
+</div>
+<div id="batchHintSimple" style="font-size:12px;color:#888;background:#f8f9fb;padding:8px;border-radius:6px;margin-bottom:8px">
+  示例：<br>
+  小白<br>
+  小黄<br>
+  小灰<br>
+  <br>默认值：性别公、账号默认第一个、品种大类默认第一个、时长 0 小时。创建后可在表格里快速改。
+</div>
+<div id="batchHintDetail" class="hidden" style="font-size:12px;color:#888;background:#f8f9fb;padding:8px;border-radius:6px;margin-bottom:8px">
+  格式：<b>昵称, 性别, 账号, 品种大类/品种, 小时数</b><br>
+  示例：<br>
+  小白, 母, 账号A, 猫猫/英短金渐层, 144<br>
+  小黄, 公, 账号A, 猫猫/英短金渐层, 4<br>
+  小灰, 母, 账号B, 狐狸/沙之狐, 72<br>
+  <br>性别填"公"或"母"；账号可以是不存在的（会自动新建）；品种大类/品种用斜杠分隔。
+</div>
+<textarea id="batchAddText" rows="12" placeholder="一行一只宠物..." style="width:100%;font-family:Consolas,Monaco,monospace;font-size:13px;line-height:1.6"></textarea>
+<div style="font-size:12px;color:#888;margin-top:6px">提示：可以先在电脑上用 Excel/记事本整理好，再粘贴进来。</div>
+</div></div>
+
+<!-- 导出备份选项 -->
+<div class="modal hidden" id="exportModal"><div class="modal-box" style="max-width:480px">
+<div class="modal-header">
+<h3>💾 导出备份</h3>
+<div class="modal-header-btns">
+<button class="primary" id="exportApply">导出</button>
+<button id="exportCancel">取消</button>
+</div>
+</div>
+<div class="form-row">
+<label>导出范围</label>
+<select id="exportScope" style="width:100%">
+  <option value="all">全部宠物（默认）</option>
+  <option value="filtered">仅当前筛选结果（<span id="exportFilteredCount">0</span> 只）</option>
+  <option value="selected">仅勾选的宠物（<span id="exportSelectedCount">0</span> 只）</option>
+  <option value="recent">最近改动过的</option>
+</select>
+<div id="exportRecentDaysWrap" class="hidden" style="margin-top:8px;display:flex;align-items:center;gap:8px">
+  <span style="font-size:13px;color:#555">最近</span>
+  <select id="exportRecentDays" style="width:auto">
+    <option value="1">1 天</option>
+    <option value="3" selected>3 天</option>
+    <option value="7">7 天</option>
+    <option value="14">14 天</option>
+    <option value="30">30 天</option>
+  </select>
+  <span style="font-size:13px;color:#555">内改动过的宠物</span>
+</div>
+</div>
+<div class="form-row">
+<label>是否包含图片</label>
+<select id="exportWithImages" style="width:100%">
+  <option value="yes">包含图片（文件较大，用于首次完整迁移）</option>
+  <option value="no">不含图片（文件很小，用于增量备份）</option>
+</select>
+</div>
+<div style="font-size:12px;color:#888;background:#f8f9fb;padding:10px;border-radius:6px;margin-top:8px;line-height:1.7">
+  <b>建议：</b><br>
+  · 首次迁移到新设备：选"全部 + 含图片"<br>
+  · 日常增量备份：选"最近改动过的 + 不含图片"<br>
+  · 两台设备间同步：导出最近改动 + 不含图片，然后到另一台设备用"智能合并"导入
+</div>
+</div></div>
+
+<!-- 导入备份选项 -->
+<div class="modal hidden" id="importModal"><div class="modal-box" style="max-width:480px">
+<div class="modal-header">
+<h3>📂 导入备份</h3>
+<div class="modal-header-btns">
+<button class="primary" id="importApply">选择文件并导入</button>
+<button id="importCancel">取消</button>
+</div>
+</div>
+<div class="form-row">
+<label>导入方式</label>
+<select id="importMode" style="width:100%">
+  <option value="merge">智能合并（推荐）：按修改时间比较，谁新用谁</option>
+  <option value="replace">覆盖：清空现有数据后导入</option>
+</select>
+</div>
+<div style="font-size:12px;color:#888;background:#f8f9fb;padding:10px;border-radius:6px;margin-top:8px;line-height:1.7">
+  <b>智能合并规则：</b><br>
+  · 备份里和现有 id 相同，且备份的修改时间更晚：用备份覆盖<br>
+  · 备份里和现有 id 相同，但本地修改时间更晚或相同：保留本地<br>
+  · 备份里新增的宠物：追加<br>
+  · 现有但不在备份里的宠物：保留<br>
+  · 图片字段：如果备份里没图而本地有图，保留本地图
+</div>
+</div></div>
+
+<!-- 编辑宠物 -->
 <div class="modal hidden" id="editModal"><div class="modal-box">
 <div class="modal-header">
 <h3 id="modalTitle">新增宠物档案</h3>
@@ -460,9 +563,8 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 </div>
 
 <div class="form-row">
-<label>账号（点击选择，或下方输入新账号）</label>
+<label>账号（点击选择）</label>
 <div class="chip-picker" id="accountPicker"></div>
-<input type="text" id="txtAccount" placeholder="可输入新账号" style="margin-top:4px;width:100%">
 </div>
 
 <div class="form-row">
@@ -489,8 +591,8 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <div class="form-row"><label>宠物标签（一行一个）</label><textarea id="petTags" rows="3"></textarea></div>
 
 <div class="form-row">
-<label>宠物特征（一行一个，也可在下方快捷勾选）</label>
-<textarea id="petFeatures" rows="4" placeholder="一行一个特征名"></textarea>
+<label>宠物特征（可手动输入，新特征会新增入库）</label>
+<textarea id="petFeatures" rows="2" placeholder="一行一个特征名"></textarea>
 <div class="feat-quick-area" id="featQuickArea"></div>
 </div>
 
@@ -573,7 +675,6 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 
 </div></div>
 
-<!-- 猫爪按钮：粉圈 + emoji 猫爪 -->
 <button class="paw-btn" id="pawBtn" title="更多">🐾</button>
 
 <div class="modal hidden" id="tipModal"><div class="modal-box" style="max-width:400px">
@@ -583,9 +684,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <button id="closeTipModal">关闭</button>
 </div>
 </div>
-<div style="text-align:center;color:#a06080;font-size:13px;margin:4px 0 12px">
-  (≧∇≦)ﾉ 谢谢你愿意投喂小咪
-</div>
+<div style="text-align:center;color:#a06080;font-size:13px;margin:4px 0 12px">(≧∇≦)ﾉ 谢谢你愿意投喂小咪</div>
 <div class="tip-tabs">
   <button class="tip-tab active" data-tab="wechat">微信</button>
   <button class="tip-tab" data-tab="alipay">支付宝</button>
@@ -615,9 +714,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <button id="closeFeedbackModal">关闭</button>
 </div>
 </div>
-<div style="font-size:13px;color:#666;margin-top:6px;line-height:1.7">
-  遇到问题或有想法，随时告诉我。你的每一条反馈我都会看。
-</div>
+<div style="font-size:13px;color:#666;margin-top:6px;line-height:1.7">遇到问题或有想法，随时告诉我。你的每一条反馈我都会看。</div>
 <div class="feedback-row">
   <label>📧 邮箱</label>
   <div class="email-wrap">
@@ -648,6 +745,21 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 </div></div>
 
 <script>
+/* ==================== 兼容性检测 ==================== */
+(function checkCompat(){
+  var ok = true;
+  try{
+    eval('let x=1; const y=2; (()=>x+y)();');
+    new Map(); new Set();
+    Array.from([1,2]);
+    eval('async function f(){}');
+  }catch(e){ ok = false; }
+  if(!ok){
+    var w = document.getElementById("compatWarn");
+    if(w) w.classList.remove("hidden");
+  }
+})();
+
 /* ==================== 常量 ==================== */
 const STORAGE_KEY = "petTimerTS_v15";
 const IMG_DB = "petTimerImages", IMG_STORE = "images";
@@ -734,7 +846,7 @@ const filterState = {
     breed: new Set(), account: new Set(), feature: new Set()
 };
 
-/* ==================== 工具 ==================== */
+/* ==================== 工具函数 ==================== */
 const $ = id => document.getElementById(id);
 const esc = s => s == null ? "" : String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 const genId = () => Date.now().toString(36) + Math.random().toString(36).slice(2,8);
@@ -806,8 +918,7 @@ function renameFeatureEverywhere(oldName, newName){
             + "是否将「"+oldName+"」合并到「"+newName+"」？\n\n"
             + "合并后：\n"
             + "  · 有 " + usedCount + " 只宠物使用「"+oldName+"」，将全部改为「"+newName+"」\n"
-            + "  · 特征库中「"+oldName+"」条目被删除\n"
-            + "  · 「"+newName+"」的颜色保持不变";
+            + "  · 特征库中「"+oldName+"」条目被删除";
         if(!confirm(mergeMsg)) return false;
         takeSnapshot("合并特征「"+oldName+"」→「"+newName+"」");
         petList.forEach(p => {
@@ -851,7 +962,7 @@ function getAllFeatureNames(){
     Object.keys(featureMap).forEach(cat => {
         Object.keys(featureMap[cat] || {}).forEach(n => s.add(n));
     });
-    return [...s];
+    return Array.from(s);
 }
 function getVisibleFeatureNames(){
     if(filterState.category.size === 0) return getAllFeatureNames();
@@ -860,11 +971,11 @@ function getVisibleFeatureNames(){
     filterState.category.forEach(cat => {
         if(featureMap[cat]) Object.keys(featureMap[cat]).forEach(n => set.add(n));
     });
-    return [...set];
+    return Array.from(set);
 }
 function countPetsByFeature(name){
     let n = 0;
-    petList.forEach(p => { if((p.features||[]).includes(name)) n++; });
+    petList.forEach(p => { if((p.features||[]).indexOf(name) >= 0) n++; });
     return n;
 }
 function getFeatCatLabel(cat){
@@ -876,7 +987,7 @@ function takeSnapshot(desc){
         petList: JSON.parse(JSON.stringify(petList)),
         featureMap: JSON.parse(JSON.stringify(featureMap)),
         breedMap: JSON.parse(JSON.stringify(breedMap)),
-        accountOptions: [...accountOptions],
+        accountOptions: accountOptions.slice(),
         desc: desc,
         ts: Date.now()
     };
@@ -1027,7 +1138,7 @@ function initFeatureMapFromDefaults(){
 }
 function guessFeatureCategory(name){
     for(const cat in DEFAULT_FEATURES_BY_CAT){
-        if(DEFAULT_FEATURES_BY_CAT[cat].includes(name)) return cat;
+        if(DEFAULT_FEATURES_BY_CAT[cat].indexOf(name) >= 0) return cat;
     }
     return null;
 }
@@ -1282,11 +1393,11 @@ function buildTableRow(p, now){
 }
 
 function getFieldValue(p, field){
-    if(field.includes(".")){ const [a,b] = field.split("."); return p[a] && p[a][b] != null ? p[a][b] : ""; }
+    if(field.indexOf(".") >= 0){ const parts = field.split("."); return p[parts[0]] && p[parts[0]][parts[1]] != null ? p[parts[0]][parts[1]] : ""; }
     return p[field] != null ? p[field] : "";
 }
 function setFieldValue(p, field, v){
-    if(field.includes(".")){ const [a,b] = field.split("."); if(!p[a]) p[a] = {}; p[a][b] = v; }
+    if(field.indexOf(".") >= 0){ const parts = field.split("."); if(!p[parts[0]]) p[parts[0]] = {}; p[parts[0]][parts[1]] = v; }
     else p[field] = v;
 }
 function startEditCell(td){
@@ -1427,7 +1538,7 @@ function drawChart(id, type, labels, data){
     if(chartRefs[id]){ chartRefs[id].destroy(); delete chartRefs[id]; }
     const ctx = $(id); if(!ctx) return;
     chartRefs[id] = new Chart(ctx, {
-        type, data: { labels, datasets: [{ data, backgroundColor:
+        type: type, data: { labels: labels, datasets: [{ data: data, backgroundColor:
             ["#4080ff","#28c76f","#ff9f43","#e85496","#9b59b6","#f39c12","#1abc9c","#e74c3c","#3498db","#95a5a6"] }] },
         options: { responsive: true, maintainAspectRatio: false,
             plugins: { legend: { position: type === "bar" ? "bottom" : "right", labels: { font: { size: 11 } } } },
@@ -1441,7 +1552,7 @@ function drawStackedBar(id, labels, males, females){
     chartRefs[id] = new Chart(ctx, {
         type: "bar",
         data: {
-            labels,
+            labels: labels,
             datasets: [
                 { label: "公", data: males, backgroundColor: "#348ede" },
                 { label: "母", data: females, backgroundColor: "#e85496" }
@@ -1469,7 +1580,7 @@ function getFilteredList(now){
             const hay = [p.name, p.account, p.category, p.breed,
                 (p.tags||[]).join(","), (p.features||[]).join(","),
                 (p.cp1 && p.cp1.name || ""), (p.cp2 && p.cp2.name || "")].join(" ").toLowerCase();
-            return hay.includes(kw);
+            return hay.indexOf(kw) >= 0;
         });
     }
     if(filterState.status.size){
@@ -1493,7 +1604,7 @@ function getFilteredList(now){
     if(filterState.feature.size){
         list = list.filter(p => {
             const feats = p.features || [];
-            for(const f of filterState.feature) if(feats.includes(f)) return true;
+            for(const f of filterState.feature) if(feats.indexOf(f) >= 0) return true;
             return false;
         });
     }
@@ -1544,7 +1655,7 @@ function render(){
     } else {
         if(sortLocked){
             hintEl.classList.remove("hidden");
-            hintEl.innerHTML = '🔒 排序已锁定，数据修改不会自动重排。点顶部「↻ 应用排序」才会重排。';
+            hintEl.innerHTML = '🔒 排序已锁定，编辑时列表顺序不会自动重排';
         } else {
             hintEl.classList.add("hidden");
             hintEl.innerHTML = "";
@@ -1615,6 +1726,19 @@ function updateFilterButtons(){
     });
 }
 
+/* 清除筛选 */
+$("btnClearFilter").onclick = () => {
+    let hadAny = false;
+    Object.keys(filterState).forEach(k => {
+        if(filterState[k].size > 0){ hadAny = true; filterState[k].clear(); }
+    });
+    if($("searchInput").value.trim()){ hadAny = true; $("searchInput").value = ""; }
+    if(hadAny){
+        closeFilterPanel();
+        render();
+    }
+};
+
 /* ==================== CP 列折叠 ==================== */
 function applyCpColVisibility(){
     const tbl = $("petTable");
@@ -1634,14 +1758,6 @@ $("sortLockChk").onchange = function(){
     if(sortLocked) freezeCurrentOrder();
     else frozenOrder = [];
     render();
-};
-$("btnApplySort").onclick = function(){
-    if(sortLocked) freezeCurrentOrder();
-    render();
-    const btn = this;
-    const old = btn.textContent;
-    btn.textContent = "✓ 已重排";
-    setTimeout(() => { btn.textContent = old; }, 800);
 };
 
 /* ==================== 多选筛选面板 ==================== */
@@ -1676,10 +1792,10 @@ function openFilterPanel(type, btn){
     } else if(type === "gender"){ options = [{ v:"m", t:"公" }, { v:"f", t:"母" }]; }
     else if(type === "category"){ options = Object.keys(breedMap).map(k => ({ v:k, t:k })); }
     else if(type === "breed"){
-        const cats = filterState.category.size > 0 ? [...filterState.category] : Object.keys(breedMap);
+        const cats = filterState.category.size > 0 ? Array.from(filterState.category) : Object.keys(breedMap);
         const set = new Set();
         cats.forEach(c => (breedMap[c] || []).forEach(b => set.add(b)));
-        options = [...set].map(b => ({ v:b, t:b }));
+        options = Array.from(set).map(b => ({ v:b, t:b }));
     } else if(type === "account"){
         options = accountOptions.map(a => ({ v:a, t:a }));
     } else if(type === "feature"){
@@ -2028,7 +2144,7 @@ document.querySelectorAll("[data-bench]").forEach(btn => {
 /* ==================== 管理账号/品种 ==================== */
 function moveInArray(arr, fromIdx, toIdx){
     if(toIdx < 0 || toIdx >= arr.length) return false;
-    const [item] = arr.splice(fromIdx, 1);
+    const item = arr.splice(fromIdx, 1)[0];
     arr.splice(toIdx, 0, item);
     return true;
 }
@@ -2136,12 +2252,12 @@ $("optManageModal").addEventListener("click", e => {
 });
 $("addAccBtn").onclick = () => {
     const v = $("newAccInput").value.trim();
-    if(v && !accountOptions.includes(v)){ accountOptions.push(v); saveLocal(); $("newAccInput").value = ""; renderOptManage(); render(); }
+    if(v && accountOptions.indexOf(v) === -1){ accountOptions.push(v); saveLocal(); $("newAccInput").value = ""; renderOptManage(); render(); }
 };
 $("addCatBtn").onclick = () => {
     const cat = $("newCatInput").value.trim(), brd = $("newBreedInput").value.trim();
     if(cat && !(cat in breedMap)) { breedMap[cat] = []; if(!featureMap[cat]) featureMap[cat] = {}; }
-    if(cat && brd && !breedMap[cat].includes(brd)) breedMap[cat].push(brd);
+    if(cat && brd && breedMap[cat].indexOf(brd) === -1) breedMap[cat].push(brd);
     $("newCatInput").value = ""; $("newBreedInput").value = "";
     saveLocal(); renderOptManage(); render();
 };
@@ -2305,7 +2421,7 @@ $("featBatchMove").onclick = () => {
     if(!featureMap[target]) featureMap[target] = {};
     takeSnapshot("批量移动特征到 " + getFeatCatLabel(target));
     let moved = 0, skipped = [];
-    const namesToMove = [...featSelected];
+    const namesToMove = Array.from(featSelected);
     namesToMove.forEach(name => {
         if(featureMap[target][name]){ skipped.push(name); return; }
         const color = featureMap[currentFeatCat][name] || DEFAULT_FEATURE_COLOR;
@@ -2352,30 +2468,42 @@ $("closeFeatManage").onclick = () => $("featManageModal").classList.add("hidden"
 function renderAccountPicker(){
     const wrap = $("accountPicker");
     wrap.innerHTML = "";
-    if(accountOptions.length === 0){
-        wrap.innerHTML = '<div class="chip-empty">还没有账号，可在下方输入新账号</div>';
-        return;
-    }
     accountOptions.forEach(a => {
         const item = document.createElement("div");
         item.className = "chip-pick-item" + (a === currentEditAccount ? " selected" : "");
         item.textContent = a;
         item.onclick = () => {
             currentEditAccount = a;
-            $("txtAccount").value = "";
             renderAccountPicker();
         };
         wrap.appendChild(item);
     });
+    const addBtn = document.createElement("div");
+    addBtn.className = "chip-add-btn";
+    addBtn.textContent = "➕ 添加新账号";
+    addBtn.onclick = () => {
+        const v = prompt("请输入新账号名称：");
+        if(v && v.trim()){
+            const name = v.trim();
+            if(accountOptions.indexOf(name) === -1){
+                accountOptions.push(name);
+                currentEditAccount = name;
+                saveLocal();
+                renderAccountPicker();
+                render();
+            } else {
+                alert("该账号已存在");
+                currentEditAccount = name;
+                renderAccountPicker();
+            }
+        }
+    };
+    wrap.appendChild(addBtn);
 }
 function renderCategoryPicker(){
     const wrap = $("categoryPicker");
     wrap.innerHTML = "";
     const keys = Object.keys(breedMap);
-    if(keys.length === 0){
-        wrap.innerHTML = '<div class="chip-empty">还没有品种大类</div>';
-        return;
-    }
     keys.forEach(c => {
         const item = document.createElement("div");
         item.className = "chip-pick-item" + (c === currentEditCategory ? " selected" : "");
@@ -2546,9 +2674,9 @@ document.querySelectorAll(".swap-btn[data-swap]").forEach(btn => {
         $("cp1Days").value = d2; $("cp2Days").value = d1;
         const h1 = $("cp1Hours").value, h2 = $("cp2Hours").value;
         $("cp1Hours").value = h2; $("cp2Hours").value = h1;
-        [pendingCp1Blob, pendingCp2Blob] = [pendingCp2Blob, pendingCp1Blob];
-        [pendingCp1Cleared, pendingCp2Cleared] = [pendingCp2Cleared, pendingCp1Cleared];
-        [editCp1ImgValue, editCp2ImgValue] = [editCp2ImgValue, editCp1ImgValue];
+        const tmpBlob = pendingCp1Blob; pendingCp1Blob = pendingCp2Blob; pendingCp2Blob = tmpBlob;
+        const tmpC = pendingCp1Cleared; pendingCp1Cleared = pendingCp2Cleared; pendingCp2Cleared = tmpC;
+        const tmpImg = editCp1ImgValue; editCp1ImgValue = editCp2ImgValue; editCp2ImgValue = tmpImg;
         updateCpPreview("cp1");
         updateCpPreview("cp2");
     };
@@ -2639,7 +2767,7 @@ function openEdit(pid){
     $("modalTitle").textContent = pid ? "编辑宠物档案" : "新增宠物档案";
     $("btnDel").classList.toggle("hidden", !pid);
 
-    ["petImgUrl","txtAccount","txtBreed","petName","petNote",
+    ["petImgUrl","txtBreed","petName","petNote",
      "cp1Name","cp2Name","cp1PairTime","cp2PairTime",
      "cp1Days","cp1Hours","cp2Days","cp2Hours"].forEach(id => { if($(id)) $(id).value = ""; });
     $("petTags").value = "";
@@ -2662,7 +2790,6 @@ function openEdit(pid){
         currentEditAccount = p.account || "";
         currentEditCategory = p.category || "";
         currentEditTimerMode = p.timerMode || "normal";
-        $("txtAccount").value = "";
         $("petName").value = p.name || "";
         setEditGender(p.gender || "m");
         setEditTimerMode(currentEditTimerMode);
@@ -2808,7 +2935,7 @@ $("txtBreed").addEventListener("input", function(){
     const v = this.value.trim();
     if(!v) return;
     for(const cat in breedMap){
-        if(breedMap[cat] && breedMap[cat].includes(v)){
+        if(breedMap[cat] && breedMap[cat].indexOf(v) >= 0){
             if(currentEditCategory !== cat){
                 currentEditCategory = cat;
                 renderCategoryPicker();
@@ -2821,8 +2948,7 @@ $("txtBreed").addEventListener("input", function(){
 });
 
 $("btnSave").onclick = async () => {
-    const txtAcc = $("txtAccount").value.trim();
-    const accountVal = txtAcc || currentEditAccount;
+    const accountVal = currentEditAccount;
     const categoryVal = currentEditCategory;
     const breedVal = $("selBreed").value.trim() || $("txtBreed").value.trim();
     const nameVal = $("petName").value.trim() || "未命名";
@@ -2881,12 +3007,12 @@ $("btnSave").onclick = async () => {
             finalCp2Img = editCp2ImgValue || "";
         }
 
-        if(accountVal && !accountOptions.includes(accountVal)) accountOptions.push(accountVal);
+        if(accountVal && accountOptions.indexOf(accountVal) === -1) accountOptions.push(accountVal);
         if(categoryVal && !(categoryVal in breedMap)) {
             breedMap[categoryVal] = [];
             if(!featureMap[categoryVal]) featureMap[categoryVal] = {};
         }
-        if(categoryVal && breedVal && !breedMap[categoryVal].includes(breedVal)) breedMap[categoryVal].push(breedVal);
+        if(categoryVal && breedVal && breedMap[categoryVal].indexOf(breedVal) === -1) breedMap[categoryVal].push(breedVal);
         featArr.forEach(f => ensureFeatureExists(f, categoryVal));
 
         const cp1 = { name: $("cp1Name").value.trim(), img: finalCp1Img, pairTime: cp1Pair };
@@ -2898,7 +3024,7 @@ $("btnSave").onclick = async () => {
                 const updated = Object.assign({}, petList[idx], {
                     img: finalImg, account: accountVal, category: categoryVal, breed: breedVal,
                     name: nameVal, gender: genderVal, tags: tagsArr, features: featArr,
-                    cp1, cp2, timerMode: tMode, note: noteVal, utime: now
+                    cp1: cp1, cp2: cp2, timerMode: tMode, note: noteVal, utime: now
                 });
                 if(timeEditedByUser){
                     updated.totalMs = totalMs; updated.pausedAt = totalMs;
@@ -2913,8 +3039,8 @@ $("btnSave").onclick = async () => {
                 id: genId(), ctime: now, utime: now,
                 img: finalImg, account: accountVal, category: categoryVal, breed: breedVal,
                 name: nameVal, gender: genderVal, tags: tagsArr, features: featArr,
-                cp1, cp2, timerMode: tMode,
-                totalMs, pausedAt: totalMs, isRunning: false, startTs: null,
+                cp1: cp1, cp2: cp2, timerMode: tMode,
+                totalMs: totalMs, pausedAt: totalMs, isRunning: false, startTs: null,
                 runStartRemain: null, locked: false, note: noteVal,
                 inBench: false
             });
@@ -2924,8 +3050,196 @@ $("btnSave").onclick = async () => {
 };
 $("btnDel").onclick = () => { if(editId && confirm("确定删除？")){ deletePet(editId); closeEdit(); } };
 
-/* ==================== 导入/导出 ==================== */
+/* ==================== 批量新建 ==================== */
+$("btnBatchAdd").onclick = () => {
+    $("batchAddText").value = "";
+    $("batchAddModal").classList.remove("hidden");
+    updateBatchHint();
+};
+document.querySelectorAll('input[name="batchMode"]').forEach(r => {
+    r.onchange = updateBatchHint;
+});
+function updateBatchHint(){
+    const mode = document.querySelector('input[name="batchMode"]:checked').value;
+    $("batchHintSimple").classList.toggle("hidden", mode !== "simple");
+    $("batchHintDetail").classList.toggle("hidden", mode !== "detail");
+}
+$("batchAddCancel").onclick = () => $("batchAddModal").classList.add("hidden");
+$("batchAddApply").onclick = () => {
+    const mode = document.querySelector('input[name="batchMode"]:checked').value;
+    const text = $("batchAddText").value;
+    const lines = text.split("\n").map(s => s.trim()).filter(Boolean);
+    if(lines.length === 0){ alert("请输入至少一行"); return; }
+
+    takeSnapshot("批量新建 " + lines.length + " 只宠物");
+
+    const now = Date.now();
+    let created = 0, errors = [];
+    const defaultAcc = accountOptions[0] || "";
+    const defaultCat = Object.keys(breedMap)[0] || "";
+    const defaultBreed = defaultCat ? (breedMap[defaultCat][0] || "") : "";
+
+    lines.forEach((line, i) => {
+        if(mode === "simple"){
+            const name = line;
+            if(!name) return;
+            petList.push({
+                id: genId(), ctime: now, utime: now,
+                img: "", account: defaultAcc, category: defaultCat, breed: defaultBreed,
+                name: name, gender: "m", tags: [], features: [],
+                cp1: { name:"", img:"", pairTime:"" },
+                cp2: { name:"", img:"", pairTime:"" },
+                timerMode: "normal",
+                totalMs: 0, pausedAt: 0, isRunning: false, startTs: null,
+                runStartRemain: null, locked: false, note: "",
+                inBench: false
+            });
+            created++;
+        } else {
+            const parts = line.split(/[,，]/).map(s => s.trim());
+            if(parts.length < 1 || !parts[0]){
+                errors.push("第 " + (i+1) + " 行：昵称为空");
+                return;
+            }
+            const name = parts[0];
+            const gender = (parts[1] === "母" || parts[1] === "f" || parts[1] === "F") ? "f" : "m";
+            const acc = parts[2] || defaultAcc;
+            if(acc && accountOptions.indexOf(acc) === -1) accountOptions.push(acc);
+            let category = defaultCat, breed = defaultBreed;
+            if(parts[3]){
+                const cb = parts[3].split("/").map(s => s.trim());
+                if(cb.length >= 2){
+                    category = cb[0];
+                    breed = cb[1];
+                } else {
+                    const v = cb[0];
+                    for(const c in breedMap){
+                        if(breedMap[c].indexOf(v) >= 0){ category = c; breed = v; break; }
+                    }
+                }
+                if(!(category in breedMap)) breedMap[category] = [];
+                if(breed && breedMap[category].indexOf(breed) === -1) breedMap[category].push(breed);
+            }
+            const hours = Number(parts[4] || 0);
+            const totalMs = hmToMs(hours, 0);
+            petList.push({
+                id: genId(), ctime: now, utime: now,
+                img: "", account: acc, category: category, breed: breed,
+                name: name, gender: gender, tags: [], features: [],
+                cp1: { name:"", img:"", pairTime:"" },
+                cp2: { name:"", img:"", pairTime:"" },
+                timerMode: "normal",
+                totalMs: totalMs, pausedAt: totalMs, isRunning: false, startTs: null,
+                runStartRemain: null, locked: false, note: "",
+                inBench: false
+            });
+            created++;
+        }
+    });
+
+    saveLocal(); render();
+    $("batchAddModal").classList.add("hidden");
+    let msg = "✓ 已创建 " + created + " 只宠物";
+    if(errors.length > 0) msg += "\n\n跳过 " + errors.length + " 行：\n" + errors.slice(0, 5).join("\n") + (errors.length > 5 ? "\n..." : "");
+    alert(msg);
+};
+
+/* ==================== 导出 ==================== */
+$("btnExport").onclick = () => {
+    const filteredCount = getFilteredList().length;
+    const selectedCount = selectedIds.size;
+    $("exportFilteredCount").textContent = filteredCount;
+    $("exportSelectedCount").textContent = selectedCount;
+    $("exportScope").value = "all";
+    $("exportRecentDaysWrap").classList.add("hidden");
+    /* 重置 recent 计数显示 */
+    const opt = $("exportScope").querySelector('option[value="recent"]');
+    opt.textContent = "最近改动过的";
+    $("exportModal").classList.remove("hidden");
+};
+$("exportScope").onchange = function(){
+    const isRecent = this.value === "recent";
+    $("exportRecentDaysWrap").classList.toggle("hidden", !isRecent);
+    if(isRecent) updateRecentExportCount();
+};
+$("exportRecentDays").onchange = updateRecentExportCount;
+function updateRecentExportCount(){
+    const days = Number($("exportRecentDays").value || 3);
+    const cutoff = Date.now() - days * 86400000;
+    const cnt = petList.filter(p => (p.utime || 0) >= cutoff).length;
+    const opt = $("exportScope").querySelector('option[value="recent"]');
+    opt.textContent = "最近改动过的（" + cnt + " 只）";
+}
+$("exportCancel").onclick = () => $("exportModal").classList.add("hidden");
+$("exportApply").onclick = async () => {
+    const scope = $("exportScope").value;
+    const withImages = $("exportWithImages").value === "yes";
+    let pets;
+    if(scope === "all") pets = petList.slice();
+    else if(scope === "filtered") pets = getFilteredList();
+    else if(scope === "selected") pets = petList.filter(p => selectedIds.has(p.id));
+    else if(scope === "recent"){
+        const days = Number($("exportRecentDays").value || 3);
+        const cutoff = Date.now() - days * 86400000;
+        pets = petList.filter(p => (p.utime || 0) >= cutoff);
+    }
+    if(!pets || pets.length === 0){ alert("导出的宠物为空"); return; }
+
+    $("exportApply").disabled = true;
+    $("exportApply").textContent = "导出中...";
+
+    try{
+        const imgMap = {};
+        if(withImages){
+            const ids = new Set();
+            pets.forEach(p => {
+                if(isIndexedImg(p.img)) ids.add(p.img);
+                if(p.cp1 && isIndexedImg(p.cp1.img)) ids.add(p.cp1.img);
+                if(p.cp2 && isIndexedImg(p.cp2.img)) ids.add(p.cp2.img);
+            });
+            for(const id of Array.from(ids)){
+                try{ const b = await getImage(id); if(b) imgMap[id] = await blobToBase64(b); }catch(e){}
+            }
+        }
+        const payload = {
+            pets: pets,
+            accounts: accountOptions,
+            breedMap: breedMap,
+            featureMap: featureMap,
+            images: imgMap,
+            exportInfo: {
+                scope: scope,
+                withImages: withImages,
+                count: pets.length,
+                ts: Date.now()
+            }
+        };
+        const blob = new Blob([JSON.stringify(payload)], {type:"application/json"});
+        const a = document.createElement("a");
+        const d = new Date();
+        const stamp = d.getFullYear() + String(d.getMonth()+1).padStart(2,"0") + String(d.getDate()).padStart(2,"0")
+                    + "_" + String(d.getHours()).padStart(2,"0") + String(d.getMinutes()).padStart(2,"0");
+        const scopeTag = scope === "recent" ? ("recent" + $("exportRecentDays").value + "d") : scope;
+        a.href = URL.createObjectURL(blob);
+        a.download = "绒光宠物录-backup-" + scopeTag + "-" + pets.length + "只-" + stamp + (withImages ? "" : "-无图") + ".json";
+        a.click();
+    }catch(e){
+        alert("导出失败：" + e.message);
+    }finally{
+        $("exportApply").disabled = false;
+        $("exportApply").textContent = "导出";
+        $("exportModal").classList.add("hidden");
+    }
+};
+
+/* ==================== 导入 ==================== */
 $("btnImport").onclick = () => {
+    $("importModal").classList.remove("hidden");
+};
+$("importCancel").onclick = () => $("importModal").classList.add("hidden");
+$("importApply").onclick = () => {
+    const mode = $("importMode").value;
+    $("importModal").classList.add("hidden");
     const ipt = document.createElement("input"); ipt.type = "file"; ipt.accept = ".json";
     ipt.onchange = e => {
         const f = e.target.files[0]; if(!f) return;
@@ -2939,12 +3253,40 @@ $("btnImport").onclick = () => {
             const imgIds = Object.keys(images);
             const base64List = [];
             migrated.forEach(p => {
-                if(isBase64Img(p.img)) base64List.push({ p, field:"img" });
-                if(p.cp1 && isBase64Img(p.cp1.img)) base64List.push({ p, field:"cp1.img" });
-                if(p.cp2 && isBase64Img(p.cp2.img)) base64List.push({ p, field:"cp2.img" });
+                if(isBase64Img(p.img)) base64List.push({ p: p, field:"img" });
+                if(p.cp1 && isBase64Img(p.cp1.img)) base64List.push({ p: p, field:"cp1.img" });
+                if(p.cp2 && isBase64Img(p.cp2.img)) base64List.push({ p: p, field:"cp2.img" });
             });
-            if(!confirm("导入将覆盖当前全部数据，确认继续？\n宠物数量："+migrated.length+"\n图片："+(imgIds.length + base64List.length)+" 张")) return;
-            takeSnapshot("导入备份");
+
+            let confirmMsg = "";
+            if(mode === "replace"){
+                confirmMsg = "覆盖导入将清空现有 " + petList.length + " 只宠物，用备份文件里的 " + migrated.length + " 只替换。\n\n确认继续？";
+            } else {
+                /* 智能合并：按 utime 预估 */
+                const localMap = new Map();
+                petList.forEach(p => localMap.set(p.id, p.utime || 0));
+                let willAdd = 0, willUpdate = 0, willKeep = 0;
+                migrated.forEach(mp => {
+                    const backupTime = mp.utime || 0;
+                    if(!localMap.has(mp.id)){
+                        willAdd++;
+                    } else {
+                        const localTime = localMap.get(mp.id);
+                        if(backupTime > localTime) willUpdate++;
+                        else willKeep++;
+                    }
+                });
+                confirmMsg = "智能合并（按修改时间比较）：\n\n"
+                    + "· 会新增 " + willAdd + " 只宠物\n"
+                    + "· 会更新 " + willUpdate + " 只（备份的修改时间更晚）\n"
+                    + "· 会跳过 " + willKeep + " 只（本地修改时间更晚或相同）\n\n"
+                    + "现有其他 " + (petList.length - willUpdate - willKeep) + " 只宠物不受影响。\n\n"
+                    + "确认继续？";
+            }
+            if(!confirm(confirmMsg)) return;
+
+            takeSnapshot(mode === "replace" ? "覆盖导入" : "智能合并导入");
+
             Object.keys(imgUrlCache).forEach(forgetImgUrl);
             const tasks = [];
             base64List.forEach(item => tasks.push(
@@ -2954,55 +3296,109 @@ $("btnImport").onclick = () => {
             ));
             imgIds.forEach(id => tasks.push(base64ToBlob(images[id]).then(blob => saveImage(id, blob)).catch(()=>{})));
             Promise.all(tasks).then(() => {
-                petList = migrated;
-                accountOptions = Array.isArray(obj.accounts) ? obj.accounts : [];
-                if(obj.breedMap && typeof obj.breedMap === "object") breedMap = obj.breedMap;
-                if(obj.featureMap && typeof obj.featureMap === "object"){
-                    const keys = Object.keys(obj.featureMap);
-                    const isOld = keys.length > 0 && typeof obj.featureMap[keys[0]] === "string";
-                    if(isOld){
-                        featureMap = initFeatureMapFromDefaults();
-                        Object.keys(obj.featureMap).forEach(name => {
-                            const color = obj.featureMap[name];
-                            const guess = guessFeatureCategory(name);
-                            if(guess){
-                                if(!featureMap[guess]) featureMap[guess] = {};
-                                featureMap[guess][name] = color;
+                /* 合并或覆盖 */
+                let stat = { added: 0, updated: 0, kept: 0 };
+                if(mode === "replace"){
+                    petList = migrated;
+                    stat.added = migrated.length;
+                } else {
+                    migrated.forEach(mp => {
+                        const idx = petList.findIndex(x => x.id === mp.id);
+                        if(idx < 0){
+                            petList.push(mp);
+                            stat.added++;
+                        } else {
+                            const exist = petList[idx];
+                            const backupTime = mp.utime || 0;
+                            const localTime = exist.utime || 0;
+                            if(backupTime > localTime){
+                                /* 备份更新：用备份，但备份没图时保留本地图 */
+                                const merged = Object.assign({}, mp);
+                                if(!merged.img && exist.img) merged.img = exist.img;
+                                if(merged.cp1 && !merged.cp1.img && exist.cp1 && exist.cp1.img) merged.cp1.img = exist.cp1.img;
+                                if(merged.cp2 && !merged.cp2.img && exist.cp2 && exist.cp2.img) merged.cp2.img = exist.cp2.img;
+                                petList[idx] = merged;
+                                stat.updated++;
                             } else {
-                                if(!featureMap[CAT_COMMON]) featureMap[CAT_COMMON] = {};
-                                featureMap[CAT_COMMON][name] = color;
+                                stat.kept++;
                             }
+                        }
+                    });
+                }
+                /* 账号 / 品种 / 特征：合并模式做并集，覆盖模式直接替换 */
+                if(mode === "replace"){
+                    accountOptions = Array.isArray(obj.accounts) ? obj.accounts : [];
+                    if(obj.breedMap && typeof obj.breedMap === "object") breedMap = obj.breedMap;
+                    if(obj.featureMap && typeof obj.featureMap === "object"){
+                        const keys = Object.keys(obj.featureMap);
+                        const isOld = keys.length > 0 && typeof obj.featureMap[keys[0]] === "string";
+                        if(isOld){
+                            featureMap = initFeatureMapFromDefaults();
+                            Object.keys(obj.featureMap).forEach(name => {
+                                const color = obj.featureMap[name];
+                                const guess = guessFeatureCategory(name);
+                                if(guess){
+                                    if(!featureMap[guess]) featureMap[guess] = {};
+                                    featureMap[guess][name] = color;
+                                } else {
+                                    if(!featureMap[CAT_COMMON]) featureMap[CAT_COMMON] = {};
+                                    featureMap[CAT_COMMON][name] = color;
+                                }
+                            });
+                        } else {
+                            featureMap = obj.featureMap;
+                            if(!featureMap[CAT_COMMON]) featureMap[CAT_COMMON] = {};
+                        }
+                    }
+                } else {
+                    if(Array.isArray(obj.accounts)){
+                        obj.accounts.forEach(a => { if(accountOptions.indexOf(a) === -1) accountOptions.push(a); });
+                    }
+                    if(obj.breedMap && typeof obj.breedMap === "object"){
+                        Object.keys(obj.breedMap).forEach(cat => {
+                            if(!(cat in breedMap)) breedMap[cat] = [];
+                            (obj.breedMap[cat] || []).forEach(b => {
+                                if(breedMap[cat].indexOf(b) === -1) breedMap[cat].push(b);
+                            });
                         });
-                    } else {
-                        featureMap = obj.featureMap;
-                        if(!featureMap[CAT_COMMON]) featureMap[CAT_COMMON] = {};
+                    }
+                    if(obj.featureMap && typeof obj.featureMap === "object"){
+                        const keys = Object.keys(obj.featureMap);
+                        const isOld = keys.length > 0 && typeof obj.featureMap[keys[0]] === "string";
+                        if(isOld){
+                            Object.keys(obj.featureMap).forEach(name => {
+                                const color = obj.featureMap[name];
+                                const guess = guessFeatureCategory(name);
+                                const target = guess || CAT_COMMON;
+                                if(!featureMap[target]) featureMap[target] = {};
+                                if(!featureMap[target][name]) featureMap[target][name] = color;
+                            });
+                        } else {
+                            Object.keys(obj.featureMap).forEach(cat => {
+                                if(!featureMap[cat]) featureMap[cat] = {};
+                                Object.keys(obj.featureMap[cat]).forEach(name => {
+                                    if(!featureMap[cat][name]) featureMap[cat][name] = obj.featureMap[cat][name];
+                                });
+                            });
+                        }
                     }
                 }
                 petList.forEach(p => p.features.forEach(f => ensureFeatureExists(f, p.category)));
                 saveLocal(); render();
-                alert("导入成功，共 "+migrated.length+" 只宠物");
+                if(mode === "replace"){
+                    alert("导入成功\n模式：覆盖\n共导入 " + migrated.length + " 只\n当前共 " + petList.length + " 只宠物");
+                } else {
+                    alert("导入成功\n模式：智能合并（按修改时间比较）\n"
+                        + "新增 " + stat.added + " 只\n"
+                        + "更新 " + stat.updated + " 只\n"
+                        + "跳过 " + stat.kept + " 只（本地更新）\n\n"
+                        + "当前共 " + petList.length + " 只宠物");
+                }
             }).catch(err => alert("导入失败："+(err.message||"未知")));
         };
         r.readAsText(f);
     };
     ipt.click();
-};
-$("btnExport").onclick = async () => {
-    const imgMap = {};
-    const ids = new Set();
-    petList.forEach(p => {
-        if(isIndexedImg(p.img)) ids.add(p.img);
-        if(p.cp1 && isIndexedImg(p.cp1.img)) ids.add(p.cp1.img);
-        if(p.cp2 && isIndexedImg(p.cp2.img)) ids.add(p.cp2.img);
-    });
-    for(const id of ids){
-        try{ const b = await getImage(id); if(b) imgMap[id] = await blobToBase64(b); }catch(e){}
-    }
-    const blob = new Blob([JSON.stringify({pets:petList, accounts:accountOptions, breedMap, featureMap, images:imgMap})], {type:"application/json"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "绒光宠物录-backup.json";
-    a.click();
 };
 
 /* ==================== 批量修改 ==================== */
@@ -3011,7 +3407,7 @@ function refreshBmBreedAll(){
     sel.innerHTML = '<option value="">--请选择--</option>';
     const set = new Set();
     Object.keys(breedMap).forEach(cat => (breedMap[cat]||[]).forEach(b => set.add(b)));
-    [...set].sort().forEach(b => {
+    Array.from(set).sort().forEach(b => {
         const o = document.createElement("option"); o.value = b; o.textContent = b; sel.appendChild(o);
     });
 }
@@ -3091,7 +3487,7 @@ $("bmApply").onclick = () => {
         if(doCat){
             p.category = catVal;
             if(!doBreed){
-                if(!breedMap[catVal] || !breedMap[catVal].includes(p.breed)) p.breed = "";
+                if(!breedMap[catVal] || breedMap[catVal].indexOf(p.breed) < 0) p.breed = "";
             }
         }
         if(doBreed) p.breed = breedVal;
@@ -3121,7 +3517,7 @@ $("bmApply").onclick = () => {
         }
         if(doFeatAdd){
             if(!p.features) p.features = [];
-            if(!p.features.includes(featAddVal)){
+            if(p.features.indexOf(featAddVal) < 0){
                 p.features.push(featAddVal);
                 ensureFeatureExists(featAddVal, p.category);
             }
@@ -3315,23 +3711,21 @@ function showTourStep(idx){
         showTourStep(idx + 1);
         return;
     }
-    /* 先把元素滚动到可视区 */
     try{ el.scrollIntoView({block: "center", behavior: "smooth"}); }catch(e){ el.scrollIntoView(); }
 
     setTimeout(() => {
         repositionTour();
         const total = TOUR_STEPS.length;
-        tourTip.innerHTML = `
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-                <span style="font-size:12px;color:#a06080">第 ${idx+1} / ${total} 步</span>
-                <button id="__tourSkip" style="background:transparent;border:none;color:#999;font-size:12px;cursor:pointer;padding:2px 6px">跳过</button>
-            </div>
-            <div style="color:#333;line-height:1.7;margin-bottom:12px">${step.text}</div>
-            <div style="display:flex;gap:8px;justify-content:flex-end">
-                <button id="__tourPrev" style="padding:5px 14px;font-size:13px;border-radius:6px;background:${idx===0?'#f0f0f0':'#fff'};color:${idx===0?'#bbb':'#444'};border:1px solid #ccc" ${idx===0?'disabled':''}>上一步</button>
-                <button id="__tourNext" style="padding:5px 14px;font-size:13px;border-radius:6px;background:#4080ff;color:#fff;border:1px solid #3070ee">${idx === total - 1 ? '完成' : '下一步'}</button>
-            </div>
-        `;
+        tourTip.innerHTML = ''
+            + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'
+            + '<span style="font-size:12px;color:#a06080">第 ' + (idx+1) + ' / ' + total + ' 步</span>'
+            + '<button id="__tourSkip" style="background:transparent;border:none;color:#999;font-size:12px;cursor:pointer;padding:2px 6px">跳过</button>'
+            + '</div>'
+            + '<div style="color:#333;line-height:1.7;margin-bottom:12px">' + step.text + '</div>'
+            + '<div style="display:flex;gap:8px;justify-content:flex-end">'
+            + '<button id="__tourPrev" style="padding:5px 14px;font-size:13px;border-radius:6px;background:' + (idx===0?'#f0f0f0':'#fff') + ';color:' + (idx===0?'#bbb':'#444') + ';border:1px solid #ccc" ' + (idx===0?'disabled':'') + '>上一步</button>'
+            + '<button id="__tourNext" style="padding:5px 14px;font-size:13px;border-radius:6px;background:#4080ff;color:#fff;border:1px solid #3070ee">' + (idx === total - 1 ? '完成' : '下一步') + '</button>'
+            + '</div>';
         document.getElementById("__tourSkip").onclick = endTour;
         document.getElementById("__tourNext").onclick = () => showTourStep(idx + 1);
         document.getElementById("__tourPrev").onclick = () => showTourStep(idx - 1);
@@ -3352,7 +3746,6 @@ function repositionTour(){
     tourHl.style.width = (rect.width + pad*2) + "px";
     tourHl.style.height = (rect.height + pad*2) + "px";
 
-    /* tooltip 位置 */
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     const tipW = tourTip.offsetWidth || 300;
@@ -3364,7 +3757,6 @@ function repositionTour(){
         tipLeft = rect.left;
         tipTop = rect.bottom + gap;
         arrow = "top";
-        /* 如果下方放不下就放上方 */
         if(tipTop + tipH > vh - 12){
             tipTop = rect.top - tipH - gap;
             arrow = "bottom";
@@ -3406,6 +3798,9 @@ setInterval(() => {
     if(!$("editModal").classList.contains("hidden")) return;
     if(!$("batchModifyModal").classList.contains("hidden")) return;
     if(!$("featManageModal").classList.contains("hidden")) return;
+    if(!$("batchAddModal").classList.contains("hidden")) return;
+    if(!$("exportModal").classList.contains("hidden")) return;
+    if(!$("importModal").classList.contains("hidden")) return;
     render();
 }, 1000);
 </script>
