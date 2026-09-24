@@ -2002,22 +2002,47 @@ document.addEventListener("click", e => {
 });
 
 function uploadRowImage(pet, field){
-    const ipt = document.createElement("input"); ipt.type = "file"; ipt.accept = "image/*";
+    const ipt = document.createElement("input");
+    ipt.type = "file";
+    ipt.accept = "image/*";
+    ipt.style.display = "none";
+    document.body.appendChild(ipt);
+
+    const cleanup = () => {
+        setTimeout(() => {
+            if(ipt.parentNode) ipt.parentNode.removeChild(ipt);
+        }, 1000);
+    };
+
     ipt.onchange = async () => {
-        const f = ipt.files[0]; if(!f) return;
+        const f = ipt.files[0];
+        cleanup();
+        if(!f) return;
+
         const isCp = field.indexOf("cp") === 0;
         try{
             const blob = await compressToBlob(f, isCp ? 200 : 2000, isCp ? 0.7 : 0.9);
             const nid = "img_" + genId();
             await saveImage(nid, blob);
+
             takeSnapshot("上传图片");
             const old = getFieldValue(pet, field);
             setFieldValue(pet, field, nid);
             if(old && isIndexedImg(old)) safeDeleteImg(old, pet.id);
-            touchPet(pet); saveLocal(); render();
-        }catch(err){ alert("图片处理失败：" + err.message); }
+
+            touchPet(pet);
+            saveLocal();
+            render();
+        }catch(err){
+            alert("图片处理失败：" + err.message);
+        }
     };
+
     ipt.click();
+
+    setTimeout(() => {
+        if(ipt.parentNode) ipt.parentNode.removeChild(ipt);
+    }, 5 * 60 * 1000);
 }
 
 function openBigPreview(src){ $("previewBigImg").src = src; $("imgPreviewModal").classList.add("show"); }
@@ -3288,91 +3313,163 @@ $("btnImport").onclick = () => {
     $("importModal").classList.remove("hidden");
 };
 $("importCancel").onclick = () => $("importModal").classList.add("hidden");
-$("importApply").onclick = () => {
+/* 内容比较：忽略 utime / ctime，逐字段对比 */
+function petDiffers(a, b){
+    const simple = ['name','gender','account','category','breed','timerMode','totalMs','pausedAt','isRunning','startTs','runStartRemain','locked','note','img'];
+    for(let i = 0; i < simple.length; i++){
+        if((a[simple[i]] || "") !== (b[simple[i]] || "")) return true;
+    }
+    if((a.tags || []).join("\u0001") !== (b.tags || []).join("\u0001")) return true;
+    if((a.features || []).join("\u0001") !== (b.features || []).join("\u0001")) return true;
+    const ac1 = a.cp1 || {}, bc1 = b.cp1 || {};
+    if((ac1.name||"") !== (bc1.name||"")) return true;
+    if((ac1.img||"") !== (bc1.img||"")) return true;
+    if((ac1.pairTime||"") !== (bc1.pairTime||"")) return true;
+    const ac2 = a.cp2 || {}, bc2 = b.cp2 || {};
+    if((ac2.name||"") !== (bc2.name||"")) return true;
+    if((ac2.img||"") !== (bc2.img||"")) return true;
+    if((ac2.pairTime||"") !== (bc2.pairTime||"")) return true;
+    return false;
+}
+
+$("importApply").onclick = function(){
     const mode = $("importMode").value;
-    $("importModal").classList.add("hidden");
-    const ipt = document.createElement("input"); ipt.type = "file"; ipt.accept = ".json";
-    ipt.onchange = e => {
-        const f = e.target.files[0]; if(!f) return;
-        const r = new FileReader();
-        r.onload = ev => {
+
+    /* file input 必须挂到 DOM，否则部分手机浏览器 onchange 不触发 */
+    const ipt = document.createElement("input");
+    ipt.type = "file";
+    ipt.accept = ".json,application/json";
+    ipt.style.position = "fixed";
+    ipt.style.left = "-9999px";
+    ipt.style.top = "-9999px";
+    document.body.appendChild(ipt);
+
+    let cleaned = false;
+    function cleanupInput(){
+        if(cleaned) return;
+        cleaned = true;
+        try{ if(ipt.parentNode) ipt.parentNode.removeChild(ipt); }catch(e){}
+    }
+
+    ipt.onchange = function(e){
+        const f = e.target.files && e.target.files[0];
+        cleanupInput();
+        if(!f){ return; }
+        $("importModal").classList.add("hidden");
+
+        const reader = new FileReader();
+        reader.onerror = function(){ alert("读取文件失败，请重试"); };
+        reader.onload = function(ev){
             let obj;
-            try{ obj = JSON.parse(ev.target.result); }catch(err){ alert("导入失败：不是有效的 JSON"); return; }
-            if(!obj || !Array.isArray(obj.pets)){ alert("导入失败：缺少 pets 数组"); return; }
+            try{ obj = JSON.parse(ev.target.result); }
+            catch(err){ alert("导入失败：文件不是有效的 JSON"); return; }
+            if(!obj || !Array.isArray(obj.pets)){
+                alert("导入失败：备份文件缺少 pets 数组");
+                return;
+            }
+
             const migrated = obj.pets.map(normalizePet);
             const images = obj.images || {};
             const imgIds = Object.keys(images);
             const base64List = [];
-            migrated.forEach(p => {
-                if(isBase64Img(p.img)) base64List.push({ p: p, field:"img" });
-                if(p.cp1 && isBase64Img(p.cp1.img)) base64List.push({ p: p, field:"cp1.img" });
-                if(p.cp2 && isBase64Img(p.cp2.img)) base64List.push({ p: p, field:"cp2.img" });
+            migrated.forEach(function(p){
+                if(isBase64Img(p.img)) base64List.push({ p: p, field: "img" });
+                if(p.cp1 && isBase64Img(p.cp1.img)) base64List.push({ p: p, field: "cp1.img" });
+                if(p.cp2 && isBase64Img(p.cp2.img)) base64List.push({ p: p, field: "cp2.img" });
             });
 
+            /* ============ 计算合并结果（不依赖时间戳，只看内容） ============ */
             let confirmMsg = "";
+            let planAdd = [], planUpdate = [], planKeep = [];
+
             if(mode === "replace"){
                 confirmMsg = "覆盖导入将清空现有 " + petList.length + " 只宠物，用备份文件里的 " + migrated.length + " 只替换。\n\n确认继续？";
             } else {
                 const localMap = new Map();
-                petList.forEach(p => localMap.set(p.id, p.utime || 0));
-                let willAdd = 0, willUpdate = 0, willKeep = 0;
-                migrated.forEach(mp => {
-                    const backupTime = mp.utime || 0;
+                petList.forEach(function(p){ localMap.set(p.id, p); });
+                migrated.forEach(function(mp){
                     if(!localMap.has(mp.id)){
-                        willAdd++;
+                        planAdd.push(mp);
                     } else {
-                        const localTime = localMap.get(mp.id);
-                        if(backupTime > localTime) willUpdate++;
-                        else willKeep++;
+                        const exist = localMap.get(mp.id);
+                        if(petDiffers(mp, exist)){
+                            planUpdate.push({ mp: mp, exist: exist });
+                        } else {
+                            planKeep.push(mp);
+                        }
                     }
                 });
-                confirmMsg = "智能合并（按修改时间比较）：\n\n"
-                    + "· 会新增 " + willAdd + " 只宠物\n"
-                    + "· 会更新 " + willUpdate + " 只（备份的修改时间更晚）\n"
-                    + "· 会跳过 " + willKeep + " 只（本地修改时间更晚或相同）\n\n"
-                    + "现有其他 " + (petList.length - willUpdate - willKeep) + " 只宠物不受影响。\n\n"
+                confirmMsg = "智能合并（按内容比较）：\n\n"
+                    + "· 会新增 " + planAdd.length + " 只宠物\n"
+                    + "· 会更新 " + planUpdate.length + " 只（内容不同，用备份覆盖）\n"
+                    + "· 会跳过 " + planKeep.length + " 只（内容完全相同）\n\n"
+                    + "现有其他 " + (petList.length - planUpdate.length - planKeep.length) + " 只宠物不受影响。\n\n"
                     + "确认继续？";
             }
             if(!confirm(confirmMsg)) return;
 
-            takeSnapshot(mode === "replace" ? "覆盖导入" : "智能合并导入");
+            /* ============ 顺序处理图片（避免一次性创建大量 Promise 卡死手机） ============ */
+            function processImagesSequentially(callback){
+                let i = 0;
+                const total = base64List.length + imgIds.length;
+                if(total === 0){ callback(); return; }
 
-            Object.keys(imgUrlCache).forEach(forgetImgUrl);
-            const tasks = [];
-            base64List.forEach(item => tasks.push(
-                base64ToBlob(getFieldValue(item.p, item.field)).then(blob => {
-                    const nid = "img_"+genId(); return saveImage(nid, blob).then(()=>{ setFieldValue(item.p, item.field, nid); });
-                }).catch(()=>{ setFieldValue(item.p, item.field, ""); })
-            ));
-            imgIds.forEach(id => tasks.push(base64ToBlob(images[id]).then(blob => saveImage(id, blob)).catch(()=>{})));
-            Promise.all(tasks).then(() => {
+                function step(){
+                    if(i >= base64List.length){
+                        const j = i - base64List.length;
+                        if(j >= imgIds.length){ callback(); return; }
+                        const id = imgIds[j];
+                        i++;
+                        base64ToBlob(images[id]).then(function(blob){
+                            return saveImage(id, blob);
+                        }).catch(function(){}).then(function(){
+                            setTimeout(step, 0);
+                        });
+                        return;
+                    }
+                    const item = base64List[i];
+                    i++;
+                    base64ToBlob(getFieldValue(item.p, item.field)).then(function(blob){
+                        const nid = "img_" + genId();
+                        return saveImage(nid, blob).then(function(){
+                            setFieldValue(item.p, item.field, nid);
+                        });
+                    }).catch(function(){
+                        setFieldValue(item.p, item.field, "");
+                    }).then(function(){
+                        setTimeout(step, 0);
+                    });
+                }
+                step();
+            }
+
+            processImagesSequentially(function(){
+                /* ============ 合并数据 ============ */
                 let stat = { added: 0, updated: 0, kept: 0 };
+
                 if(mode === "replace"){
                     petList = migrated;
                     stat.added = migrated.length;
                 } else {
-                    migrated.forEach(mp => {
-                        const idx = petList.findIndex(x => x.id === mp.id);
-                        if(idx < 0){
-                            petList.push(mp);
-                            stat.added++;
-                        } else {
-                            const exist = petList[idx];
-                            const backupTime = mp.utime || 0;
-                            const localTime = exist.utime || 0;
-                            if(backupTime > localTime){
-                                const merged = Object.assign({}, mp);
-                                if(!merged.img && exist.img) merged.img = exist.img;
-                                if(merged.cp1 && !merged.cp1.img && exist.cp1 && exist.cp1.img) merged.cp1.img = exist.cp1.img;
-                                if(merged.cp2 && !merged.cp2.img && exist.cp2 && exist.cp2.img) merged.cp2.img = exist.cp2.img;
-                                petList[idx] = merged;
-                                stat.updated++;
-                            } else {
-                                stat.kept++;
-                            }
-                        }
+                    planAdd.forEach(function(mp){
+                        petList.push(mp);
+                        stat.added++;
                     });
+                    planUpdate.forEach(function(item){
+                        const idx = petList.findIndex(function(x){ return x.id === item.mp.id; });
+                        if(idx < 0) return;
+                        const merged = Object.assign({}, item.mp);
+                        /* 备份没图时保留本地图 */
+                        if(!merged.img && item.exist.img) merged.img = item.exist.img;
+                        if(merged.cp1 && !merged.cp1.img && item.exist.cp1 && item.exist.cp1.img) merged.cp1.img = item.exist.cp1.img;
+                        if(merged.cp2 && !merged.cp2.img && item.exist.cp2 && item.exist.cp2.img) merged.cp2.img = item.exist.cp2.img;
+                        petList[idx] = merged;
+                        stat.updated++;
+                    });
+                    stat.kept = planKeep.length;
                 }
+
+                /* 账号 / 品种 / 特征 */
                 if(mode === "replace"){
                     accountOptions = Array.isArray(obj.accounts) ? obj.accounts : [];
                     if(obj.breedMap && typeof obj.breedMap === "object") breedMap = obj.breedMap;
@@ -3381,7 +3478,7 @@ $("importApply").onclick = () => {
                         const isOld = keys.length > 0 && typeof obj.featureMap[keys[0]] === "string";
                         if(isOld){
                             featureMap = initFeatureMapFromDefaults();
-                            Object.keys(obj.featureMap).forEach(name => {
+                            Object.keys(obj.featureMap).forEach(function(name){
                                 const color = obj.featureMap[name];
                                 const guess = guessFeatureCategory(name);
                                 if(guess){
@@ -3399,12 +3496,12 @@ $("importApply").onclick = () => {
                     }
                 } else {
                     if(Array.isArray(obj.accounts)){
-                        obj.accounts.forEach(a => { if(accountOptions.indexOf(a) === -1) accountOptions.push(a); });
+                        obj.accounts.forEach(function(a){ if(accountOptions.indexOf(a) === -1) accountOptions.push(a); });
                     }
                     if(obj.breedMap && typeof obj.breedMap === "object"){
-                        Object.keys(obj.breedMap).forEach(cat => {
+                        Object.keys(obj.breedMap).forEach(function(cat){
                             if(!(cat in breedMap)) breedMap[cat] = [];
-                            (obj.breedMap[cat] || []).forEach(b => {
+                            (obj.breedMap[cat] || []).forEach(function(b){
                                 if(breedMap[cat].indexOf(b) === -1) breedMap[cat].push(b);
                             });
                         });
@@ -3413,7 +3510,7 @@ $("importApply").onclick = () => {
                         const keys = Object.keys(obj.featureMap);
                         const isOld = keys.length > 0 && typeof obj.featureMap[keys[0]] === "string";
                         if(isOld){
-                            Object.keys(obj.featureMap).forEach(name => {
+                            Object.keys(obj.featureMap).forEach(function(name){
                                 const color = obj.featureMap[name];
                                 const guess = guessFeatureCategory(name);
                                 const target = guess || CAT_COMMON;
@@ -3421,31 +3518,48 @@ $("importApply").onclick = () => {
                                 if(!featureMap[target][name]) featureMap[target][name] = color;
                             });
                         } else {
-                            Object.keys(obj.featureMap).forEach(cat => {
+                            Object.keys(obj.featureMap).forEach(function(cat){
                                 if(!featureMap[cat]) featureMap[cat] = {};
-                                Object.keys(obj.featureMap[cat]).forEach(name => {
+                                Object.keys(obj.featureMap[cat]).forEach(function(name){
                                     if(!featureMap[cat][name]) featureMap[cat][name] = obj.featureMap[cat][name];
                                 });
                             });
                         }
                     }
                 }
-                petList.forEach(p => p.features.forEach(f => ensureFeatureExists(f, p.category)));
-                saveLocal(); render();
-                if(mode === "replace"){
-                    alert("导入成功\n模式：覆盖\n共导入 " + migrated.length + " 只\n当前共 " + petList.length + " 只宠物");
-                } else {
-                    alert("导入成功\n模式：智能合并（按修改时间比较）\n"
-                        + "新增 " + stat.added + " 只\n"
-                        + "更新 " + stat.updated + " 只\n"
-                        + "跳过 " + stat.kept + " 只（本地更新）\n\n"
-                        + "当前共 " + petList.length + " 只宠物");
-                }
-            }).catch(err => alert("导入失败："+(err.message||"未知")));
+
+                petList.forEach(function(p){
+                    if(!p.features) return;
+                    p.features.forEach(function(f){ ensureFeatureExists(f, p.category); });
+                });
+
+                saveLocal();
+
+                /* 让出一帧，让 saveLocal 完成后再渲染和弹窗，避免手机卡死 */
+                setTimeout(function(){
+                    render();
+                    setTimeout(function(){
+                        if(mode === "replace"){
+                            alert("导入成功\n模式：覆盖\n共导入 " + migrated.length + " 只\n当前共 " + petList.length + " 只宠物");
+                        } else {
+                            alert("导入成功\n模式：智能合并（内容比较）\n"
+                                + "· 新增 " + stat.added + " 只\n"
+                                + "· 更新 " + stat.updated + " 只\n"
+                                + "· 跳过 " + stat.kept + " 只\n\n"
+                                + "当前共 " + petList.length + " 只宠物");
+                        }
+                    }, 100);
+                }, 0);
+            });
         };
-        r.readAsText(f);
+        reader.readAsText(f);
     };
-    ipt.click();
+
+    /* 用户取消文件选择时不触发 onchange，60 秒后清理 */
+    setTimeout(cleanupInput, 60000);
+
+    /* 稍微延迟一点再打开文件选择器 */
+    setTimeout(function(){ ipt.click(); }, 50);
 };
 
 /* ==================== 批量修改 ==================== */
