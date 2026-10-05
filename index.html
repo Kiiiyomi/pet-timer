@@ -1421,7 +1421,7 @@ function buildCard(p, now, showIdle){
     else if(p.isRunning) status = "⏱计时运行中";
     else status = "⏸托管暂停";
 
-      let idleInfo = "";
+    let idleInfo = "";
     if(showIdle && !p.isRunning && !p.locked && rem <= 0 && p.recoveredAt){
         const idleMs = now - p.recoveredAt;
         idleInfo = '已空闲 ' + msToHMS(idleMs) + '（' + fmtDT(p.recoveredAt) + ' 恢复）';
@@ -1857,6 +1857,7 @@ function updateBatchBar(){
 function updateFilterButtons(){
     document.querySelectorAll(".mf-btn").forEach(btn => {
         const t = btn.dataset.type;
+        if(!t) return;
         const s = filterState[t];
         btn.classList.toggle("active", s.size > 0);
         const labelMap = { status:"状态", gender:"性别", category:"品种大类", breed:"品种", account:"账号", feature:"特征" };
@@ -3908,15 +3909,13 @@ function calculateMatchScore(petA, petB, scheme){
         }
     });
 
-    if(!scheme.acceptFlaw){
-        const aFlaws = aFeats.filter(f => isFlawFeature(f));
+      if(!scheme.acceptFlaw){
         const bFlaws = bFeats.filter(f => isFlawFeature(f));
-        const allFlaws = new Set([...aFlaws, ...bFlaws]);
-        if(allFlaws.size > 0){
-            const penalty = allFlaws.size * 20;
-            score -= penalty;
-            minusItems.push({ label: "⚠️ 有瑕疵（" + Array.from(allFlaws).join("、") + "）", weight: penalty });
-        }
+        bFlaws.forEach(f => {
+            const w = getFlawScore(f);
+            score -= w;
+            minusItems.push({ label: "⚠️ 瑕疵：" + f, weight: w });
+        });
     }
     if(!scheme.acceptSamePartFlaw){
         const aFlaws = aFeats.filter(f => isFlawFeature(f));
@@ -3983,35 +3982,75 @@ function saveCurrentScheme(){
     alert("✓ 已保存方案【" + getCurrentScheme().name + "】");
 }
 
+/* 虚拟品种大类：把狗狗拆成「金毛」「萨摩耶」两个独立大类 */
+function getVirtualCategories(){
+    const result = [];
+    Object.keys(breedMap).forEach(cat => {
+        const breeds = breedMap[cat] || [];
+        if(cat === "狗狗"){
+            breeds.forEach(b => {
+                result.push({ virtualName: b, realCat: cat, breeds: [b] });
+            });
+        } else {
+            result.push({ virtualName: cat, realCat: cat, breeds: breeds.slice() });
+        }
+    });
+    return result;
+}
+
+/* 同步 scheme.categories：真实大类下有任何品种在 breeds 里就保留 */
+function syncCategories(scheme){
+    const catSet = new Set();
+    Object.keys(breedMap).forEach(cat => {
+        const breeds = breedMap[cat] || [];
+        breeds.forEach(b => {
+            if(scheme.breeds.indexOf(b) >= 0) catSet.add(cat);
+        });
+    });
+    scheme.categories = Array.from(catSet);
+}
+
+/* 根据方案勾选的品种大类过滤特征（通用 + 各大类专属） */
+function getFeaturesForScheme(scheme){
+    const set = new Set();
+    Object.keys(featureMap[CAT_COMMON] || {}).forEach(n => set.add(n));
+    if(Array.isArray(scheme.categories) && scheme.categories.length > 0){
+        scheme.categories.forEach(cat => {
+            if(featureMap[cat]) Object.keys(featureMap[cat]).forEach(n => set.add(n));
+        });
+    } else {
+        getAllFeatureNames().forEach(n => set.add(n));
+    }
+    return Array.from(set);
+}
+
 function renderSchemeParams(){
     const wrap = $("schemeParams");
     if(!wrap) return;
     wrap.innerHTML = "";
     const scheme = getCurrentScheme();
     const petA = petList.find(p => p.id === $("matchPetSelect").value);
-    const petCategory = petA ? petA.category : "";
 
     /* 品种大类 / 品种 —— 下拉多选按钮 */
     const catDiv = document.createElement("div");
     catDiv.style.cssText = "margin-bottom:12px";
-    catDiv.innerHTML = '<div style="font-weight:bold;font-size:13px;margin-bottom:6px">品种大类 / 品种（不勾选 = 全部）</div>';
+    catDiv.innerHTML = '<div style="font-weight:bold;font-size:13px;margin-bottom:6px">品种大类 / 品种（不勾选 = 全部，金毛与萨摩耶为独立大类）</div>';
     const catBtnWrap = document.createElement("div");
     catBtnWrap.style.cssText = "display:flex;flex-wrap:wrap;gap:6px;align-items:center";
     const catBtn = document.createElement("button");
     catBtn.className = "mf-btn";
-    const totalSel = scheme.categories.length + scheme.breeds.length;
-    catBtn.innerHTML = '选择品种 / 大类' + (totalSel > 0 ? '<span class="cnt">'+totalSel+'</span>' : '');
+    catBtn.innerHTML = '选择品种 / 大类' + (scheme.breeds.length > 0 ? '<span class="cnt">'+scheme.breeds.length+'</span>' : '');
     catBtn.onclick = e => { e.stopPropagation(); openSchemeCategoryPanel(catBtn, scheme); };
     catBtnWrap.appendChild(catBtn);
-    if(scheme.categories.length > 0){
+    if(scheme.breeds.length > 0){
         const tip = document.createElement("span");
         tip.style.cssText = "font-size:12px;color:#3070ee";
-        tip.textContent = scheme.categories.join("、");
+        tip.textContent = scheme.breeds.length <= 5 ? scheme.breeds.join("、") : (scheme.breeds.slice(0, 4).join("、") + " 等 " + scheme.breeds.length + " 个品种");
         catBtnWrap.appendChild(tip);
     } else {
         const tip = document.createElement("span");
         tip.style.cssText = "font-size:12px;color:#999";
-        tip.textContent = "全部";
+        tip.textContent = "全部（不限制）";
         catBtnWrap.appendChild(tip);
     }
     catDiv.appendChild(catBtnWrap);
@@ -4069,10 +4108,10 @@ function renderSchemeParams(){
     flawDiv.appendChild(flawBtn);
     wrap.appendChild(flawDiv);
 
-    renderSchemeFeatureList(wrap, "加分项（特征）", scheme.plusFeatures, petCategory);
-    renderSchemeTagInput(wrap, "加分项（标签，每行一个标签，可写「标签名=权重」）", scheme.plusTags);
-    renderSchemeFeatureList(wrap, "减分项（特征）", scheme.minusFeatures, petCategory);
-    renderSchemeTagInput(wrap, "减分项（标签，每行一个标签，可写「标签名=权重」）", scheme.minusTags);
+    renderSchemeFeatureList(wrap, "加分项（特征）", scheme.plusFeatures, scheme, "plus");
+    renderSchemeTagInput(wrap, "加分项（标签，每行一个标签，可写「标签名=权重」）", scheme.plusTags, "plus");
+    renderSchemeFeatureList(wrap, "减分项（特征）", scheme.minusFeatures, scheme, "minus");
+    renderSchemeTagInput(wrap, "减分项（标签，每行一个标签，可写「标签名=权重」）", scheme.minusTags, "minus");
 
     /* 底部保存按钮 */
     const btnRow = document.createElement("div");
@@ -4089,32 +4128,52 @@ function renderSchemeParams(){
     wrap.appendChild(btnRow);
 }
 
-/* 品种大类/品种 多选面板 */
+/* 品种大类/品种 多选面板（金毛 / 萨摩耶作为独立大类） */
 function openSchemeCategoryPanel(btn, scheme){
     closeFilterPanel();
     const panel = document.createElement("div");
     panel.className = "mf-panel";
     panel.id = "__mfPanel";
-    panel.style.minWidth = "260px";
-    panel.appendChild(document.createElement("h5")).textContent = "品种大类 / 品种";
+    panel.style.minWidth = "300px";
+    panel.style.maxHeight = "70vh";
+    panel.appendChild(document.createElement("h5")).textContent = "品种大类 / 品种（金毛与萨摩耶为独立大类）";
 
-    const catCbs = [], breedCbs = [];
+    const virtualCats = getVirtualCategories();
+    const catEntries = [];
 
-    Object.keys(breedMap).forEach(cat => {
-        const catRow = document.createElement("label");
-        catRow.style.cssText = "display:flex;align-items:center;gap:6px;padding:4px 6px;font-weight:600;cursor:pointer;border-radius:4px";
+    virtualCats.forEach(entry => {
+        const catRow = document.createElement("div");
+        catRow.style.cssText = "display:flex;align-items:center;gap:4px;padding:4px 0;border-bottom:1px dashed #eee";
+
         const catCb = document.createElement("input");
         catCb.type = "checkbox";
-        catCb.checked = scheme.categories.indexOf(cat) >= 0;
-        catRow.appendChild(catCb);
-        catRow.appendChild(document.createTextNode(cat));
+        const allSelected = entry.breeds.every(b => scheme.breeds.indexOf(b) >= 0);
+        const someSelected = entry.breeds.some(b => scheme.breeds.indexOf(b) >= 0);
+        catCb.checked = allSelected;
+        catCb.indeterminate = !allSelected && someSelected;
+
+        const catLabel = document.createElement("label");
+        catLabel.style.cssText = "flex:1;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;font-size:13px";
+        catLabel.appendChild(catCb);
+        catLabel.appendChild(document.createTextNode(entry.virtualName));
+        catRow.appendChild(catLabel);
+
+        const selAllBtn = document.createElement("button");
+        selAllBtn.textContent = "全选";
+        selAllBtn.style.cssText = "font-size:11px;padding:2px 6px;cursor:pointer;background:#f0f7ff;border:1px solid #a8c8f0;color:#3070ee;border-radius:4px";
+        const selNoneBtn = document.createElement("button");
+        selNoneBtn.textContent = "全不选";
+        selNoneBtn.style.cssText = "font-size:11px;padding:2px 6px;cursor:pointer;background:#fff0f0;border:1px solid #f4c8c8;color:#c82424;border-radius:4px";
+        catRow.appendChild(selAllBtn);
+        catRow.appendChild(selNoneBtn);
         panel.appendChild(catRow);
 
         const breedsWrap = document.createElement("div");
         breedsWrap.style.cssText = "padding-left:22px;display:flex;flex-wrap:wrap;gap:4px 10px;margin-bottom:6px";
-        if(!catCb.checked) breedsWrap.style.display = "none";
+        if(!someSelected) breedsWrap.style.display = "none";
 
-        (breedMap[cat] || []).forEach(b => {
+        const breedCbs = [];
+        entry.breeds.forEach(b => {
             const bLb = document.createElement("label");
             bLb.style.cssText = "display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer";
             const bCb = document.createElement("input");
@@ -4124,62 +4183,108 @@ function openSchemeCategoryPanel(btn, scheme){
             bLb.appendChild(document.createTextNode(b));
             bCb.onchange = () => {
                 if(bCb.checked){
-                    if(scheme.breeds.indexOf(b) === -1) scheme.breeds.push(b);
-                    if(scheme.categories.indexOf(cat) === -1){
-                        scheme.categories.push(cat);
-                        catCb.checked = true;
-                        breedsWrap.style.display = "flex";
-                    }
+                    if(scheme.breeds.indexOf(b) < 0) scheme.breeds.push(b);
                 } else {
-                    scheme.breeds = scheme.breeds.filter(x => x !== b);
+                    const i = scheme.breeds.indexOf(b);
+                    if(i >= 0) scheme.breeds.splice(i, 1);
                 }
+                syncCategories(scheme);
+                refreshCatCheckbox();
                 schemeDirty = true; updateSchemeDirtyTip();
             };
             breedsWrap.appendChild(bLb);
-            breedCbs.push({ cat, breed: b, cb: bCb });
+            breedCbs.push({ breed: b, cb: bCb });
         });
         panel.appendChild(breedsWrap);
 
+        function refreshCatCheckbox(){
+            const all = entry.breeds.every(b => scheme.breeds.indexOf(b) >= 0);
+            const some = entry.breeds.some(b => scheme.breeds.indexOf(b) >= 0);
+            catCb.checked = all;
+            catCb.indeterminate = !all && some;
+            if(some || all) breedsWrap.style.display = "flex";
+            else breedsWrap.style.display = "none";
+        }
+
         catCb.onchange = () => {
             if(catCb.checked){
-                if(scheme.categories.indexOf(cat) === -1) scheme.categories.push(cat);
-                breedsWrap.style.display = "flex";
-            } else {
-                scheme.categories = scheme.categories.filter(x => x !== cat);
-                breedsWrap.style.display = "none";
-                (breedMap[cat] || []).forEach(b => {
-                    scheme.breeds = scheme.breeds.filter(x => x !== b);
+                entry.breeds.forEach(b => {
+                    if(scheme.breeds.indexOf(b) < 0) scheme.breeds.push(b);
                 });
-                breedsWrap.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = false);
+            } else {
+                entry.breeds.forEach(b => {
+                    const i = scheme.breeds.indexOf(b);
+                    if(i >= 0) scheme.breeds.splice(i, 1);
+                });
             }
+            syncCategories(scheme);
+            breedCbs.forEach(x => { x.cb.checked = catCb.checked; });
+            refreshCatCheckbox();
             schemeDirty = true; updateSchemeDirtyTip();
         };
-        catCbs.push({ cat, cb: catCb });
+
+        selAllBtn.onclick = e => {
+            e.preventDefault(); e.stopPropagation();
+            entry.breeds.forEach(b => {
+                if(scheme.breeds.indexOf(b) < 0) scheme.breeds.push(b);
+            });
+            syncCategories(scheme);
+            breedCbs.forEach(x => { x.cb.checked = true; });
+            catCb.checked = true;
+            catCb.indeterminate = false;
+            breedsWrap.style.display = "flex";
+            schemeDirty = true; updateSchemeDirtyTip();
+        };
+        selNoneBtn.onclick = e => {
+            e.preventDefault(); e.stopPropagation();
+            entry.breeds.forEach(b => {
+                const i = scheme.breeds.indexOf(b);
+                if(i >= 0) scheme.breeds.splice(i, 1);
+            });
+            syncCategories(scheme);
+            breedCbs.forEach(x => { x.cb.checked = false; });
+            catCb.checked = false;
+            catCb.indeterminate = false;
+            breedsWrap.style.display = "none";
+            schemeDirty = true; updateSchemeDirtyTip();
+        };
+
+        catEntries.push({ entry, catCb, breedCbs, breedsWrap, refreshCatCheckbox });
     });
 
+    /* 底部：全局全选 / 全不选 */
     const btnRow = document.createElement("div");
-    btnRow.style.cssText = "display:flex;gap:6px;margin-top:6px;padding-top:6px;border-top:1px solid #eee";
+    btnRow.style.cssText = "display:flex;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid #eee";
     const sAll = document.createElement("button");
-    sAll.textContent = "全选";
-    sAll.style.cssText = "flex:1;font-size:12px;padding:4px";
-    sAll.onclick = () => {
-        scheme.categories = Object.keys(breedMap);
-        scheme.breeds = [];
-        Object.keys(breedMap).forEach(c => (breedMap[c]||[]).forEach(b => scheme.breeds.push(b)));
-        catCbs.forEach(x => x.cb.checked = true);
-        breedCbs.forEach(x => x.cb.checked = true);
-        panel.querySelectorAll("div").forEach(d => { if(d.style.display === "none") d.style.display = "flex"; });
+    sAll.textContent = "全部全选";
+    sAll.style.cssText = "flex:1;font-size:12px;padding:4px;background:#e8f5ee;border:1px solid #a8d8c0;color:#1a7a4a;border-radius:4px";
+    sAll.onclick = e => {
+        e.preventDefault(); e.stopPropagation();
+        const allBreeds = [];
+        Object.keys(breedMap).forEach(c => (breedMap[c]||[]).forEach(b => allBreeds.push(b)));
+        scheme.breeds = allBreeds.slice();
+        syncCategories(scheme);
+        catEntries.forEach(({ catCb, breedCbs, breedsWrap }) => {
+            catCb.checked = true;
+            catCb.indeterminate = false;
+            breedCbs.forEach(x => { x.cb.checked = true; });
+            breedsWrap.style.display = "flex";
+        });
         schemeDirty = true; updateSchemeDirtyTip();
     };
     const sNone = document.createElement("button");
-    sNone.textContent = "全不选";
-    sNone.style.cssText = "flex:1;font-size:12px;padding:4px";
-    sNone.onclick = () => {
-        scheme.categories = [];
+    sNone.textContent = "全部全不选";
+    sNone.style.cssText = "flex:1;font-size:12px;padding:4px;background:#fff0f0;border:1px solid #f4c8c8;color:#c82424;border-radius:4px";
+    sNone.onclick = e => {
+        e.preventDefault(); e.stopPropagation();
         scheme.breeds = [];
-        catCbs.forEach(x => x.cb.checked = false);
-        breedCbs.forEach(x => x.cb.checked = false);
-        breedCbs.forEach(x => { x.cb.parentNode.parentNode.style.display = "none"; });
+        syncCategories(scheme);
+        catEntries.forEach(({ catCb, breedCbs, breedsWrap }) => {
+            catCb.checked = false;
+            catCb.indeterminate = false;
+            breedCbs.forEach(x => { x.cb.checked = false; });
+            breedsWrap.style.display = "none";
+        });
         schemeDirty = true; updateSchemeDirtyTip();
     };
     btnRow.appendChild(sAll); btnRow.appendChild(sNone);
@@ -4187,7 +4292,7 @@ function openSchemeCategoryPanel(btn, scheme){
 
     document.body.appendChild(panel);
     const r = btn.getBoundingClientRect();
-    panel.style.left = Math.min(r.left, window.innerWidth - 320) + "px";
+    panel.style.left = Math.min(r.left, window.innerWidth - 340) + "px";
     panel.style.top = (r.bottom + 4) + "px";
 
     const outsideHandler = e => {
@@ -4273,15 +4378,15 @@ function openSchemeAccountPanel(btn, scheme){
     setTimeout(() => document.addEventListener("click", outsideHandler), 0);
 }
 
-function renderSchemeFeatureList(container, title, items, filterCategory){
+function renderSchemeFeatureList(container, title, items, scheme, type){
     const div = document.createElement("div");
-    div.style.cssText = "margin-bottom:12px";
+    div.style.cssText = "margin-bottom:12px;padding:8px;border-radius:8px;background:" + (type === "plus" ? "#f0fbf5" : "#fff5f5") + ";border-left:4px solid " + (type === "plus" ? "#28c76f" : "#e04040");
 
     const head = document.createElement("div");
     head.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:6px";
     const titleEl = document.createElement("div");
-    titleEl.style.cssText = "font-weight:bold;font-size:13px";
-    titleEl.textContent = title;
+    titleEl.style.cssText = "font-weight:bold;font-size:13px;color:" + (type === "plus" ? "#1a9c50" : "#c82424");
+    titleEl.textContent = (type === "plus" ? "✅ " : "❌ ") + title;
     head.appendChild(titleEl);
     const btnGroup = document.createElement("div");
     btnGroup.style.cssText = "display:flex;gap:4px";
@@ -4294,18 +4399,9 @@ function renderSchemeFeatureList(container, title, items, filterCategory){
     div.appendChild(head);
 
     const list = document.createElement("div");
-    list.style.cssText = "max-height:220px;overflow:auto;border:1px solid #e3e8ef;border-radius:6px;padding:6px;background:#fafbfd";
+    list.style.cssText = "max-height:220px;overflow:auto;border:1px solid " + (type === "plus" ? "#c8ead8" : "#f4c8c8") + ";border-radius:6px;padding:6px;background:#fff";
 
-    let featureNames = [];
-    if(filterCategory){
-        const set = new Set();
-        Object.keys(featureMap[CAT_COMMON] || {}).forEach(n => set.add(n));
-        if(featureMap[filterCategory]) Object.keys(featureMap[filterCategory]).forEach(n => set.add(n));
-        featureNames = Array.from(set);
-    } else {
-        featureNames = getAllFeatureNames();
-    }
-    featureNames.sort();
+    const featureNames = getFeaturesForScheme(scheme).sort();
 
     selAllBtn.onclick = () => {
         featureNames.forEach(f => { if(items[f] === undefined) items[f] = 10; });
@@ -4354,13 +4450,18 @@ function renderSchemeFeatureList(container, title, items, filterCategory){
     container.appendChild(div);
 }
 
-function renderSchemeTagInput(container, title, items){
+function renderSchemeTagInput(container, title, items, type){
     const div = document.createElement("div");
-    div.style.cssText = "margin-bottom:12px";
-    div.innerHTML = '<div style="font-weight:bold;font-size:13px;margin-bottom:6px">' + title + '</div>';
+    div.style.cssText = "margin-bottom:12px;padding:8px;border-radius:8px;background:" + (type === "plus" ? "#f0fbf5" : "#fff5f5") + ";border-left:4px solid " + (type === "plus" ? "#28c76f" : "#e04040");
+
+    const titleDiv = document.createElement("div");
+    titleDiv.style.cssText = "font-weight:bold;font-size:13px;margin-bottom:6px;color:" + (type === "plus" ? "#1a9c50" : "#c82424");
+    titleDiv.textContent = (type === "plus" ? "✅ " : "❌ ") + title;
+    div.appendChild(titleDiv);
+
     const ta = document.createElement("textarea");
     ta.rows = 3;
-    ta.style.cssText = "width:100%;font-family:Consolas,Monaco,monospace;font-size:12px;padding:6px";
+    ta.style.cssText = "width:100%;font-family:Consolas,Monaco,monospace;font-size:12px;padding:6px;border:1px solid " + (type === "plus" ? "#c8ead8" : "#f4c8c8");
     const lines = Object.keys(items).map(k => {
         const w = items[k];
         return (w === 10) ? k : (k + "=" + w);
@@ -4409,8 +4510,8 @@ function renderMatchResults(petA, scheme){
         const imgHtml = p.img
             ? '<img class="match-thumb" data-imgid="'+esc(p.img)+'" style="width:48px;height:48px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid #eee;flex-shrink:0" alt="">'
             : '<div style="width:48px;height:48px;border-radius:6px;background:#f0f2f5;flex-shrink:0"></div>';
-        const plusHtml = r.plusItems.length ? r.plusItems.map(x => '<div style="color:#20b060;font-size:11px">' + esc(x.label) + ' +' + x.weight + '</div>').join("") : "";
-        const minusHtml = r.minusItems.length ? r.minusItems.map(x => '<div style="color:#c82424;font-size:11px">' + esc(x.label) + ' -' + x.weight + '</div>').join("") : "";
+        const plusHtml = r.plusItems.length ? r.plusItems.map(x => '<div style="color:#20b060;font-size:11px">✅ ' + esc(x.label) + ' +' + x.weight + '</div>').join("") : "";
+        const minusHtml = r.minusItems.length ? r.minusItems.map(x => '<div style="color:#c82424;font-size:11px">❌ ' + esc(x.label) + ' -' + x.weight + '</div>').join("") : "";
         const scoreColor = r.score < 0 ? "#c82424" : "#3070ee";
         return '<div class="match-result-item" style="display:flex;gap:8px;align-items:flex-start">'
             + imgHtml
@@ -4770,8 +4871,8 @@ function showScoreDetail(petA, petB, result, tempBlob){
         ? (isIndexedImg(petB.img) ? (getImageUrlSync(petB.img) || "") : petB.img)
         : (tempBlob ? URL.createObjectURL(tempBlob) : "");
 
-    const plusHtml = result.plusItems.length ? result.plusItems.map(x => '<div style="color:#20b060;font-size:12px">' + esc(x.label) + ' +' + x.weight + '</div>').join("") : '<div style="color:#999;font-size:12px">无</div>';
-    const minusHtml = result.minusItems.length ? result.minusItems.map(x => '<div style="color:#c82424;font-size:12px">' + esc(x.label) + ' -' + x.weight + '</div>').join("") : '<div style="color:#999;font-size:12px">无</div>';
+    const plusHtml = result.plusItems.length ? result.plusItems.map(x => '<div style="color:#20b060;font-size:12px">✅ ' + esc(x.label) + ' +' + x.weight + '</div>').join("") : '<div style="color:#999;font-size:12px">无</div>';
+    const minusHtml = result.minusItems.length ? result.minusItems.map(x => '<div style="color:#c82424;font-size:12px">❌ ' + esc(x.label) + ' -' + x.weight + '</div>').join("") : '<div style="color:#999;font-size:12px">无</div>';
     const scoreColor = result.score < 0 ? "#c82424" : "#3070ee";
 
     wrap.innerHTML = ''
@@ -4939,7 +5040,7 @@ function tickUpdate(){
         if(remainEl) remainEl.textContent = msToHMS(rem);
         const recoverEl = cardEl.querySelector(".recover-text");
         if(recoverEl) recoverEl.textContent = recover ? "预计恢复 " + fmtDT(recover) : "";
-           const idleEl = cardEl.querySelector(".idle-info");
+        const idleEl = cardEl.querySelector(".idle-info");
         if(idleEl && idleEl.dataset.showIdle === "1"){
             if(!p.isRunning && !p.locked && rem <= 0 && p.recoveredAt){
                 const idleMs = now - p.recoveredAt;
