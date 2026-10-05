@@ -4587,10 +4587,10 @@ function renderMatchResults(petA, scheme){
         const minusHtml = r.minusItems.length ? r.minusItems.map(x => '<div style="color:#c82424;font-size:11px">❌ ' + esc(x.label) + ' -' + x.weight + '</div>').join("") : "";
         const scoreColor = r.score < 0 ? "#c82424" : "#3070ee";
 
-        return '<div class="match-result-item" style="display:flex;gap:8px;align-items:flex-start">'
+               return '<div class="match-result-item" style="display:flex;gap:8px;align-items:flex-start">'
             + imgHtml
             + '<div style="flex:1;min-width:0">'
-            + '<div><span class="name">' + esc(p.name) + '</span> ' + gTag
+            + '<div><button class="star-btn'+(p.inBench?' on':'')+'" data-match-star="'+p.id+'" style="position:static;font-size:16px;padding:0 4px;color:'+(p.inBench?'#f0b840':'#ddd')+'" title="'+(p.inBench?'移出工作台':'加入工作台')+'">'+(p.inBench?'★':'☆')+'</button> <span class="name">' + esc(p.name) + '</span> ' + gTag
             + ' <span class="score" style="color:'+scoreColor+'">' + r.score + ' 分</span>'
             + timeHtml
             + ' <button class="mini-btn" data-match-edit="'+p.id+'" title="编辑档案">✏编辑</button></div>'
@@ -5005,22 +5005,31 @@ function showScoreDetail(petA, petB, result, tempBlob){
     wrap.scrollIntoView({behavior:"smooth", block:"center"});
 }
 
-/* 编辑按钮（推荐列表内） */
+/* 编辑按钮 / 星号收藏（推荐列表内） */
 document.addEventListener("click", e => {
+    const matchStarBtn = e.target.closest("[data-match-star]");
+    if(matchStarBtn){
+        e.stopPropagation();
+        const id = matchStarBtn.dataset.matchStar;
+        const pet = petList.find(x => x.id === id);
+        if(pet){
+            pet.inBench = !pet.inBench;
+            if(!pet.inBench) benchSelectedIds.delete(id);
+            touchPet(pet); saveLocal();
+            /* 只更新按钮和计数，不重建整个推荐列表，避免滚动位置被重置 */
+            matchStarBtn.textContent = pet.inBench ? '★' : '☆';
+            matchStarBtn.classList.toggle('on', pet.inBench);
+            matchStarBtn.style.color = pet.inBench ? '#f0b840' : '#ddd';
+            matchStarBtn.title = pet.inBench ? '移出工作台' : '加入工作台';
+            updateBenchCount();
+        }
+        return;
+    }
     const editBtn = e.target.closest("[data-match-edit]");
     if(editBtn){
         e.stopPropagation();
         const id = editBtn.dataset.matchEdit;
         if(id) openEdit(id);
-        return;
-    }
-    const matchThumb = e.target.closest(".match-thumb");
-    if(matchThumb){
-        const id = matchThumb.getAttribute("data-imgid");
-        if(id){
-            if(isIndexedImg(id)) getImageUrl(id).then(u => u && openBigPreview(u));
-            else openBigPreview(id);
-        }
         return;
     }
 });
