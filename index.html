@@ -612,8 +612,8 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <label>导出范围</label>
 <select id="exportScope" style="width:100%">
   <option value="all">全部宠物（默认）</option>
-  <option value="filtered">仅当前筛选结果（<span id="exportFilteredCount">0</span> 只）</option>
-  <option value="selected">仅勾选的宠物（<span id="exportSelectedCount">0</span> 只）</option>
+   <option value="filtered" id="optFiltered">仅当前筛选结果（0 只）</option>
+  <option value="selected" id="optSelected">仅勾选的宠物（0 只）</option>
   <option value="recent">最近改动过的</option>
 </select>
 <div id="exportRecentDaysWrap" class="hidden" style="margin-top:8px;display:flex;align-items:center;gap:8px">
@@ -3282,8 +3282,8 @@ $("btnExport").onclick = function(){
     try{
         const filteredCount = getFilteredList().length;
         const selectedCount = selectedIds.size;
-        $("exportFilteredCount").textContent = filteredCount;
-        $("exportSelectedCount").textContent = selectedCount;
+        $("optFiltered").textContent = "仅当前筛选结果（" + filteredCount + " 只）";
+        $("optSelected").textContent = "仅勾选的宠物（" + selectedCount + " 只）";
         $("exportScope").value = "all";
         const opt = $("exportScope").querySelector('option[value="recent"]');
         if(opt) opt.textContent = "最近改动过的";
