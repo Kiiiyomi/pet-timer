@@ -376,25 +376,30 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
       <span id="schemeDirtyTip" style="font-size:12px;color:#e08030;margin-left:6px;display:none">⚠️ 有未保存的修改</span>
     </div>
 
-    <div style="display:flex;gap:12px;flex-wrap:wrap">
-      <div style="flex:1;min-width:280px">
-        <h4>选择目标宠物（取当前筛选结果）</h4>
-        <select id="matchPetSelect" style="width:100%"></select>
-        <div id="matchPetInfo" style="margin-top:8px;font-size:13px;color:#666"></div>
-        <button id="matchRunBtn" class="primary" style="margin-top:8px;width:100%">开始匹配</button>
-        <button id="matchScoreBtn" style="margin-top:6px;width:100%;background:#28c76f;color:#fff;border-color:#20b060">📊 匹配度计算</button>
-        <div id="matchScoreDetail" style="margin-top:10px;font-size:13px"></div>
-      </div>
-      <div style="flex:2;min-width:320px">
-        <h4>推荐结果（按分数从高到低）</h4>
-        <div id="matchResults" style="max-height:65vh;overflow:auto"></div>
-      </div>
+    <div style="margin-bottom:12px">
+      <h4>选择目标宠物（优先显示工作台，按剩余时间排序）</h4>
+      <select id="matchPetSelect" style="width:100%"></select>
+      <div id="matchPetInfo" style="margin-top:8px;font-size:13px;color:#666"></div>
+      <button id="matchRunBtn" class="primary" style="margin-top:8px;width:100%">开始匹配</button>
+      <button id="matchScoreBtn" style="margin-top:6px;width:100%;background:#28c76f;color:#fff;border-color:#20b060">📊 匹配度计算</button>
+      <div id="matchScoreDetail" style="margin-top:10px;font-size:13px"></div>
     </div>
 
     <details id="schemeParamsDetails" style="margin-top:16px;border-top:1px solid #eee;padding-top:12px">
       <summary style="cursor:pointer;font-weight:bold;font-size:14px;margin-bottom:8px;color:#3070ee">📋 打分表细则（点击展开/折叠）</summary>
       <div id="schemeParams" style="margin-top:8px"></div>
     </details>
+
+    <div style="margin-top:16px;border-top:1px solid #eee;padding-top:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px">
+        <h4 style="margin:0">推荐结果</h4>
+        <div style="display:flex;gap:4px;font-size:12px">
+          <button id="matchSortByScore" class="mf-btn active" style="font-size:12px;padding:4px 10px">按分数排序</button>
+          <button id="matchSortByTime" class="mf-btn" style="font-size:12px;padding:4px 10px">按时间排序</button>
+        </div>
+      </div>
+      <div id="matchResults" style="max-height:65vh;overflow:auto"></div>
+    </div>
   </div>
 </div>
 
@@ -612,7 +617,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <label>导出范围</label>
 <select id="exportScope" style="width:100%">
   <option value="all">全部宠物（默认）</option>
-   <option value="filtered" id="optFiltered">仅当前筛选结果（0 只）</option>
+  <option value="filtered" id="optFiltered">仅当前筛选结果（0 只）</option>
   <option value="selected" id="optSelected">仅勾选的宠物（0 只）</option>
   <option value="recent">最近改动过的</option>
 </select>
@@ -961,6 +966,7 @@ let currentSchemeId = "";
 let currentMatchPetId = "";
 let schemeDirty = false;
 let tempPetImgBlob = null;
+let matchSortMode = "score"; // "score" | "time"
 
 const filterState = {
     status: new Set(), gender: new Set(), category: new Set(),
@@ -1904,6 +1910,8 @@ let filterOutsideHandler = null;
 
 document.querySelectorAll(".mf-btn").forEach(btn => {
     if(btn.id === "btnClearFilter") return;
+    if(btn.id === "matchSortByScore") return;
+    if(btn.id === "matchSortByTime") return;
     btn.onclick = e => {
         e.stopPropagation();
         const t = btn.dataset.type;
@@ -3851,6 +3859,7 @@ function canMatch(petA, petB, scheme){
     if(isDogConflict(petA, petB)) return false;
     if(scheme){
         if(Array.isArray(scheme.accounts) && scheme.accounts.length > 0){
+            if(scheme.accounts[0] === "__NONE__") return false;
             if(scheme.accounts.indexOf(petB.account) === -1) return false;
         }
         if(Array.isArray(scheme.categories) && scheme.categories.length > 0){
@@ -3878,38 +3887,43 @@ function calculateMatchScore(petA, petB, scheme){
         minusItems.push({ label: "⚠️ 近亲", weight: 999 });
     }
 
-    const aFeats = petA.features || [];
     const bFeats = petB.features || [];
-    const aTags = petA.tags || [];
     const bTags = petB.tags || [];
-    const combined = new Set([...aFeats, ...bFeats]);
 
+    /* 加分项（特征）：只看候选宠物 petB 是否有该特征 */
     Object.keys(scheme.plusFeatures || {}).forEach(fname => {
         const w = Number(scheme.plusFeatures[fname]) || 0;
         if(w === 0) return;
-        if(combined.has(fname)){ score += w; plusItems.push({ label: fname, weight: w }); }
+        if(bFeats.indexOf(fname) >= 0){ score += w; plusItems.push({ label: fname, weight: w }); }
     });
+
+    /* 加分项（标签）：只看候选宠物 petB 是否有该标签 */
     Object.keys(scheme.plusTags || {}).forEach(tagName => {
         const w = Number(scheme.plusTags[tagName]) || 0;
         if(w === 0) return;
-        if(aTags.indexOf(tagName) >= 0 || bTags.indexOf(tagName) >= 0){
+        if(bTags.indexOf(tagName) >= 0){
             score += w; plusItems.push({ label: "🏷️ " + tagName, weight: w });
         }
     });
+
+    /* 减分项（特征）：只看候选宠物 petB 是否有该特征 */
     Object.keys(scheme.minusFeatures || {}).forEach(fname => {
         const w = Number(scheme.minusFeatures[fname]) || 0;
         if(w === 0) return;
-        if(combined.has(fname)){ score -= w; minusItems.push({ label: fname, weight: w }); }
+        if(bFeats.indexOf(fname) >= 0){ score -= w; minusItems.push({ label: fname, weight: w }); }
     });
+
+    /* 减分项（标签）：只看候选宠物 petB 是否有该标签 */
     Object.keys(scheme.minusTags || {}).forEach(tagName => {
         const w = Number(scheme.minusTags[tagName]) || 0;
         if(w === 0) return;
-        if(aTags.indexOf(tagName) >= 0 && bTags.indexOf(tagName) >= 0){
-            score -= w; minusItems.push({ label: "🏷️ 共同标签 " + tagName, weight: w });
+        if(bTags.indexOf(tagName) >= 0){
+            score -= w; minusItems.push({ label: "🏷️ " + tagName, weight: w });
         }
     });
 
-      if(!scheme.acceptFlaw){
+    /* 接受瑕疵：只看候选宠物 petB 是否有瑕疵，每个瑕疵独立扣分 */
+    if(!scheme.acceptFlaw){
         const bFlaws = bFeats.filter(f => isFlawFeature(f));
         bFlaws.forEach(f => {
             const w = getFlawScore(f);
@@ -3917,10 +3931,12 @@ function calculateMatchScore(petA, petB, scheme){
             minusItems.push({ label: "⚠️ 瑕疵：" + f, weight: w });
         });
     }
+
+    /* 接受同部位瑕疵：判断目标宠物 petA 与候选宠物 petB 是否拥有同一个瑕疵 */
     if(!scheme.acceptSamePartFlaw){
-        const aFlaws = aFeats.filter(f => isFlawFeature(f));
-        const bFlaws = bFeats.filter(f => isFlawFeature(f));
-        const shared = aFlaws.filter(f => bFlaws.indexOf(f) >= 0);
+        const aFlaws = (petA.features || []).filter(f => isFlawFeature(f));
+        const bFlaws2 = bFeats.filter(f => isFlawFeature(f));
+        const shared = aFlaws.filter(f => bFlaws2.indexOf(f) >= 0);
         if(shared.length > 0){
             let penalty = 0;
             shared.forEach(f => { penalty += getFlawScore(f); });
@@ -3928,6 +3944,7 @@ function calculateMatchScore(petA, petB, scheme){
             minusItems.push({ label: "⚠️ 同部位瑕疵（" + shared.join("、") + "）", weight: penalty });
         }
     }
+
     return { score: score, plusItems: plusItems, minusItems: minusItems };
 }
 
@@ -4029,7 +4046,6 @@ function renderSchemeParams(){
     if(!wrap) return;
     wrap.innerHTML = "";
     const scheme = getCurrentScheme();
-    const petA = petList.find(p => p.id === $("matchPetSelect").value);
 
     /* 品种大类 / 品种 —— 下拉多选按钮 */
     const catDiv = document.createElement("div");
@@ -4064,12 +4080,18 @@ function renderSchemeParams(){
     accBtnWrap.style.cssText = "display:flex;flex-wrap:wrap;gap:6px;align-items:center";
     const accBtn = document.createElement("button");
     accBtn.className = "mf-btn";
-    accBtn.innerHTML = '选择账号' + (scheme.accounts.length > 0 ? '<span class="cnt">'+scheme.accounts.length+'</span>' : '');
+    const accIsNone = scheme.accounts.length === 1 && scheme.accounts[0] === "__NONE__";
+    const accCount = accIsNone ? 0 : scheme.accounts.length;
+    accBtn.innerHTML = '选择账号' + (accCount > 0 ? '<span class="cnt">'+accCount+'</span>' : '');
     accBtn.onclick = e => { e.stopPropagation(); openSchemeAccountPanel(accBtn, scheme); };
     accBtnWrap.appendChild(accBtn);
     const accTip = document.createElement("span");
-    accTip.style.cssText = "font-size:12px;color:" + (scheme.accounts.length > 0 ? "#3070ee" : "#999");
-    accTip.textContent = scheme.accounts.length > 0 ? scheme.accounts.join("、") : "全部";
+    let accText, accColor;
+    if(accIsNone){ accText = "无（已排除全部）"; accColor = "#c82424"; }
+    else if(scheme.accounts.length === 0){ accText = "全部"; accColor = "#999"; }
+    else { accText = scheme.accounts.join("、"); accColor = "#3070ee"; }
+    accTip.style.cssText = "font-size:12px;color:" + accColor;
+    accTip.textContent = accText;
     accBtnWrap.appendChild(accTip);
     accDiv.appendChild(accBtnWrap);
     wrap.appendChild(accDiv);
@@ -4108,10 +4130,20 @@ function renderSchemeParams(){
     flawDiv.appendChild(flawBtn);
     wrap.appendChild(flawDiv);
 
-    renderSchemeFeatureList(wrap, "加分项（特征）", scheme.plusFeatures, scheme, "plus");
-    renderSchemeTagInput(wrap, "加分项（标签，每行一个标签，可写「标签名=权重」）", scheme.plusTags, "plus");
-    renderSchemeFeatureList(wrap, "减分项（特征）", scheme.minusFeatures, scheme, "minus");
-    renderSchemeTagInput(wrap, "减分项（标签，每行一个标签，可写「标签名=权重」）", scheme.minusTags, "minus");
+    /* 加分项和减分项左右两列齐放 */
+    const twoCol = document.createElement("div");
+    twoCol.style.cssText = "display:flex;gap:12px;flex-wrap:wrap";
+    const leftCol = document.createElement("div");
+    leftCol.style.cssText = "flex:1;min-width:300px";
+    const rightCol = document.createElement("div");
+    rightCol.style.cssText = "flex:1;min-width:300px";
+    renderSchemeFeatureList(leftCol, "加分项（特征）", scheme.plusFeatures, scheme, "plus");
+    renderSchemeTagInput(leftCol, "加分项（标签，每行一个，可写「标签名=权重」）", scheme.plusTags, "plus");
+    renderSchemeFeatureList(rightCol, "减分项（特征）", scheme.minusFeatures, scheme, "minus");
+    renderSchemeTagInput(rightCol, "减分项（标签，每行一个，可写「标签名=权重」）", scheme.minusTags, "minus");
+    twoCol.appendChild(leftCol);
+    twoCol.appendChild(rightCol);
+    wrap.appendChild(twoCol);
 
     /* 底部保存按钮 */
     const btnRow = document.createElement("div");
@@ -4128,7 +4160,7 @@ function renderSchemeParams(){
     wrap.appendChild(btnRow);
 }
 
-/* 品种大类/品种 多选面板（金毛 / 萨摩耶作为独立大类） */
+/* 品种大类/品种 多选面板（金毛 / 萨摩耶作为独立大类；全不选不折叠列表） */
 function openSchemeCategoryPanel(btn, scheme){
     closeFilterPanel();
     const panel = document.createElement("div");
@@ -4170,7 +4202,6 @@ function openSchemeCategoryPanel(btn, scheme){
 
         const breedsWrap = document.createElement("div");
         breedsWrap.style.cssText = "padding-left:22px;display:flex;flex-wrap:wrap;gap:4px 10px;margin-bottom:6px";
-        if(!someSelected) breedsWrap.style.display = "none";
 
         const breedCbs = [];
         entry.breeds.forEach(b => {
@@ -4202,8 +4233,6 @@ function openSchemeCategoryPanel(btn, scheme){
             const some = entry.breeds.some(b => scheme.breeds.indexOf(b) >= 0);
             catCb.checked = all;
             catCb.indeterminate = !all && some;
-            if(some || all) breedsWrap.style.display = "flex";
-            else breedsWrap.style.display = "none";
         }
 
         catCb.onchange = () => {
@@ -4211,14 +4240,15 @@ function openSchemeCategoryPanel(btn, scheme){
                 entry.breeds.forEach(b => {
                     if(scheme.breeds.indexOf(b) < 0) scheme.breeds.push(b);
                 });
+                breedCbs.forEach(x => { x.cb.checked = true; });
             } else {
                 entry.breeds.forEach(b => {
                     const i = scheme.breeds.indexOf(b);
                     if(i >= 0) scheme.breeds.splice(i, 1);
                 });
+                breedCbs.forEach(x => { x.cb.checked = false; });
             }
             syncCategories(scheme);
-            breedCbs.forEach(x => { x.cb.checked = catCb.checked; });
             refreshCatCheckbox();
             schemeDirty = true; updateSchemeDirtyTip();
         };
@@ -4232,7 +4262,6 @@ function openSchemeCategoryPanel(btn, scheme){
             breedCbs.forEach(x => { x.cb.checked = true; });
             catCb.checked = true;
             catCb.indeterminate = false;
-            breedsWrap.style.display = "flex";
             schemeDirty = true; updateSchemeDirtyTip();
         };
         selNoneBtn.onclick = e => {
@@ -4245,11 +4274,10 @@ function openSchemeCategoryPanel(btn, scheme){
             breedCbs.forEach(x => { x.cb.checked = false; });
             catCb.checked = false;
             catCb.indeterminate = false;
-            breedsWrap.style.display = "none";
             schemeDirty = true; updateSchemeDirtyTip();
         };
 
-        catEntries.push({ entry, catCb, breedCbs, breedsWrap, refreshCatCheckbox });
+        catEntries.push({ entry, catCb, breedCbs, refreshCatCheckbox });
     });
 
     /* 底部：全局全选 / 全不选 */
@@ -4264,11 +4292,10 @@ function openSchemeCategoryPanel(btn, scheme){
         Object.keys(breedMap).forEach(c => (breedMap[c]||[]).forEach(b => allBreeds.push(b)));
         scheme.breeds = allBreeds.slice();
         syncCategories(scheme);
-        catEntries.forEach(({ catCb, breedCbs, breedsWrap }) => {
+        catEntries.forEach(({ catCb, breedCbs }) => {
             catCb.checked = true;
             catCb.indeterminate = false;
             breedCbs.forEach(x => { x.cb.checked = true; });
-            breedsWrap.style.display = "flex";
         });
         schemeDirty = true; updateSchemeDirtyTip();
     };
@@ -4279,11 +4306,10 @@ function openSchemeCategoryPanel(btn, scheme){
         e.preventDefault(); e.stopPropagation();
         scheme.breeds = [];
         syncCategories(scheme);
-        catEntries.forEach(({ catCb, breedCbs, breedsWrap }) => {
+        catEntries.forEach(({ catCb, breedCbs }) => {
             catCb.checked = false;
             catCb.indeterminate = false;
             breedCbs.forEach(x => { x.cb.checked = false; });
-            breedsWrap.style.display = "none";
         });
         schemeDirty = true; updateSchemeDirtyTip();
     };
@@ -4304,7 +4330,7 @@ function openSchemeCategoryPanel(btn, scheme){
     setTimeout(() => document.addEventListener("click", outsideHandler), 0);
 }
 
-/* 账号 多选面板 */
+/* 账号 多选面板 —— 用 "__NONE__" 哨兵表示"全部未勾选" */
 function openSchemeAccountPanel(btn, scheme){
     closeFilterPanel();
     const panel = document.createElement("div");
@@ -4318,25 +4344,36 @@ function openSchemeAccountPanel(btn, scheme){
         empty.textContent = "暂无账号";
         panel.appendChild(empty);
     }
+
+    const isNone = scheme.accounts.length === 1 && scheme.accounts[0] === "__NONE__";
     const cbMap = [];
+
+    /* 从复选框状态重建 scheme.accounts */
+    function rebuildAccounts(){
+        const selected = [];
+        cbMap.forEach(({a, cb}) => { if(cb.checked) selected.push(a); });
+        if(selected.length === 0){
+            scheme.accounts = ["__NONE__"];
+        } else if(selected.length === accountOptions.length){
+            scheme.accounts = [];
+        } else {
+            scheme.accounts = selected;
+        }
+        schemeDirty = true; updateSchemeDirtyTip();
+    }
+
     accountOptions.forEach(a => {
         const lb = document.createElement("label");
         const cb = document.createElement("input");
         cb.type = "checkbox";
-        cb.checked = scheme.accounts.length === 0 || scheme.accounts.indexOf(a) >= 0;
-        cb.onchange = () => {
-            if(scheme.accounts.length === 0){
-                scheme.accounts = accountOptions.filter(x => x !== a);
-            } else {
-                if(cb.checked){
-                    if(scheme.accounts.indexOf(a) === -1) scheme.accounts.push(a);
-                    if(scheme.accounts.length === accountOptions.length) scheme.accounts = [];
-                } else {
-                    scheme.accounts = scheme.accounts.filter(x => x !== a);
-                }
-            }
-            schemeDirty = true; updateSchemeDirtyTip();
-        };
+        if(isNone){
+            cb.checked = false;
+        } else if(scheme.accounts.length === 0){
+            cb.checked = true;
+        } else {
+            cb.checked = scheme.accounts.indexOf(a) >= 0;
+        }
+        cb.onchange = rebuildAccounts;
         lb.appendChild(cb);
         lb.appendChild(document.createTextNode(a));
         panel.appendChild(lb);
@@ -4349,17 +4386,15 @@ function openSchemeAccountPanel(btn, scheme){
     sAll.textContent = "全选";
     sAll.style.cssText = "flex:1;font-size:12px;padding:4px";
     sAll.onclick = () => {
-        scheme.accounts = [];
-        cbMap.forEach(x => x.cb.checked = true);
-        schemeDirty = true; updateSchemeDirtyTip();
+        cbMap.forEach(x => { x.cb.checked = true; });
+        rebuildAccounts();
     };
     const sNone = document.createElement("button");
     sNone.textContent = "全不选";
     sNone.style.cssText = "flex:1;font-size:12px;padding:4px";
     sNone.onclick = () => {
-        scheme.accounts = [];
-        cbMap.forEach(x => x.cb.checked = false);
-        schemeDirty = true; updateSchemeDirtyTip();
+        cbMap.forEach(x => { x.cb.checked = false; });
+        rebuildAccounts();
     };
     btnRow.appendChild(sAll); btnRow.appendChild(sNone);
     panel.appendChild(btnRow);
@@ -4491,14 +4526,41 @@ function updateSchemeDirtyTip(){
 }
 
 function renderMatchResults(petA, scheme){
+    const now = Date.now();
     const results = [];
     petList.forEach(petB => {
         if(petB.id === petA.id) return;
         if(!canMatch(petA, petB, scheme)) return;
         const m = calculateMatchScore(petA, petB, scheme);
-        results.push({ pet: petB, score: m.score, plusItems: m.plusItems, minusItems: m.minusItems });
+        const rem = getRemain(petB, now);
+        const recover = getRecoverTime(petB, now);
+        const isIdle = !petB.isRunning && !petB.locked && rem <= 0;
+        results.push({ pet: petB, score: m.score, plusItems: m.plusItems, minusItems: m.minusItems, rem, recover, isIdle });
     });
-    results.sort((a,b) => b.score - a.score);
+
+    /* 按当前模式排序 */
+    if(matchSortMode === "score"){
+        results.sort((a, b) => b.score - a.score);
+    } else {
+        results.sort((a, b) => {
+            if(a.rem !== b.rem) return a.rem - b.rem;
+            if(a.isIdle && b.isIdle){
+                const ia = a.pet.recoveredAt || 0;
+                const ib = b.pet.recoveredAt || 0;
+                return ia - ib;
+            }
+            return 0;
+        });
+    }
+
+    /* 更新排序按钮高亮 */
+    const scoreBtn = $("matchSortByScore");
+    const timeBtn = $("matchSortByTime");
+    if(scoreBtn && timeBtn){
+        scoreBtn.classList.toggle("active", matchSortMode === "score");
+        timeBtn.classList.toggle("active", matchSortMode === "time");
+    }
+
     const wrap = $("matchResults");
     if(results.length === 0){
         wrap.innerHTML = '<div style="color:#999;padding:20px;text-align:center">暂无符合条件的宠物</div>';
@@ -4510,15 +4572,28 @@ function renderMatchResults(petA, scheme){
         const imgHtml = p.img
             ? '<img class="match-thumb" data-imgid="'+esc(p.img)+'" style="width:48px;height:48px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid #eee;flex-shrink:0" alt="">'
             : '<div style="width:48px;height:48px;border-radius:6px;background:#f0f2f5;flex-shrink:0"></div>';
+
+        let timeHtml = "";
+        if(r.isIdle){
+            const idleMs = now - (p.recoveredAt || now);
+            timeHtml = '<span style="font-size:11px;color:#20b060;margin-left:6px">🟢空闲 ' + msToHMS(idleMs) + '</span>';
+        } else if(r.recover){
+            timeHtml = '<span style="font-size:11px;color:#888;margin-left:6px">⏱剩余 ' + msToHMS(r.rem) + '</span>';
+        } else {
+            timeHtml = '<span style="font-size:11px;color:#888;margin-left:6px">⏸暂停 ' + msToHMS(r.rem) + '</span>';
+        }
+
         const plusHtml = r.plusItems.length ? r.plusItems.map(x => '<div style="color:#20b060;font-size:11px">✅ ' + esc(x.label) + ' +' + x.weight + '</div>').join("") : "";
         const minusHtml = r.minusItems.length ? r.minusItems.map(x => '<div style="color:#c82424;font-size:11px">❌ ' + esc(x.label) + ' -' + x.weight + '</div>').join("") : "";
         const scoreColor = r.score < 0 ? "#c82424" : "#3070ee";
+
         return '<div class="match-result-item" style="display:flex;gap:8px;align-items:flex-start">'
             + imgHtml
             + '<div style="flex:1;min-width:0">'
             + '<div><span class="name">' + esc(p.name) + '</span> ' + gTag
             + ' <span class="score" style="color:'+scoreColor+'">' + r.score + ' 分</span>'
-            + ' <button class="mini-btn" data-match-jump="'+p.id+'">跳转</button></div>'
+            + timeHtml
+            + ' <button class="mini-btn" data-match-edit="'+p.id+'" title="编辑档案">✏编辑</button></div>'
             + '<div style="font-size:12px;color:#666;margin-top:2px">' + esc(p.breed||"-") + '｜' + esc(p.account||"-") + '</div>'
             + (plusHtml || minusHtml ? '<div style="margin-top:4px;border-top:1px dashed #eee;padding-top:3px">' + plusHtml + minusHtml + '</div>' : '')
             + '</div></div>';
@@ -4539,13 +4614,37 @@ function initMatchSelect(){
     if(!sel) return;
     const curVal = sel.value;
     sel.innerHTML = '<option value="">--请选择--</option>';
-    const filtered = getFilteredList();
-    filtered.forEach(p => {
-        const o = document.createElement("option");
-        o.value = p.id;
-        o.textContent = p.name + "（" + (p.account||"-") + " / " + (p.breed||"-") + "）";
-        sel.appendChild(o);
-    });
+
+    const now = Date.now();
+    function cmpRemain(a, b){
+        const ra = getRemain(a, now);
+        const rb = getRemain(b, now);
+        if(ra !== rb) return ra - rb;
+        return (a.recoveredAt || 0) - (b.recoveredAt || 0);
+    }
+
+    const benchPets = petList.filter(p => p.inBench).sort(cmpRemain);
+    const otherPets = petList.filter(p => !p.inBench).sort(cmpRemain);
+
+    function addGroup(label, pets){
+        if(pets.length === 0) return;
+        const optGroup = document.createElement("optgroup");
+        optGroup.label = label;
+        pets.forEach(p => {
+            const o = document.createElement("option");
+            o.value = p.id;
+            const rem = getRemain(p, now);
+            const isIdle = !p.isRunning && !p.locked && rem <= 0;
+            const remText = isIdle ? "空闲" : msToHMS(rem);
+            o.textContent = p.name + "（" + (p.account||"-") + " / " + (p.breed||"-") + " · " + remText + "）";
+            optGroup.appendChild(o);
+        });
+        sel.appendChild(optGroup);
+    }
+
+    addGroup("⭐ 工作台", benchPets);
+    addGroup("其他宠物", otherPets);
+
     if(curVal) sel.value = curVal;
     const petA = petList.find(p => p.id === sel.value);
     $("matchPetInfo").innerHTML = petA
@@ -4563,6 +4662,16 @@ function initMatchSelect(){
 
 $("matchPetSelect").onchange = initMatchSelect;
 $("matchRunBtn").onclick = runMatch;
+$("matchSortByScore").onclick = () => {
+    matchSortMode = "score";
+    const petA = petList.find(p => p.id === $("matchPetSelect").value);
+    if(petA) renderMatchResults(petA, getCurrentScheme());
+};
+$("matchSortByTime").onclick = () => {
+    matchSortMode = "time";
+    const petA = petList.find(p => p.id === $("matchPetSelect").value);
+    if(petA) renderMatchResults(petA, getCurrentScheme());
+};
 
 $("matchSchemeSelect").onchange = function(){
     if(schemeDirty){
@@ -4765,7 +4874,6 @@ $("scoreCalcTemp").onclick = () => {
     renderTempPetFeatureQuick();
 };
 
-/* 临时宠物特征快捷区 */
 function renderTempPetFeatureQuick(){
     const wrap = $("tempPetFeatQuick");
     if(!wrap) return;
@@ -4897,25 +5005,13 @@ function showScoreDetail(petA, petB, result, tempBlob){
     wrap.scrollIntoView({behavior:"smooth", block:"center"});
 }
 
-/* 跳转宠物卡片 */
+/* 编辑按钮（推荐列表内） */
 document.addEventListener("click", e => {
-    const jumpBtn = e.target.closest("[data-match-jump]");
-    if(jumpBtn){
-        const id = jumpBtn.dataset.matchJump;
-        const pet = petList.find(x => x.id === id);
-        if(pet){
-            $("searchInput").value = pet.name;
-            document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
-            const cardTab = document.querySelector('.view-tab[data-view="card"]');
-            if(cardTab) cardTab.classList.add("active");
-            currentView = "card";
-            $("cardView").classList.remove("hidden");
-            $("tableView").classList.add("hidden");
-            $("dashboardView").classList.add("hidden");
-            $("benchView").classList.add("hidden");
-            $("matchView").classList.add("hidden");
-            render();
-        }
+    const editBtn = e.target.closest("[data-match-edit]");
+    if(editBtn){
+        e.stopPropagation();
+        const id = editBtn.dataset.matchEdit;
+        if(id) openEdit(id);
         return;
     }
     const matchThumb = e.target.closest(".match-thumb");
