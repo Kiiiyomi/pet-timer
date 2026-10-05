@@ -177,7 +177,6 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .backup-banner{background:linear-gradient(135deg,#fff8e6 0%,#fff2d8 100%);border-bottom:1px solid #f0e0a0;padding:8px 12px;font-size:12px;color:#8a6a10;display:flex;align-items:center;gap:8px;justify-content:center;position:relative}
 .backup-banner .close-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#8a6a10;font-size:18px;cursor:pointer;padding:0 6px;line-height:1}
 .backup-banner .close-btn:hover{color:#c82424}
-
 .paw-btn{position:fixed;right:20px;bottom:20px;width:52px;height:52px;border-radius:50%;background:#fff;border:2px solid #f5c8d8;box-shadow:0 3px 12px rgba(245,200,216,.5);cursor:pointer;z-index:700;display:flex;align-items:center;justify-content:center;transition:.2s;padding:0;opacity:.9;font-size:24px;line-height:1}
 .paw-btn:hover{opacity:1;border-color:#e9a8be;box-shadow:0 5px 18px rgba(245,200,216,.75);transform:scale(1.05)}
 .paw-btn:active{transform:scale(.95)}
@@ -185,7 +184,6 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .paw-menu button{background:transparent;border:none;text-align:left;padding:10px 14px;font-size:14px;border-radius:8px;color:#444;cursor:pointer;display:flex;align-items:center;gap:10px}
 .paw-menu button:hover{background:#fff0f5}
 .paw-menu button .ico{font-size:16px;width:20px;text-align:center}
-
 .tip-tabs{display:flex;gap:6px;justify-content:center;margin:10px 0}
 .tip-tab{padding:6px 22px;border-radius:16px;border:1px solid #ddd;background:#fff;cursor:pointer;font-size:13px;color:#666}
 .tip-tab.active{background:#4080ff;color:#fff;border-color:#4080ff;font-weight:500}
@@ -203,7 +201,6 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .tip-qr-header .tip-qr-close:hover{color:#c82424}
 .tip-qr-panel img{max-width:220px;width:100%;border-radius:8px;display:block;margin:0 auto}
 .tip-footer{text-align:center;color:#aaa;font-size:12px;margin-top:8px;line-height:1.6}
-
 .feedback-row{margin:14px 0;padding:10px 12px;background:#f8f9fb;border-radius:8px}
 .feedback-row label{display:block;font-size:12px;color:#888;margin-bottom:6px;font-weight:500}
 .email-wrap{display:flex;gap:6px;align-items:center}
@@ -213,20 +210,25 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .email-wrap button.copied{background:#28c76f;border-color:#1fa85a}
 .feedback-row .q-btn{width:100%;padding:10px;font-size:14px;background:#4080ff;color:#fff;border-color:#3070ee}
 .feedback-row .q-btn:hover{background:#3070ee}
-
 .tour-highlight{position:fixed;border-radius:10px;box-shadow:0 0 0 4px rgba(245,200,216,.9), 0 0 0 9999px rgba(0,0,0,.55);z-index:2000;pointer-events:none}
 .tour-tip{position:fixed;z-index:2001;background:#fff;padding:14px 18px;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.18);max-width:320px;font-size:14px;line-height:1.6}
 .tour-tip::before{content:"";position:absolute;width:0;height:0;border:8px solid transparent}
 .tour-tip.arrow-top::before{top:-16px;left:30px;border-bottom-color:#fff}
 .tour-tip.arrow-bottom::before{bottom:-16px;left:30px;border-top-color:#fff}
-
 .compat-warn{background:#fff3cd;border:1px solid #ffc107;color:#856404;padding:12px 16px;border-radius:8px;margin:12px;font-size:14px;line-height:1.7}
 .compat-warn b{color:#a06000}
-
 .hint-block{font-size:12px;color:#666;background:#f8f9fb;padding:10px 12px;border-radius:6px;margin-bottom:8px;line-height:1.8}
 .hint-block code{background:#eef3fa;padding:1px 5px;border-radius:3px;font-family:Consolas,Monaco,monospace;color:#3070ee}
 .hint-block .warn-text{color:#c82424;font-weight:500}
 .hint-block .title{font-weight:600;color:#444;margin-bottom:4px;display:block}
+.pet-card.large-img .avatar-wrap { width: 120px; height: 120px; }
+.pet-card.large-img .card-head { align-items: flex-start; }
+.match-panel{background:#fff;border:1px solid #e3e8ef;border-radius:10px;padding:14px}
+.match-panel h4{margin:0 0 8px;font-size:14px;color:#444}
+.match-result-item{border:1px solid #e3e8ef;border-radius:8px;padding:8px;margin-bottom:8px;background:#fff}
+.match-result-item .name{font-weight:bold;font-size:14px}
+.match-result-item .score{color:#3070ee;font-weight:bold}
+.match-result-item .reasons{font-size:12px;color:#666;margin-top:4px}
 </style>
 </head>
 <body>
@@ -261,10 +263,11 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <button class="view-tab" data-view="table">📊 表格</button>
 <button class="view-tab" data-view="dashboard">📈 仪表盘</button>
 <button class="view-tab" data-view="bench">⭐ 工作台<span id="benchCount" style="color:#d99f30;font-weight:bold;margin-left:4px"></span></button>
+<button class="view-tab" data-view="match">💞 速配</button>
 </div>
 
 <div class="search-row">
-<input id="searchInput" placeholder="🔍搜索名字/标签/账号/品种/特征..." style="flex:1;min-width:220px">
+<input id="searchInput" placeholder="🔍搜索名字/标签/品种/特征/CP对象/备注（空格分隔多个关键词）..." style="flex:1;min-width:220px">
 </div>
 
 <div class="filter-row">
@@ -280,6 +283,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <option value="remain">排序：剩余时间</option>
 <option value="recoverTime">排序：预计恢复时间</option>
 <option value="pairTime">排序：预计配对时间</option>
+<option value="idleTime">排序：空闲时间</option>
 </select>
 <label class="sort-lock" id="sortLockWrap" title="勾选后，编辑宠物时列表顺序不会自动重排">
     <input type="checkbox" id="sortLockChk"> 🔒 锁定排序
@@ -288,7 +292,12 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 
 <div class="filter-hint hidden" id="filterHint"></div>
 
-<div id="cardView"><div id="petContainer"></div></div>
+<div id="cardView">
+  <div style="margin-bottom:6px;display:flex;justify-content:flex-end">
+    <button id="btnToggleCardSize" style="font-size:12px;padding:4px 10px">切换大图</button>
+  </div>
+  <div id="petContainer"></div>
+</div>
 
 <div id="tableView" class="hidden">
 <div style="margin-bottom:6px;display:flex;justify-content:flex-end">
@@ -355,6 +364,104 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 </div>
 </div>
 
+<!-- ===== 速配视图 ===== -->
+<div id="matchView" class="hidden">
+  <div class="match-panel">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+      <label style="font-size:13px">打分方案：</label>
+      <select id="matchSchemeSelect" style="min-width:180px"></select>
+      <button id="btnSaveScheme" class="primary" style="font-size:12px;padding:4px 10px">💾 保存</button>
+      <button id="btnSaveAsScheme" style="font-size:12px;padding:4px 10px">📋 另存为方案</button>
+      <button id="btnManageSchemes" style="font-size:12px;padding:4px 10px">⚙️ 管理方案</button>
+      <span id="schemeDirtyTip" style="font-size:12px;color:#e08030;margin-left:6px;display:none">⚠️ 有未保存的修改</span>
+    </div>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:280px">
+        <h4>选择目标宠物（取当前筛选结果）</h4>
+        <select id="matchPetSelect" style="width:100%"></select>
+        <div id="matchPetInfo" style="margin-top:8px;font-size:13px;color:#666"></div>
+        <button id="matchRunBtn" class="primary" style="margin-top:8px;width:100%">开始匹配</button>
+        <button id="matchScoreBtn" style="margin-top:6px;width:100%;background:#28c76f;color:#fff;border-color:#20b060">📊 匹配度计算</button>
+        <div id="matchScoreDetail" style="margin-top:10px;font-size:13px"></div>
+      </div>
+      <div style="flex:2;min-width:320px">
+        <h4>推荐结果（按分数从高到低）</h4>
+        <div id="matchResults" style="max-height:65vh;overflow:auto"></div>
+      </div>
+    </div>
+
+    <details id="schemeParamsDetails" style="margin-top:16px;border-top:1px solid #eee;padding-top:12px">
+      <summary style="cursor:pointer;font-weight:bold;font-size:14px;margin-bottom:8px;color:#3070ee">📋 打分表细则（点击展开/折叠）</summary>
+      <div id="schemeParams" style="margin-top:8px"></div>
+    </details>
+  </div>
+</div>
+
+<!-- 匹配度计算弹窗 -->
+<div class="modal hidden" id="scoreCalcModal"><div class="modal-box" style="max-width:560px">
+  <div class="modal-header">
+    <h3>匹配度计算</h3>
+    <div class="modal-header-btns">
+      <button id="closeScoreCalc">关闭</button>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:12px">
+    <button id="scoreCalcExisting" class="primary" style="flex:1;padding:8px">🐾 现有宠物</button>
+    <button id="scoreCalcTemp" style="flex:1;padding:8px">✨ 新增临时宠物档案</button>
+  </div>
+  <div id="scoreCalcBody"></div>
+</div></div>
+
+<!-- 临时宠物表单弹窗 -->
+<div class="modal hidden" id="tempPetModal"><div class="modal-box" style="max-width:520px">
+  <div class="modal-header">
+    <h3>新增临时宠物档案</h3>
+    <div class="modal-header-btns">
+      <button class="primary" id="tempPetCalc">计算匹配度</button>
+      <button id="tempPetCancel">取消</button>
+    </div>
+  </div>
+  <div class="form-row">
+    <label>宠物图片（选填，可上传或粘贴）</label>
+    <input type="file" accept="image/*" id="tempPetImg">
+    <div class="paste-zone" id="tempPetPasteZone" tabindex="0">📋 点击此处后按 Ctrl+V 粘贴图片</div>
+    <div id="tempPetPreviewWrap" style="margin-top:5px;display:none;align-items:center;gap:6px">
+      <img id="tempPetPreview" style="max-width:100px;max-height:100px;border-radius:6px;border:1px solid #ddd">
+      <button type="button" id="tempPetClearImg" style="padding:3px 6px;font-size:12px">清除</button>
+    </div>
+  </div>
+  <div class="form-row"><label>品种（选填）</label>
+    <select id="tempPetBreed" style="width:100%"></select>
+  </div>
+  <div class="form-row"><label>特征（可点击下方快速选择，或手动输入，一行一个）</label>
+    <textarea id="tempPetFeatures" rows="2" style="width:100%"></textarea>
+    <div class="feat-quick-area" id="tempPetFeatQuick"></div>
+  </div>
+  <div class="form-row"><label>标签（选填，一行一个）</label>
+    <textarea id="tempPetTags" rows="2" style="width:100%"></textarea>
+  </div>
+  <div class="form-row"><label>昵称（选填）</label>
+    <input type="text" id="tempPetName" style="width:100%" placeholder="不填则显示为「临时宠物」">
+  </div>
+</div></div>
+
+<!-- 管理方案弹窗 -->
+<div class="modal hidden" id="schemeManageModal"><div class="modal-box" style="max-width:680px">
+  <div class="modal-header">
+    <h3>管理打分方案</h3>
+    <div class="modal-header-btns">
+      <button id="closeSchemeManage">关闭</button>
+    </div>
+  </div>
+  <div style="font-size:12px;color:#666;margin-bottom:8px">每个方案独立配置账号范围、品种大类/品种、瑕疵接受度、加分项、减分项。方案会随备份一起导出/导入。</div>
+  <div id="schemeListWrap" style="max-height:50vh;overflow:auto"></div>
+  <div style="margin-top:10px;display:flex;gap:6px">
+    <input id="newSchemeName" placeholder="新方案名" style="flex:1">
+    <button id="addSchemeBtn">新建方案</button>
+  </div>
+</div></div>
+
 <div class="batch-bar hidden" id="batchBar">
 <span id="batchCount">已选 0 只</span>
 <button id="batchModify" class="hl">批量修改</button>
@@ -395,7 +502,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <button id="closeFeatManage">关闭</button>
 </div>
 </div>
-<div style="font-size:12px;color:#666;margin-bottom:8px">按品种大类分类。改名时若目标名已存在，会询问是否合并。</div>
+<div style="font-size:12px;color:#666;margin-bottom:8px">按品种大类分类。改名时若目标名已存在，会询问是否合并。「瑕疵」勾选后，速配时会被识别为瑕疵特征。</div>
 <div class="feat-cat-tabs" id="featCatTabs"></div>
 <div class="feat-batch-bar">
   <label><input type="checkbox" id="featSelectAll"> 全选本分类</label>
@@ -439,7 +546,10 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 </select></div>
 <div class="form-row"><label class="chk-label"><input type="checkbox" id="bmFeatAddEnable"> 添加特征</label><input type="text" id="bmFeatAdd" placeholder="输入特征名" list="bmFeatList" style="width:100%;margin-top:4px"></div>
 <div class="form-row"><label class="chk-label"><input type="checkbox" id="bmFeatDelEnable"> 删除特征</label><input type="text" id="bmFeatDel" placeholder="输入特征名" list="bmFeatList" style="width:100%;margin-top:4px"></div>
+<div class="form-row"><label class="chk-label"><input type="checkbox" id="bmTagAddEnable"> 增加标签</label><input type="text" id="bmTagAdd" placeholder="输入标签名" list="bmTagList" style="width:100%;margin-top:4px"></div>
+<div class="form-row"><label class="chk-label"><input type="checkbox" id="bmTagDelEnable"> 删除标签</label><input type="text" id="bmTagDel" placeholder="输入标签名" list="bmTagList" style="width:100%;margin-top:4px"></div>
 <datalist id="bmFeatList"></datalist>
+<datalist id="bmTagList"></datalist>
 </div></div>
 
 <!-- 批量新建宠物 -->
@@ -546,17 +656,16 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <div class="form-row">
 <label>导入方式</label>
 <select id="importMode" style="width:100%">
-  <option value="merge">智能合并（推荐）：按修改时间比较，谁新用谁</option>
+  <option value="merge">智能合并（推荐）：按内容比较，不同则更新</option>
   <option value="replace">覆盖：清空现有数据后导入</option>
 </select>
 </div>
 <div style="font-size:12px;color:#888;background:#f8f9fb;padding:10px;border-radius:6px;margin-top:8px;line-height:1.7">
-  <b>智能合并规则：</b><br>
-  · 备份里和现有 id 相同，且备份的修改时间更晚：用备份覆盖<br>
-  · 备份里和现有 id 相同，但本地修改时间更晚或相同：保留本地<br>
-  · 备份里新增的宠物：追加<br>
-  · 现有但不在备份里的宠物：保留<br>
-  · 图片字段：如果备份里没图而本地有图，保留本地图
+  <b>智能合并规则（按内容比较，不看时间）：</b><br>
+  · 备份里 id 不存在：新增<br>
+  · 备份里 id 存在，内容不同：用备份覆盖（备份没图时保留本地图）<br>
+  · 备份里 id 存在，内容完全相同：跳过<br>
+  · 现有但不在备份里的宠物：保留
 </div>
 </div></div>
 
@@ -610,6 +719,14 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <label>宠物特征（可手动输入，新特征会新增入库）</label>
 <textarea id="petFeatures" rows="2" placeholder="一行一个特征名"></textarea>
 <div class="feat-quick-area" id="featQuickArea"></div>
+</div>
+
+<div class="form-row">
+<label>家谱（用于速配判断近亲，可留空）</label>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<input type="text" id="petSire" placeholder="父亲昵称" style="flex:1;min-width:120px">
+<input type="text" id="petDam" placeholder="母亲昵称" style="flex:1;min-width:120px">
+</div>
 </div>
 
 <div class="form-row"><label>总时长</label>
@@ -759,7 +876,6 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
   <p style="color:#a06080;margin-top:16px">如果这个工具帮到了你，欢迎投喂小咪 🐱</p>
 </div>
 </div></div>
-
 <script>
 /* ==================== 兼容性检测 ==================== */
 (function checkCompat(){
@@ -783,47 +899,25 @@ const DEFAULT_FEATURE_COLOR = "#7eb6ff";
 const CAT_COMMON = "_common";
 
 const PAYMENT_QR = {
-  wechat: {
-    "default": "./wechat-default.png",
-    "1.00": "./wechat-1.png",
-    "3.00": "./wechat-3.png",
-    "6.66": "./wechat-6.66.png",
-    "9.90": "./wechat-9.9.png"
-  },
-  alipay: {
-    "default": "./alipay-default.png",
-    "1.00": "./alipay-1.png",
-    "3.00": "./alipay-3.png",
-    "6.66": "./alipay-6.66.png",
-    "9.90": "./alipay-9.9.png"
-  }
+  wechat: { "default": "./wechat-default.png","1.00": "./wechat-1.png","3.00": "./wechat-3.png","6.66": "./wechat-6.66.png","9.90": "./wechat-9.9.png" },
+  alipay: { "default": "./alipay-default.png","1.00": "./alipay-1.png","3.00": "./alipay-3.png","6.66": "./alipay-6.66.png","9.90": "./alipay-9.9.png" }
 };
 const FEEDBACK_EMAIL = "pet_timer_feedback@163.com";
 const FEEDBACK_URL = "https://wj.qq.com/s2/27978561/omr3/";
 const BACKUP_BANNER_KEY = "petTimerBackupBannerClosed";
 const BENCH_GUIDE_KEY = "petTimerBenchGuideShown";
+const FLAW_COLORS = ["#000000", "#333333", "#808080", "#999999", "#666666"];
 
 const DEFAULT_CATEGORIES = {
     "猫猫": ["英短金渐层","英短纯白","英短三花","英短蓝猫","英短银渐层","英短重色","英短蓝白","英短纯黑","英短虎斑"],
     "狐狸": ["火球狐","宝贝狐","彩虹虎威狐","沙之狐","雪绒狐","钛晶狐","夜月狐"],
-    "兔兔": [
-        "纯白垂耳兔","纯白大垂耳兔","纯白大耳兔",
-        "野兔色垂耳兔","野兔色大垂耳兔","野兔色大耳兔",
-        "重点垂耳兔","重点大垂耳兔","重点大耳兔",
-        "玳瑁垂耳兔","玳瑁大垂耳兔","玳瑁大耳兔",
-        "道奇大垂耳兔","道奇大耳兔",
-        "碎花大垂耳兔","碎花大耳兔"
-    ],
+    "兔兔": ["纯白垂耳兔","纯白大垂耳兔","纯白大耳兔","野兔色垂耳兔","野兔色大垂耳兔","野兔色大耳兔","重点垂耳兔","重点大垂耳兔","重点大耳兔","玳瑁垂耳兔","玳瑁大垂耳兔","玳瑁大耳兔","道奇大垂耳兔","道奇大耳兔","碎花大垂耳兔","碎花大耳兔"],
     "荔枝喵": ["又睡了之喵","有实力之喵","玉笋灵竹喵","榆树林子喵","野参灵芝喵","严肃理智喵","一生浪子喵"],
     "狗狗": ["金毛","萨摩耶"]
 };
 const DEFAULT_FEATURES_BY_CAT = {
     "_common": ["美瞳","背","黑胡子","灰胡子"],
-    "狐狸": [
-        "黑下巴","星围脖","雪糕帽","棒棒糖","挂围兜","宝贝帽","头戴雪花","雪球",
-        "雪花纹身","狐火","斑点尾","星星脸","环纹耳","水晶底","黑肚皮","额头火苗",
-        "胸前三爱心","水晶块","头顶猪","云朵飘飘","银项链","月亮","彩虹","云朵底","后背四叶草"
-    ],
+    "狐狸": ["黑下巴","星围脖","雪糕帽","棒棒糖","挂围兜","宝贝帽","头戴雪花","雪球","雪花纹身","狐火","斑点尾","星星脸","环纹耳","水晶底","黑肚皮","额头火苗","胸前三爱心","水晶块","头顶猪","云朵飘飘","银项链","月亮","彩虹","云朵底","后背四叶草"],
     "猫猫": ["爱心鼻","戴眼罩","胸背爱心","胸前领结","囧囧眉","凶凶眉","八嘎胡"],
     "荔枝喵": ["垂泪脸","蝴蝶背","实力眼","豆豆眉","眯眯眼","嚼叶子","戴眼镜","鼻涕泡","背剪刀","戴睡帽","键盘底","纸箱壳","竹子壳","荔枝壳","叶子底","灵芝底","布料底","顶蘑菇","顶叶子","枕头底"],
     "兔兔": ["戴帽子","蝴蝶结","花瓣背","贪吃嘴","戴手套","腮红脸","爱心耳"],
@@ -857,6 +951,17 @@ let featSelected = new Set();
 let lastSnapshot = null;
 let tipCurrentTab = "wechat";
 let tipCurrentAmt = null;
+let cardLargeImg = false;
+let flawScores = {};
+let mainAccount = "";
+
+/* 速配方案 */
+let matchSchemes = [];
+let currentSchemeId = "";
+let currentMatchPetId = "";
+let schemeDirty = false;
+let tempPetImgBlob = null;
+
 const filterState = {
     status: new Set(), gender: new Set(), category: new Set(),
     breed: new Set(), account: new Set(), feature: new Set()
@@ -879,11 +984,8 @@ const touchPet = (p,ts) => { if(p) p.utime = ts || Date.now(); };
 function hexToRgba(hex, alpha){
     if(!hex || hex[0] !== "#" || (hex.length !== 7 && hex.length !== 4)) return "rgba(64,128,255,"+alpha+")";
     let r, g, b;
-    if(hex.length === 7){
-        r = parseInt(hex.slice(1,3),16); g = parseInt(hex.slice(3,5),16); b = parseInt(hex.slice(5,7),16);
-    } else {
-        r = parseInt(hex[1]+hex[1],16); g = parseInt(hex[2]+hex[2],16); b = parseInt(hex[3]+hex[3],16);
-    }
+    if(hex.length === 7){ r = parseInt(hex.slice(1,3),16); g = parseInt(hex.slice(3,5),16); b = parseInt(hex.slice(5,7),16); }
+    else { r = parseInt(hex[1]+hex[1],16); g = parseInt(hex[2]+hex[2],16); b = parseInt(hex[3]+hex[3],16); }
     return "rgba("+r+","+g+","+b+","+alpha+")";
 }
 function getFeatureColor(name){
@@ -894,6 +996,17 @@ function getFeatureColor(name){
         if(featureMap[cat] && featureMap[cat][name]) return featureMap[cat][name];
     }
     return DEFAULT_FEATURE_COLOR;
+}
+function isFlawFeature(name){
+    if(!name) return false;
+    if(flawScores && typeof flawScores[name] === "number") return true;
+    const c = getFeatureColor(name).toLowerCase();
+    return FLAW_COLORS.indexOf(c) >= 0;
+}
+function getFlawScore(name){
+    if(!name) return 0;
+    if(flawScores && typeof flawScores[name] === "number") return flawScores[name];
+    return 10;
 }
 function featureChip(name){
     const c = getFeatureColor(name);
@@ -914,10 +1027,7 @@ function ensureFeatureExists(featureName, petCategory){
 function removeFeatureEverywhere(featureName){
     let found = false;
     Object.keys(featureMap).forEach(cat => {
-        if(featureMap[cat] && featureMap[cat][featureName]){
-            delete featureMap[cat][featureName];
-            found = true;
-        }
+        if(featureMap[cat] && featureMap[cat][featureName]){ delete featureMap[cat][featureName]; found = true; }
     });
     return found;
 }
@@ -930,25 +1040,11 @@ function renameFeatureEverywhere(oldName, newName){
     }
     if(existsCat){
         const usedCount = countPetsByFeature(oldName);
-        const mergeMsg = "特征「"+newName+"」已存在于【"+getFeatCatLabel(existsCat)+"】分类中。\n\n"
-            + "是否将「"+oldName+"」合并到「"+newName+"」？\n\n"
-            + "合并后：\n"
-            + "  · 有 " + usedCount + " 只宠物使用「"+oldName+"」，将全部改为「"+newName+"」\n"
-            + "  · 特征库中「"+oldName+"」条目被删除";
-        if(!confirm(mergeMsg)) return false;
+        if(!confirm("特征「"+newName+"」已存在于【"+getFeatCatLabel(existsCat)+"】分类中。\n\n是否将「"+oldName+"」合并到「"+newName+"」？\n\n合并后 "+usedCount+" 只宠物将全部改为「"+newName+"」。")) return false;
         takeSnapshot("合并特征「"+oldName+"」→「"+newName+"」");
-        petList.forEach(p => {
-            if(Array.isArray(p.features)){
-                p.features = p.features.map(f => f === oldName ? newName : f);
-            }
-        });
-        Object.keys(featureMap).forEach(cat => {
-            if(featureMap[cat] && featureMap[cat][oldName]) delete featureMap[cat][oldName];
-        });
-        if(filterState.feature.has(oldName)){
-            filterState.feature.delete(oldName);
-            filterState.feature.add(newName);
-        }
+        petList.forEach(p => { if(Array.isArray(p.features)) p.features = p.features.map(f => f === oldName ? newName : f); });
+        Object.keys(featureMap).forEach(cat => { if(featureMap[cat] && featureMap[cat][oldName]) delete featureMap[cat][oldName]; });
+        if(filterState.feature.has(oldName)){ filterState.feature.delete(oldName); filterState.feature.add(newName); }
         return true;
     }
     takeSnapshot("重命名特征「"+oldName+"」→「"+newName+"」");
@@ -962,31 +1058,20 @@ function renameFeatureEverywhere(oldName, newName){
         }
     });
     if(!found) return false;
-    petList.forEach(p => {
-        if(Array.isArray(p.features)){
-            p.features = p.features.map(f => f === oldName ? newName : f);
-        }
-    });
-    if(filterState.feature.has(oldName)){
-        filterState.feature.delete(oldName);
-        filterState.feature.add(newName);
-    }
+    petList.forEach(p => { if(Array.isArray(p.features)) p.features = p.features.map(f => f === oldName ? newName : f); });
+    if(filterState.feature.has(oldName)){ filterState.feature.delete(oldName); filterState.feature.add(newName); }
     return true;
 }
 function getAllFeatureNames(){
     const s = new Set();
-    Object.keys(featureMap).forEach(cat => {
-        Object.keys(featureMap[cat] || {}).forEach(n => s.add(n));
-    });
+    Object.keys(featureMap).forEach(cat => { Object.keys(featureMap[cat] || {}).forEach(n => s.add(n)); });
     return Array.from(s);
 }
 function getVisibleFeatureNames(){
     if(filterState.category.size === 0) return getAllFeatureNames();
     const set = new Set();
     Object.keys(featureMap[CAT_COMMON] || {}).forEach(n => set.add(n));
-    filterState.category.forEach(cat => {
-        if(featureMap[cat]) Object.keys(featureMap[cat]).forEach(n => set.add(n));
-    });
+    filterState.category.forEach(cat => { if(featureMap[cat]) Object.keys(featureMap[cat]).forEach(n => set.add(n)); });
     return Array.from(set);
 }
 function countPetsByFeature(name){
@@ -994,18 +1079,15 @@ function countPetsByFeature(name){
     petList.forEach(p => { if((p.features||[]).indexOf(name) >= 0) n++; });
     return n;
 }
-function getFeatCatLabel(cat){
-    if(cat === CAT_COMMON) return "共有";
-    return cat;
-}
+function getFeatCatLabel(cat){ return cat === CAT_COMMON ? "共有" : cat; }
+
 function takeSnapshot(desc){
     lastSnapshot = {
         petList: JSON.parse(JSON.stringify(petList)),
         featureMap: JSON.parse(JSON.stringify(featureMap)),
         breedMap: JSON.parse(JSON.stringify(breedMap)),
         accountOptions: accountOptions.slice(),
-        desc: desc,
-        ts: Date.now()
+        desc: desc, ts: Date.now()
     };
     updateUndoBtn();
 }
@@ -1018,8 +1100,7 @@ function undoLast(){
     breedMap = lastSnapshot.breedMap;
     accountOptions = lastSnapshot.accountOptions;
     lastSnapshot = null;
-    saveLocal(); render();
-    updateUndoBtn();
+    saveLocal(); render(); updateUndoBtn();
     alert("✓ 已撤回：" + d);
 }
 function updateUndoBtn(){
@@ -1050,6 +1131,25 @@ function parsePairTime(v){
     if(!v) return null;
     const t = new Date(v.replace(" ","T")).getTime();
     return isNaN(t) ? null : t;
+}
+
+/* ==================== 导入内容比较 ==================== */
+function petDiffers(a, b){
+    const simple = ['name','gender','account','category','breed','timerMode','totalMs','pausedAt','isRunning','startTs','runStartRemain','locked','note','img','sire','dam','recoveredAt'];
+    for(let i = 0; i < simple.length; i++){
+        if((a[simple[i]] || "") !== (b[simple[i]] || "")) return true;
+    }
+    if((a.tags || []).join("\u0001") !== (b.tags || []).join("\u0001")) return true;
+    if((a.features || []).join("\u0001") !== (b.features || []).join("\u0001")) return true;
+    const ac1 = a.cp1 || {}, bc1 = b.cp1 || {};
+    if((ac1.name||"") !== (bc1.name||"")) return true;
+    if((ac1.img||"") !== (bc1.img||"")) return true;
+    if((ac1.pairTime||"") !== (bc1.pairTime||"")) return true;
+    const ac2 = a.cp2 || {}, bc2 = b.cp2 || {};
+    if((ac2.name||"") !== (bc2.name||"")) return true;
+    if((ac2.img||"") !== (bc2.img||"")) return true;
+    if((ac2.pairTime||"") !== (bc2.pairTime||"")) return true;
+    return false;
 }
 
 /* ==================== IndexedDB ==================== */
@@ -1130,13 +1230,15 @@ function safeDeleteImg(imgId, excludePetId){
 function safeSave(){
     try{
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
-            pets: petList, accounts: accountOptions, breedMap, featureMap
+            pets: petList, accounts: accountOptions, breedMap, featureMap,
+            flawScores: flawScores, mainAccount: mainAccount,
+            matchSchemes: matchSchemes, currentSchemeId: currentSchemeId
         }));
         return true;
     }catch(e){
         console.warn("写入失败", e);
         try{
-            const slim = {pets:petList.map(p => Object.assign({}, p, {img:""})), accounts:accountOptions, breedMap, featureMap};
+            const slim = {pets:petList.map(p => Object.assign({}, p, {img:""})), accounts:accountOptions, breedMap, featureMap, flawScores:flawScores, mainAccount:mainAccount, matchSchemes:matchSchemes, currentSchemeId:currentSchemeId};
             localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
             alert("⚠️ 本地存储已满！已紧急丢弃图片字段。请立即导出备份。"); return false;
         }catch(e2){ alert("⚠️ 本地存储写不进去！请立即导出备份。"); return false; }
@@ -1179,7 +1281,10 @@ function normalizePet(p){
         isRunning: !!p.isRunning, startTs: p.startTs || null,
         runStartRemain: p.runStartRemain !== undefined ? p.runStartRemain : null,
         locked: !!p.locked, note: p.note || "",
-        inBench: !!p.inBench
+        inBench: !!p.inBench,
+        recoveredAt: p.recoveredAt || 0,
+        sire: p.sire || "", dam: p.dam || "",
+        bodyType: p.bodyType || "", baseColor: p.baseColor || ""
     };
 }
 function loadFromLocal(){
@@ -1189,6 +1294,10 @@ function loadFromLocal(){
         const obj = JSON.parse(raw);
         petList = (Array.isArray(obj.pets) ? obj.pets : []).map(normalizePet);
         accountOptions = Array.isArray(obj.accounts) ? obj.accounts : [];
+        flawScores = obj.flawScores && typeof obj.flawScores === "object" ? obj.flawScores : {};
+        mainAccount = obj.mainAccount || "";
+        matchSchemes = Array.isArray(obj.matchSchemes) ? obj.matchSchemes : [];
+        currentSchemeId = obj.currentSchemeId || "";
         if(obj.breedMap && typeof obj.breedMap === "object"){
             breedMap = obj.breedMap;
             Object.keys(DEFAULT_CATEGORIES).forEach(k => { if(!(k in breedMap)) breedMap[k] = DEFAULT_CATEGORIES[k]; });
@@ -1201,13 +1310,8 @@ function loadFromLocal(){
                 Object.keys(obj.featureMap).forEach(name => {
                     const color = obj.featureMap[name];
                     const guess = guessFeatureCategory(name);
-                    if(guess){
-                        if(!featureMap[guess]) featureMap[guess] = {};
-                        featureMap[guess][name] = color;
-                    } else {
-                        if(!featureMap[CAT_COMMON]) featureMap[CAT_COMMON] = {};
-                        featureMap[CAT_COMMON][name] = color;
-                    }
+                    if(guess){ if(!featureMap[guess]) featureMap[guess] = {}; featureMap[guess][name] = color; }
+                    else { if(!featureMap[CAT_COMMON]) featureMap[CAT_COMMON] = {}; featureMap[CAT_COMMON][name] = color; }
                 });
             } else {
                 featureMap = obj.featureMap;
@@ -1216,9 +1320,7 @@ function loadFromLocal(){
         } else {
             featureMap = initFeatureMapFromDefaults();
         }
-        Object.keys(DEFAULT_FEATURES_BY_CAT).forEach(cat => {
-            if(!featureMap[cat]) featureMap[cat] = {};
-        });
+        Object.keys(DEFAULT_FEATURES_BY_CAT).forEach(cat => { if(!featureMap[cat]) featureMap[cat] = {}; });
     }catch(e){ console.error("加载失败", e); featureMap = initFeatureMapFromDefaults(); }
 }
 
@@ -1237,7 +1339,7 @@ function getRecoverTime(p, now){
 function startTimer(p, now){
     now = now || Date.now();
     p.runStartRemain = p.isRunning ? getRemain(p, now) : (p.pausedAt != null ? p.pausedAt : (p.totalMs || 0));
-    p.isRunning = true; p.startTs = now; touchPet(p, now);
+    p.isRunning = true; p.startTs = now; p.recoveredAt = 0; touchPet(p, now);
 }
 function pauseTimer(p, now){
     now = now || Date.now();
@@ -1246,12 +1348,13 @@ function pauseTimer(p, now){
 function resetTimer(p, now){
     now = now || Date.now();
     p.isRunning = false; p.startTs = null; p.runStartRemain = null;
-    p.pausedAt = p.totalMs || 0; p.locked = false; touchPet(p, now);
+    p.pausedAt = p.totalMs || 0; p.locked = false; p.recoveredAt = 0; touchPet(p, now);
 }
 function deliverBaby(p, now){
     now = now || Date.now();
     p.locked = false; p.timerMode = "normal";
     p.totalMs = hmToMs(72,0); p.pausedAt = p.totalMs; p.isRunning = false; p.runStartRemain = null;
+    p.recoveredAt = 0;
     startTimer(p, now);
 }
 const FEMALE_LOCK_MS = hmToMs(72,0);
@@ -1260,7 +1363,13 @@ function checkAutoLock(now){
     let changed = false; const alerts = [];
     petList.forEach(p => {
         if(p.isRunning && !p.locked && p.timerMode !== "breedFemale"){
-            if(getRemain(p, now) <= 0){ p.isRunning = false; p.pausedAt = 0; p.runStartRemain = null; touchPet(p, now); changed = true; }
+            if(getRemain(p, now) <= 0){
+                p.isRunning = false;
+                p.pausedAt = 0;
+                p.runStartRemain = null;
+                p.recoveredAt = now;
+                changed = true;
+            }
         }
         if(p.timerMode === "breedFemale" && p.isRunning && !p.locked){
             if(getRemain(p, now) <= FEMALE_LOCK_MS){
@@ -1293,14 +1402,16 @@ function calcWaitTime(p, now){
 }
 
 /* ==================== 卡片 ==================== */
-function buildCard(p, now){
+function buildCard(p, now, showIdle){
     const div = document.createElement("div");
-    div.className = "pet-card" + (p.locked ? " locked" : "") + (p.inBench ? " bench-starred" : "");
+    div.className = "pet-card" + (p.locked ? " locked" : "") + (p.inBench ? " bench-starred" : "") + (cardLargeImg ? " large-img" : "");
     const rem = getRemain(p, now);
     const recover = getRecoverTime(p, now);
     const cp1Name = (p.cp1 && p.cp1.name || "").trim();
     const cp2Name = (p.cp2 && p.cp2.name || "").trim();
     const isWaitPair = !p.locked && rem <= 0 && cp1Name !== "";
+    div.dataset.cardId = p.id;
+    div.dataset.stateKey = p.locked ? "locked" : (rem <= 0 ? (cp1Name ? "waitpair" : "idle") : (p.isRunning ? "cd" : "paused"));
 
     let status = "";
     if(p.locked) status = "🔒待手动接生";
@@ -1309,6 +1420,12 @@ function buildCard(p, now){
     }
     else if(p.isRunning) status = "⏱计时运行中";
     else status = "⏸托管暂停";
+
+      let idleInfo = "";
+    if(showIdle && !p.isRunning && !p.locked && rem <= 0 && p.recoveredAt){
+        const idleMs = now - p.recoveredAt;
+        idleInfo = '已空闲 ' + msToHMS(idleMs) + '（' + fmtDT(p.recoveredAt) + ' 恢复）';
+    }
 
     let cpLine = "";
     if(!isWaitPair && (cp1Name || cp2Name)){
@@ -1334,8 +1451,9 @@ function buildCard(p, now){
             cpLine+
             '<div style="margin:3px 0">'+tagHtml+'</div>'+
             (featHtml ? '<div style="margin:3px 0">'+featHtml+'</div>' : '')+
-            '<div class="timer-area">'+status+' · 剩余 '+msToHMS(rem)+
-                (recover ? '<div style="font-size:11px;color:#888">预计恢复 '+fmtDT(recover)+'</div>' : '')+
+            '<div class="timer-area"><span class="status-text">'+status+'</span> · 剩余 <span class="remain-text">'+msToHMS(rem)+'</span>'+
+                '<div class="recover-text" style="font-size:11px;color:#888">'+(recover ? '预计恢复 '+fmtDT(recover) : '')+'</div>'+
+                '<div class="idle-info" data-show-idle="'+(showIdle?"1":"0")+'" style="font-size:11px;color:#888">'+idleInfo+'</div>'+
             '</div>'+
         '</div></div>'+
         noteHtml+
@@ -1366,6 +1484,8 @@ function buildTableRow(p, now){
     if(selectedIds.has(p.id)) tr.classList.add("selected");
     const rem = getRemain(p, now);
     const recover = getRecoverTime(p, now);
+    const cp1NameForState = (p.cp1 && p.cp1.name || "").trim();
+    tr.dataset.stateKey = p.locked ? "locked" : (rem <= 0 ? (cp1NameForState ? "waitpair" : "idle") : (p.isRunning ? "cd" : "paused"));
     let status = "";
     if(p.locked) status = "🔒待接生";
     else if(rem <= 0){
@@ -1391,14 +1511,14 @@ function buildTableRow(p, now){
         '<td class="select-cell" data-field="account" data-id="'+p.id+'">'+esc(p.account||"-")+'</td>'+
         '<td class="select-cell" data-field="category" data-id="'+p.id+'">'+esc(p.category||"-")+'</td>'+
         '<td class="select-cell" data-field="breed" data-id="'+p.id+'">'+esc(p.breed||"-")+'</td>'+
-        '<td>'+status+'</td>'+
-        '<td style="font-size:12px">'+(recover ? fmtDT(recover) : "-")+'</td>'+
+        '<td class="status-cell">'+status+'</td>'+
+        '<td class="recover-cell" style="font-size:12px">'+(recover ? fmtDT(recover) : "-")+'</td>'+
         '<td class="tags-cell" data-id="'+p.id+'" style="cursor:pointer;white-space:normal;max-width:140px">'+tagHtml+'</td>'+
         '<td class="feat-cell" data-id="'+p.id+'" style="cursor:pointer;white-space:normal;max-width:160px">'+featHtml+'</td>'+
         '<td class="cp-col">'+cp1ImgHtml+'</td>'+
         '<td class="edit-cell cp-col" data-field="cp1.name" data-id="'+p.id+'">'+esc(cp1.name||"-")+'</td>'+
         '<td class="edit-cell cp-col" data-field="cp1.pairTime" data-id="'+p.id+'">'+esc(cp1.pairTime||"-")+'</td>'+
-        '<td class="cp-col" style="font-size:12px">'+calcWaitTime(p, now)+'</td>'+
+        '<td class="cp-col wait-cell" style="font-size:12px">'+calcWaitTime(p, now)+'</td>'+
         '<td class="cp-col">'+cp2ImgHtml+'</td>'+
         '<td class="edit-cell cp-col" data-field="cp2.name" data-id="'+p.id+'">'+esc(cp2.name||"-")+'</td>'+
         '<td class="edit-cell cp-col" data-field="cp2.pairTime" data-id="'+p.id+'">'+esc(cp2.pairTime||"-")+'</td>'+
@@ -1567,36 +1687,30 @@ function drawStackedBar(id, labels, males, females){
     const ctx = $(id); if(!ctx) return;
     chartRefs[id] = new Chart(ctx, {
         type: "bar",
-        data: {
-            labels: labels,
-            datasets: [
-                { label: "公", data: males, backgroundColor: "#348ede" },
-                { label: "母", data: females, backgroundColor: "#e85496" }
-            ]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
+        data: { labels: labels, datasets: [
+            { label: "公", data: males, backgroundColor: "#348ede" },
+            { label: "母", data: females, backgroundColor: "#e85496" }
+        ]},
+        options: { responsive: true, maintainAspectRatio: false,
             plugins: { legend: { position: "top", labels: { font: { size: 12 } } } },
-            scales: {
-                x: { stacked: true, ticks: { font: { size: 11 } } },
-                y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } }
-            }
-        }
+            scales: { x: { stacked: true, ticks: { font: { size: 11 } } }, y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } } } }
     });
 }
 
 /* ==================== 筛选/排序 ==================== */
 function getFilteredList(now){
     now = now || Date.now();
-    const kw = $("searchInput").value.trim().toLowerCase();
+    const rawKw = $("searchInput").value.trim().toLowerCase();
+    const kws = rawKw ? rawKw.split(/\s+/).filter(Boolean) : [];
     const sortMode = $("sortModeSel").value;
     let list = petList.slice();
-    if(kw){
+    if(kws.length){
         list = list.filter(p => {
-            const hay = [p.name, p.account, p.category, p.breed,
+            const hay = [p.name, p.category, p.breed,
                 (p.tags||[]).join(","), (p.features||[]).join(","),
-                (p.cp1 && p.cp1.name || ""), (p.cp2 && p.cp2.name || "")].join(" ").toLowerCase();
-            return hay.indexOf(kw) >= 0;
+                (p.cp1 && p.cp1.name || ""), (p.cp2 && p.cp2.name || ""),
+                p.sire || "", p.dam || "", p.note || ""].join(" ").toLowerCase();
+            return kws.every(kw => hay.indexOf(kw) >= 0);
         });
     }
     if(filterState.status.size){
@@ -1647,14 +1761,13 @@ function getFilteredList(now){
         const pb = (b.cp1 && b.cp1.pairTime) ? parsePairTime(b.cp1.pairTime) || Infinity : Infinity;
         return pa - pb;
     });
+    else if(sortMode === "idleTime") list.sort((a,b) => (b.recoveredAt||0) - (a.recoveredAt||0));
     return list;
 }
 function freezeCurrentOrder(){
-    const now = Date.now();
-    const list = getFilteredList(now);
+    const list = getFilteredList(Date.now());
     frozenOrder = list.map(p => p.id);
 }
-
 function render(){
     const now = Date.now();
     if(checkAutoLock(now)) saveLocal();
@@ -1692,6 +1805,8 @@ function render(){
         renderDashboard();
     } else if(currentView === "bench"){
         renderBench(now);
+    } else if(currentView === "match"){
+        initMatchSelect();
     }
     updateBatchBar();
     updateFilterButtons();
@@ -1712,9 +1827,16 @@ function renderBench(now){
         return;
     }
     $("benchEmpty").classList.add("hidden");
-    benchList.sort((a,b) => (b.utime||0) - (a.utime||0));
+    benchList.sort((a,b) => {
+        const ra = a.recoveredAt || 0;
+        const rb = b.recoveredAt || 0;
+        if(ra === 0 && rb === 0) return (b.utime||0) - (a.utime||0);
+        if(ra === 0) return 1;
+        if(rb === 0) return -1;
+        return rb - ra;
+    });
     benchList.forEach(p => {
-        const card = buildCard(p, now);
+        const card = buildCard(p, now, true);
         const chkWrap = document.createElement("label");
         chkWrap.style.cssText = "position:absolute;top:8px;left:8px;z-index:2;background:#fff;border:1px solid #ddd;border-radius:4px;padding:2px 5px;cursor:pointer;font-size:12px";
         chkWrap.innerHTML = '<input type="checkbox" class="bench-check" data-id="'+p.id+'"'+(benchSelectedIds.has(p.id)?" checked":"")+' style="margin:0 3px 0 0;vertical-align:middle">';
@@ -1742,20 +1864,15 @@ function updateFilterButtons(){
     });
 }
 
-/* 清除筛选 */
 $("btnClearFilter").onclick = () => {
     let hadAny = false;
     Object.keys(filterState).forEach(k => {
         if(filterState[k].size > 0){ hadAny = true; filterState[k].clear(); }
     });
     if($("searchInput").value.trim()){ hadAny = true; $("searchInput").value = ""; }
-    if(hadAny){
-        closeFilterPanel();
-        render();
-    }
+    if(hadAny){ closeFilterPanel(); render(); }
 };
 
-/* ==================== CP 列折叠 ==================== */
 function applyCpColVisibility(){
     const tbl = $("petTable");
     if(tbl) tbl.classList.toggle("hide-cp", !showCpCols);
@@ -1766,8 +1883,12 @@ $("btnToggleCp").onclick = function(){
     showCpCols = !showCpCols;
     applyCpColVisibility();
 };
+$("btnToggleCardSize").onclick = function(){
+    cardLargeImg = !cardLargeImg;
+    this.textContent = cardLargeImg ? "切换小图" : "切换大图";
+    render();
+};
 
-/* ==================== 排序锁定 ==================== */
 $("sortLockChk").onchange = function(){
     sortLocked = this.checked;
     $("sortLockWrap").classList.toggle("locked", sortLocked);
@@ -1781,9 +1902,11 @@ let activeFilterBtn = null;
 let filterOutsideHandler = null;
 
 document.querySelectorAll(".mf-btn").forEach(btn => {
+    if(btn.id === "btnClearFilter") return;
     btn.onclick = e => {
         e.stopPropagation();
         const t = btn.dataset.type;
+        if(!t) return;
         if(activeFilterBtn === btn){ closeFilterPanel(); return; }
         openFilterPanel(t, btn);
     };
@@ -1817,7 +1940,9 @@ function openFilterPanel(type, btn){
     } else if(type === "feature"){
         options = getVisibleFeatureNames().map(f => ({ v:f, t:f }));
     }
-    panel.innerHTML = '<h5>勾选即生效</h5>';
+
+    panel.appendChild(document.createElement("h5")).textContent = "勾选即生效";
+
     if(options.length === 0){
         const empty = document.createElement("div");
         empty.style.cssText = "color:#999;font-size:12px;padding:6px";
@@ -1830,12 +1955,7 @@ function openFilterPanel(type, btn){
         cb.type = "checkbox"; cb.checked = filterState[type].has(o.v);
         cb.onchange = () => {
             if(cb.checked) filterState[type].add(o.v); else filterState[type].delete(o.v);
-            if(type === "category"){
-                filterState.breed.clear();
-                closeFilterPanel();
-                render();
-                return;
-            }
+            if(type === "category"){ filterState.breed.clear(); closeFilterPanel(); render(); return; }
             render();
         };
         lb.appendChild(cb);
@@ -1848,10 +1968,28 @@ function openFilterPanel(type, btn){
         lb.appendChild(document.createTextNode(o.t));
         panel.appendChild(lb);
     });
-    const clearBtn = document.createElement("button");
-    clearBtn.textContent = "清空此项"; clearBtn.style.cssText = "margin-top:6px;width:100%;font-size:12px;padding:4px";
-    clearBtn.onclick = () => { filterState[type].clear(); closeFilterPanel(); render(); };
-    panel.appendChild(clearBtn);
+
+    const selectAllWrap = document.createElement("div");
+    selectAllWrap.style.cssText = "display:flex;gap:6px;margin-top:6px;padding-top:6px;border-top:1px solid #eee";
+    const selectAllBtn = document.createElement("button");
+    selectAllBtn.textContent = "全选";
+    selectAllBtn.style.cssText = "flex:1;font-size:12px;padding:4px";
+    selectAllBtn.onclick = () => {
+        options.forEach(o => filterState[type].add(o.v));
+        panel.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = true);
+        render();
+    };
+    const selectNoneBtn = document.createElement("button");
+    selectNoneBtn.textContent = "全不选";
+    selectNoneBtn.style.cssText = "flex:1;font-size:12px;padding:4px";
+    selectNoneBtn.onclick = () => {
+        filterState[type].clear();
+        panel.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = false);
+        render();
+    };
+    selectAllWrap.appendChild(selectAllBtn);
+    selectAllWrap.appendChild(selectNoneBtn);
+    panel.appendChild(selectAllWrap);
 
     document.body.appendChild(panel);
     const r = btn.getBoundingClientRect();
@@ -2076,6 +2214,7 @@ function copyPet(id){
     copy.isRunning = false; copy.startTs = null; copy.runStartRemain = null;
     copy.pausedAt = copy.totalMs || 0; copy.locked = false;
     copy.inBench = false;
+    copy.recoveredAt = 0;
     petList.push(copy);
     saveLocal(); render();
 }
@@ -2089,6 +2228,7 @@ document.querySelectorAll(".view-tab").forEach(tab => {
         $("tableView").classList.toggle("hidden", currentView !== "table");
         $("dashboardView").classList.toggle("hidden", currentView !== "dashboard");
         $("benchView").classList.toggle("hidden", currentView !== "bench");
+        $("matchView").classList.toggle("hidden", currentView !== "match");
         if(currentView === "bench" && !localStorage.getItem(BENCH_GUIDE_KEY)){
             setTimeout(() => {
                 alert("⭐ 工作台小提示\n\n点宠物卡片右上角的 ⭐ 就能把宠物加进工作台，方便集中管理要配对的宠物。");
@@ -2172,6 +2312,7 @@ document.querySelectorAll("[data-bench]").forEach(btn => {
             p.startTs = null;
             p.runStartRemain = null;
             p.locked = false;
+            p.recoveredAt = 0;
             startTimer(p, now);
             touchPet(p, now);
         });
@@ -2195,9 +2336,7 @@ function moveCategory(catName, dir){
     if(idx < 0) return;
     const newIdx = idx + dir;
     if(newIdx < 0 || newIdx >= keys.length) return;
-    const tmp = keys[idx];
-    keys[idx] = keys[newIdx];
-    keys[newIdx] = tmp;
+    const tmp = keys[idx]; keys[idx] = keys[newIdx]; keys[newIdx] = tmp;
     const newMap = {};
     keys.forEach(k => { newMap[k] = breedMap[k]; });
     breedMap = newMap;
@@ -2347,10 +2486,12 @@ function renderFeatManage(){
         const row = document.createElement("div");
         row.className = "feat-manage-row";
         const checked = featSelected.has(name) ? " checked" : "";
+        const flawChk = isFlawFeature(name) ? " checked" : "";
         row.innerHTML =
             '<input type="checkbox" data-featcheck="'+esc(name)+'"'+checked+'>'+
             '<input type="text" value="'+esc(name)+'" data-featname="'+esc(name)+'">'+
             '<input type="color" value="'+esc(color)+'" data-featcolor="'+esc(name)+'">'+
+            '<label style="font-size:12px;color:#a06010;display:inline-flex;align-items:center;gap:2px;white-space:nowrap"><input type="checkbox" data-featflaw="'+esc(name)+'"'+flawChk+'>瑕疵</label>'+
             '<span class="feat-count">'+used+' 只</span>'+
             '<button class="del-opt" data-featdel="'+esc(name)+'">删除</button>';
         wrap.appendChild(row);
@@ -2374,6 +2515,7 @@ function renderFeatManage(){
             if(!nv || nv === oldName){ inp.value = oldName; return; }
             if(renameFeatureEverywhere(oldName, nv)){
                 if(featSelected.has(oldName)){ featSelected.delete(oldName); featSelected.add(nv); }
+                if(flawScores[oldName] !== undefined){ flawScores[nv] = flawScores[oldName]; delete flawScores[oldName]; }
                 saveLocal();
                 renderFeatCatTabs();
                 renderFeatManage();
@@ -2399,6 +2541,14 @@ function renderFeatManage(){
             }
         });
     });
+    wrap.querySelectorAll("[data-featflaw]").forEach(cb => {
+        cb.addEventListener("change", () => {
+            const name = cb.dataset.featflaw;
+            if(cb.checked){ flawScores[name] = 10; }
+            else { delete flawScores[name]; }
+            saveLocal();
+        });
+    });
     wrap.querySelectorAll("[data-featdel]").forEach(btn => {
         btn.onclick = () => {
             const name = btn.dataset.featdel;
@@ -2408,6 +2558,7 @@ function renderFeatManage(){
             if(!confirm(msg)) return;
             takeSnapshot("删除特征「" + name + "」");
             removeFeatureEverywhere(name);
+            delete flawScores[name];
             filterState.feature.delete(name);
             featSelected.delete(name);
             saveLocal();
@@ -2428,11 +2579,8 @@ function updateFeatSelCount(){
 }
 $("featSelectAll").onchange = function(){
     const features = featureMap[currentFeatCat] || {};
-    if(this.checked){
-        Object.keys(features).forEach(name => featSelected.add(name));
-    } else {
-        featSelected.clear();
-    }
+    if(this.checked){ Object.keys(features).forEach(name => featSelected.add(name)); }
+    else { featSelected.clear(); }
     renderFeatManage();
 };
 $("featBatchDelete").onclick = () => {
@@ -2441,11 +2589,12 @@ $("featBatchDelete").onclick = () => {
     let totalUsed = 0;
     featSelected.forEach(name => { totalUsed += countPetsByFeature(name); });
     const msg = "确认删除选中的 " + total + " 个特征？\n"
-        + (totalUsed > 0 ? "这些特征被宠物引用共 " + totalUsed + " 次。删除后已勾选的宠物仍会显示，但不再出现在可选库里。" : "");
+        + (totalUsed > 0 ? "这些特征被宠物引用共 " + totalUsed + " 次。" : "");
     if(!confirm(msg)) return;
     takeSnapshot("批量删除特征 " + total + " 个");
     featSelected.forEach(name => {
         removeFeatureEverywhere(name);
+        delete flawScores[name];
         filterState.feature.delete(name);
     });
     featSelected.clear();
@@ -2513,10 +2662,7 @@ function renderAccountPicker(){
         const item = document.createElement("div");
         item.className = "chip-pick-item" + (a === currentEditAccount ? " selected" : "");
         item.textContent = a;
-        item.onclick = () => {
-            currentEditAccount = a;
-            renderAccountPicker();
-        };
+        item.onclick = () => { currentEditAccount = a; renderAccountPicker(); };
         wrap.appendChild(item);
     });
     const addBtn = document.createElement("div");
@@ -2532,11 +2678,7 @@ function renderAccountPicker(){
                 saveLocal();
                 renderAccountPicker();
                 render();
-            } else {
-                alert("该账号已存在");
-                currentEditAccount = name;
-                renderAccountPicker();
-            }
+            } else { alert("该账号已存在"); currentEditAccount = name; renderAccountPicker(); }
         }
     };
     wrap.appendChild(addBtn);
@@ -2586,13 +2728,8 @@ function renderFeatureQuickPick(){
             const chip = document.createElement("div");
             chip.className = "feat-quick-chip" + (curSet.has(name) ? " on" : "");
             chip.textContent = name;
-            if(curSet.has(name)){
-                chip.style.background = color;
-                chip.style.borderColor = color;
-            } else {
-                chip.style.color = color;
-                chip.style.borderColor = hexToRgba(color, 0.4);
-            }
+            if(curSet.has(name)){ chip.style.background = color; chip.style.borderColor = color; }
+            else { chip.style.color = color; chip.style.borderColor = hexToRgba(color, 0.4); }
             chip.onclick = () => toggleFeatureInTextarea(name);
             chips.appendChild(chip);
         });
@@ -2614,13 +2751,8 @@ function renderFeatureQuickPick(){
                 const chip = document.createElement("div");
                 chip.className = "feat-quick-chip" + (curSet.has(name) ? " on" : "");
                 chip.textContent = name;
-                if(curSet.has(name)){
-                    chip.style.background = color;
-                    chip.style.borderColor = color;
-                } else {
-                    chip.style.color = color;
-                    chip.style.borderColor = hexToRgba(color, 0.4);
-                }
+                if(curSet.has(name)){ chip.style.background = color; chip.style.borderColor = color; }
+                else { chip.style.color = color; chip.style.borderColor = hexToRgba(color, 0.4); }
                 chip.onclick = () => toggleFeatureInTextarea(name);
                 chips.appendChild(chip);
             });
@@ -2636,8 +2768,7 @@ function toggleFeatureInTextarea(name){
     const ta = $("petFeatures");
     const cur = ta.value.split("\n").map(s => s.trim()).filter(Boolean);
     const idx = cur.indexOf(name);
-    if(idx >= 0) cur.splice(idx, 1);
-    else cur.push(name);
+    if(idx >= 0) cur.splice(idx, 1); else cur.push(name);
     ta.value = cur.join("\n");
     renderFeatureQuickPick();
 }
@@ -2726,16 +2857,13 @@ document.querySelectorAll(".clear-cp-btn").forEach(btn => {
     btn.onclick = () => {
         const prefix = btn.dataset.clear;
         const label = prefix === "cp1" ? "CP1" : "CP2";
-        if(!confirm("确认清空 " + label + " 的所有信息？\n（名字、图片、预计配对时间都会被清除）")) return;
+        if(!confirm("确认清空 " + label + " 的所有信息？")) return;
         $(prefix + "Name").value = "";
         $(prefix + "PairTime").value = "";
         $(prefix + "Days").value = "";
         $(prefix + "Hours").value = "";
-        if(prefix === "cp1"){
-            pendingCp1Blob = null; pendingCp1Cleared = true; editCp1ImgValue = "";
-        } else {
-            pendingCp2Blob = null; pendingCp2Cleared = true; editCp2ImgValue = "";
-        }
+        if(prefix === "cp1"){ pendingCp1Blob = null; pendingCp1Cleared = true; editCp1ImgValue = ""; }
+        else { pendingCp2Blob = null; pendingCp2Cleared = true; editCp2ImgValue = ""; }
         updateCpPreview(prefix);
     };
 });
@@ -2751,29 +2879,18 @@ function updateCpPreview(prefix){
         updatePasteZoneState(prefix + "PasteZone", true);
         return;
     }
-    if(cleared){
-        img.src = "";
-        wrap.classList.remove("show");
-        updatePasteZoneState(prefix + "PasteZone", false);
-        return;
-    }
+    if(cleared){ img.src = ""; wrap.classList.remove("show"); updatePasteZoneState(prefix + "PasteZone", false); return; }
     if(imgValue){
         if(isIndexedImg(imgValue)){
             const c = getImageUrlSync(imgValue);
             if(c){ img.src = c; wrap.classList.add("show"); updatePasteZoneState(prefix + "PasteZone", true); }
-            else getImageUrl(imgValue).then(u => {
-                if(u && editId !== null){ img.src = u; wrap.classList.add("show"); updatePasteZoneState(prefix + "PasteZone", true); }
-            });
+            else getImageUrl(imgValue).then(u => { if(u && editId !== null){ img.src = u; wrap.classList.add("show"); updatePasteZoneState(prefix + "PasteZone", true); } });
         } else {
             img.src = imgValue;
             wrap.classList.add("show");
             updatePasteZoneState(prefix + "PasteZone", true);
         }
-    } else {
-        img.src = "";
-        wrap.classList.remove("show");
-        updatePasteZoneState(prefix + "PasteZone", false);
-    }
+    } else { img.src = ""; wrap.classList.remove("show"); updatePasteZoneState(prefix + "PasteZone", false); }
 }
 
 function setTimeHint(p){
@@ -2808,7 +2925,7 @@ function openEdit(pid){
     $("modalTitle").textContent = pid ? "编辑宠物档案" : "新增宠物档案";
     $("btnDel").classList.toggle("hidden", !pid);
 
-    ["petImgUrl","txtBreed","petName","petNote",
+    ["petImgUrl","txtBreed","petName","petNote","petSire","petDam",
      "cp1Name","cp2Name","cp1PairTime","cp2PairTime",
      "cp1Days","cp1Hours","cp2Days","cp2Hours"].forEach(id => { if($(id)) $(id).value = ""; });
     $("petTags").value = "";
@@ -2832,6 +2949,8 @@ function openEdit(pid){
         currentEditCategory = p.category || "";
         currentEditTimerMode = p.timerMode || "normal";
         $("petName").value = p.name || "";
+        $("petSire").value = p.sire || "";
+        $("petDam").value = p.dam || "";
         setEditGender(p.gender || "m");
         setEditTimerMode(currentEditTimerMode);
         $("petTags").value = (p.tags||[]).join("\n");
@@ -2922,55 +3041,39 @@ $("petImgUrl").addEventListener("input", function(){
 
 $("cp1File").onchange = e => {
     const f = e.target.files[0]; if(!f) return;
-    compressToBlob(f, 200, 0.7).then(blob => {
-        pendingCp1Blob = blob; pendingCp1Cleared = false;
-        updateCpPreview("cp1");
-    }).catch(err => alert("CP图片处理失败："+err.message));
+    compressToBlob(f, 200, 0.7).then(blob => { pendingCp1Blob = blob; pendingCp1Cleared = false; updateCpPreview("cp1"); })
+    .catch(err => alert("CP图片处理失败："+err.message));
     e.target.value = "";
 };
 $("cp1PasteZone").addEventListener("paste", e => {
     for(const it of e.clipboardData.items){
         if(it.type.indexOf("image/") === 0){
             const f = it.getAsFile(); e.preventDefault();
-            compressToBlob(f, 200, 0.7).then(blob => {
-                pendingCp1Blob = blob; pendingCp1Cleared = false;
-                updateCpPreview("cp1");
-            }).catch(err => alert("CP图片处理失败："+err.message));
+            compressToBlob(f, 200, 0.7).then(blob => { pendingCp1Blob = blob; pendingCp1Cleared = false; updateCpPreview("cp1"); })
+            .catch(err => alert("CP图片处理失败："+err.message));
             break;
         }
     }
 });
-$("cp1Clear").onclick = () => {
-    pendingCp1Blob = null; pendingCp1Cleared = true;
-    editCp1ImgValue = "";
-    updateCpPreview("cp1");
-};
+$("cp1Clear").onclick = () => { pendingCp1Blob = null; pendingCp1Cleared = true; editCp1ImgValue = ""; updateCpPreview("cp1"); };
 
 $("cp2File").onchange = e => {
     const f = e.target.files[0]; if(!f) return;
-    compressToBlob(f, 200, 0.7).then(blob => {
-        pendingCp2Blob = blob; pendingCp2Cleared = false;
-        updateCpPreview("cp2");
-    }).catch(err => alert("CP图片处理失败："+err.message));
+    compressToBlob(f, 200, 0.7).then(blob => { pendingCp2Blob = blob; pendingCp2Cleared = false; updateCpPreview("cp2"); })
+    .catch(err => alert("CP图片处理失败："+err.message));
     e.target.value = "";
 };
 $("cp2PasteZone").addEventListener("paste", e => {
     for(const it of e.clipboardData.items){
         if(it.type.indexOf("image/") === 0){
             const f = it.getAsFile(); e.preventDefault();
-            compressToBlob(f, 200, 0.7).then(blob => {
-                pendingCp2Blob = blob; pendingCp2Cleared = false;
-                updateCpPreview("cp2");
-            }).catch(err => alert("CP图片处理失败："+err.message));
+            compressToBlob(f, 200, 0.7).then(blob => { pendingCp2Blob = blob; pendingCp2Cleared = false; updateCpPreview("cp2"); })
+            .catch(err => alert("CP图片处理失败："+err.message));
             break;
         }
     }
 });
-$("cp2Clear").onclick = () => {
-    pendingCp2Blob = null; pendingCp2Cleared = true;
-    editCp2ImgValue = "";
-    updateCpPreview("cp2");
-};
+$("cp2Clear").onclick = () => { pendingCp2Blob = null; pendingCp2Cleared = true; editCp2ImgValue = ""; updateCpPreview("cp2"); };
 
 $("txtBreed").addEventListener("input", function(){
     const v = this.value.trim();
@@ -3000,6 +3103,8 @@ $("btnSave").onclick = async () => {
     const h = Number($("tHour").value || 0), m = Number($("tMinute").value || 0);
     const noteVal = $("petNote").value.trim();
     const imgUrlInput = $("petImgUrl").value.trim();
+    const sireVal = $("petSire").value.trim();
+    const damVal = $("petDam").value.trim();
     const totalMs = hmToMs(h, m);
     const now = Date.now();
 
@@ -3032,9 +3137,7 @@ $("btnSave").onclick = async () => {
         } else if(pendingCp1Cleared){
             finalCp1Img = "";
             if(editCp1ImgValue && isIndexedImg(editCp1ImgValue)) delImgs.push(editCp1ImgValue);
-        } else {
-            finalCp1Img = editCp1ImgValue || "";
-        }
+        } else finalCp1Img = editCp1ImgValue || "";
 
         let finalCp2Img;
         if(pendingCp2Blob){
@@ -3044,9 +3147,7 @@ $("btnSave").onclick = async () => {
         } else if(pendingCp2Cleared){
             finalCp2Img = "";
             if(editCp2ImgValue && isIndexedImg(editCp2ImgValue)) delImgs.push(editCp2ImgValue);
-        } else {
-            finalCp2Img = editCp2ImgValue || "";
-        }
+        } else finalCp2Img = editCp2ImgValue || "";
 
         if(accountVal && accountOptions.indexOf(accountVal) === -1) accountOptions.push(accountVal);
         if(categoryVal && !(categoryVal in breedMap)) {
@@ -3065,12 +3166,14 @@ $("btnSave").onclick = async () => {
                 const updated = Object.assign({}, petList[idx], {
                     img: finalImg, account: accountVal, category: categoryVal, breed: breedVal,
                     name: nameVal, gender: genderVal, tags: tagsArr, features: featArr,
-                    cp1: cp1, cp2: cp2, timerMode: tMode, note: noteVal, utime: now
+                    cp1: cp1, cp2: cp2, timerMode: tMode, note: noteVal, utime: now,
+                    sire: sireVal, dam: damVal
                 });
                 if(timeEditedByUser){
                     updated.totalMs = totalMs; updated.pausedAt = totalMs;
                     updated.isRunning = false; updated.startTs = null;
                     updated.runStartRemain = null; updated.locked = false;
+                    updated.recoveredAt = 0;
                 }
                 petList[idx] = updated;
                 delImgs.forEach(imgId => safeDeleteImg(imgId, editId));
@@ -3083,7 +3186,8 @@ $("btnSave").onclick = async () => {
                 cp1: cp1, cp2: cp2, timerMode: tMode,
                 totalMs: totalMs, pausedAt: totalMs, isRunning: false, startTs: null,
                 runStartRemain: null, locked: false, note: noteVal,
-                inBench: false
+                inBench: false, recoveredAt: 0,
+                sire: sireVal, dam: damVal, bodyType: "", baseColor: ""
             });
         }
     } catch(err){ alert("保存失败：" + err.message); return; }
@@ -3097,9 +3201,7 @@ $("btnBatchAdd").onclick = () => {
     $("batchAddModal").classList.remove("hidden");
     updateBatchHint();
 };
-document.querySelectorAll('input[name="batchMode"]').forEach(r => {
-    r.onchange = updateBatchHint;
-});
+document.querySelectorAll('input[name="batchMode"]').forEach(r => { r.onchange = updateBatchHint; });
 function updateBatchHint(){
     const mode = document.querySelector('input[name="batchMode"]:checked').value;
     $("batchHintSimple").classList.toggle("hidden", mode !== "simple");
@@ -3113,7 +3215,6 @@ $("batchAddApply").onclick = () => {
     if(lines.length === 0){ alert("请输入至少一行"); return; }
 
     takeSnapshot("批量新建 " + lines.length + " 只宠物");
-
     const now = Date.now();
     let created = 0, errors = [];
     const defaultAcc = accountOptions[0] || "";
@@ -3128,21 +3229,15 @@ $("batchAddApply").onclick = () => {
                 id: genId(), ctime: now, utime: now,
                 img: "", account: defaultAcc, category: defaultCat, breed: defaultBreed,
                 name: name, gender: "m", tags: [], features: [],
-                cp1: { name:"", img:"", pairTime:"" },
-                cp2: { name:"", img:"", pairTime:"" },
-                timerMode: "normal",
-                totalMs: 0, pausedAt: 0, isRunning: false, startTs: null,
-                runStartRemain: null, locked: false, note: "",
-                inBench: false
+                cp1: { name:"", img:"", pairTime:"" }, cp2: { name:"", img:"", pairTime:"" },
+                timerMode: "normal", totalMs: 0, pausedAt: 0, isRunning: false, startTs: null,
+                runStartRemain: null, locked: false, note: "", inBench: false, recoveredAt: 0,
+                sire: "", dam: "", bodyType: "", baseColor: ""
             });
             created++;
         } else {
-            /* 固定 5 段：昵称, 性别, 账号, 品种大类/品种, 小时数 */
             const parts = line.split(/[,，]/).map(s => s.trim());
-            if(parts.length < 1 || !parts[0]){
-                errors.push("第 " + (i+1) + " 行：昵称为空");
-                return;
-            }
+            if(parts.length < 1 || !parts[0]){ errors.push("第 " + (i+1) + " 行：昵称为空"); return; }
             const name = parts[0];
             const gender = (parts[1] === "母" || parts[1] === "f" || parts[1] === "F") ? "f" : "m";
             const acc = parts[2] || defaultAcc;
@@ -3150,19 +3245,14 @@ $("batchAddApply").onclick = () => {
             let category = defaultCat, breed = defaultBreed;
             if(parts[3]){
                 const cb = parts[3].split("/").map(s => s.trim());
-                if(cb.length >= 2){
-                    category = cb[0];
-                    breed = cb[1];
-                } else {
+                if(cb.length >= 2){ category = cb[0]; breed = cb[1]; }
+                else {
                     const v = cb[0];
-                    for(const c in breedMap){
-                        if(breedMap[c].indexOf(v) >= 0){ category = c; breed = v; break; }
-                    }
+                    for(const c in breedMap){ if(breedMap[c].indexOf(v) >= 0){ category = c; breed = v; break; } }
                 }
                 if(!(category in breedMap)) breedMap[category] = [];
                 if(breed && breedMap[category].indexOf(breed) === -1) breedMap[category].push(breed);
             }
-            /* 时长：剥离单位后取数字 */
             const rawHours = String(parts[4] || "0").trim();
             const hours = Number(rawHours.replace(/[^\d.]/g, "")) || 0;
             const totalMs = hmToMs(hours, 0);
@@ -3170,12 +3260,10 @@ $("batchAddApply").onclick = () => {
                 id: genId(), ctime: now, utime: now,
                 img: "", account: acc, category: category, breed: breed,
                 name: name, gender: gender, tags: [], features: [],
-                cp1: { name:"", img:"", pairTime:"" },
-                cp2: { name:"", img:"", pairTime:"" },
-                timerMode: "normal",
-                totalMs: totalMs, pausedAt: totalMs, isRunning: false, startTs: null,
-                runStartRemain: null, locked: false, note: "",
-                inBench: false
+                cp1: { name:"", img:"", pairTime:"" }, cp2: { name:"", img:"", pairTime:"" },
+                timerMode: "normal", totalMs: totalMs, pausedAt: totalMs,
+                isRunning: false, startTs: null, runStartRemain: null, locked: false,
+                note: "", inBench: false, recoveredAt: 0, sire: "", dam: "", bodyType: "", baseColor: ""
             });
             created++;
         }
@@ -3191,33 +3279,16 @@ $("batchAddApply").onclick = () => {
 /* ==================== 导出 ==================== */
 $("btnExport").onclick = function(){
     try{
-        const filteredCount = (typeof getFilteredList === "function") ? getFilteredList().length : 0;
-        const selectedCount = selectedIds ? selectedIds.size : 0;
-
-        const elF = $("exportFilteredCount");
-        const elS = $("exportSelectedCount");
-        if(elF) elF.textContent = filteredCount;
-        if(elS) elS.textContent = selectedCount;
-
-        const scopeSel = $("exportScope");
-        if(!scopeSel){ alert("BUG: 找不到 exportScope"); return; }
-        scopeSel.value = "all";
-        const opt = scopeSel.querySelector('option[value="recent"]');
+        const filteredCount = getFilteredList().length;
+        const selectedCount = selectedIds.size;
+        $("exportFilteredCount").textContent = filteredCount;
+        $("exportSelectedCount").textContent = selectedCount;
+        $("exportScope").value = "all";
+        const opt = $("exportScope").querySelector('option[value="recent"]');
         if(opt) opt.textContent = "最近改动过的";
-
-        const wrap = $("exportRecentDaysWrap");
-        if(wrap) wrap.classList.add("hidden");
-
-        const modal = $("exportModal");
-        if(!modal){ alert("BUG: 找不到 exportModal，弹窗无法显示"); return; }
-        modal.classList.remove("hidden");
-        // 显示后立刻确认一下
-        if(getComputedStyle(modal).display === "none"){
-            modal.style.display = "flex";
-        }
-    }catch(e){
-        alert("点击导出按钮出错：\n\n" + e.message);
-    }
+        $("exportRecentDaysWrap").classList.add("hidden");
+        $("exportModal").classList.remove("hidden");
+    }catch(e){ alert("点击导出按钮出错：" + e.message); }
 };
 $("exportScope").onchange = function(){
     const isRecent = this.value === "recent";
@@ -3249,7 +3320,6 @@ $("exportApply").onclick = async () => {
 
     $("exportApply").disabled = true;
     $("exportApply").textContent = "导出中...";
-
     try{
         const imgMap = {};
         if(withImages){
@@ -3264,17 +3334,11 @@ $("exportApply").onclick = async () => {
             }
         }
         const payload = {
-            pets: pets,
-            accounts: accountOptions,
-            breedMap: breedMap,
-            featureMap: featureMap,
+            pets: pets, accounts: accountOptions, breedMap: breedMap, featureMap: featureMap,
+            flawScores: flawScores, mainAccount: mainAccount,
+            matchSchemes: matchSchemes, currentSchemeId: currentSchemeId,
             images: imgMap,
-            exportInfo: {
-                scope: scope,
-                withImages: withImages,
-                count: pets.length,
-                ts: Date.now()
-            }
+            exportInfo: { scope: scope, withImages: withImages, count: pets.length, ts: Date.now() }
         };
         const blob = new Blob([JSON.stringify(payload)], {type:"application/json"});
         const a = document.createElement("a");
@@ -3287,21 +3351,15 @@ $("exportApply").onclick = async () => {
         a.style.display = "none";
         document.body.appendChild(a);
         a.click();
-        /* iOS Safari 和部分手机浏览器要求 <a> 挂到 DOM 里再 click，并且延迟清理 */
         setTimeout(() => {
             try{ document.body.removeChild(a); }catch(e){}
             try{ URL.revokeObjectURL(a.href); }catch(e){}
         }, 2000);
-
-        /* iOS 用户提示去哪里找文件 */
         if(/iPad|iPhone|iPod/.test(navigator.userAgent)){
-            setTimeout(() => {
-                alert("文件已开始下载。\niPhone/iPad 用户请在「文件」App → 「下载」文件夹里查找。");
-            }, 800);
+            setTimeout(() => { alert("文件已开始下载。\niPhone/iPad 用户请在「文件」App → 「下载」文件夹里查找。"); }, 800);
         }
-    }catch(e){
-        alert("导出失败：" + e.message);
-    }finally{
+    }catch(e){ alert("导出失败：" + e.message); }
+    finally{
         $("exportApply").disabled = false;
         $("exportApply").textContent = "导出";
         $("exportModal").classList.add("hidden");
@@ -3309,33 +3367,11 @@ $("exportApply").onclick = async () => {
 };
 
 /* ==================== 导入 ==================== */
-$("btnImport").onclick = () => {
-    $("importModal").classList.remove("hidden");
-};
+$("btnImport").onclick = () => { $("importModal").classList.remove("hidden"); };
 $("importCancel").onclick = () => $("importModal").classList.add("hidden");
-/* 内容比较：忽略 utime / ctime，逐字段对比 */
-function petDiffers(a, b){
-    const simple = ['name','gender','account','category','breed','timerMode','totalMs','pausedAt','isRunning','startTs','runStartRemain','locked','note','img'];
-    for(let i = 0; i < simple.length; i++){
-        if((a[simple[i]] || "") !== (b[simple[i]] || "")) return true;
-    }
-    if((a.tags || []).join("\u0001") !== (b.tags || []).join("\u0001")) return true;
-    if((a.features || []).join("\u0001") !== (b.features || []).join("\u0001")) return true;
-    const ac1 = a.cp1 || {}, bc1 = b.cp1 || {};
-    if((ac1.name||"") !== (bc1.name||"")) return true;
-    if((ac1.img||"") !== (bc1.img||"")) return true;
-    if((ac1.pairTime||"") !== (bc1.pairTime||"")) return true;
-    const ac2 = a.cp2 || {}, bc2 = b.cp2 || {};
-    if((ac2.name||"") !== (bc2.name||"")) return true;
-    if((ac2.img||"") !== (bc2.img||"")) return true;
-    if((ac2.pairTime||"") !== (bc2.pairTime||"")) return true;
-    return false;
-}
-
 $("importApply").onclick = function(){
     const mode = $("importMode").value;
 
-    /* file input 必须挂到 DOM，否则部分手机浏览器 onchange 不触发 */
     const ipt = document.createElement("input");
     ipt.type = "file";
     ipt.accept = ".json,application/json";
@@ -3363,10 +3399,7 @@ $("importApply").onclick = function(){
             let obj;
             try{ obj = JSON.parse(ev.target.result); }
             catch(err){ alert("导入失败：文件不是有效的 JSON"); return; }
-            if(!obj || !Array.isArray(obj.pets)){
-                alert("导入失败：备份文件缺少 pets 数组");
-                return;
-            }
+            if(!obj || !Array.isArray(obj.pets)){ alert("导入失败：备份文件缺少 pets 数组"); return; }
 
             const migrated = obj.pets.map(normalizePet);
             const images = obj.images || {};
@@ -3378,7 +3411,6 @@ $("importApply").onclick = function(){
                 if(p.cp2 && isBase64Img(p.cp2.img)) base64List.push({ p: p, field: "cp2.img" });
             });
 
-            /* ============ 计算合并结果（不依赖时间戳，只看内容） ============ */
             let confirmMsg = "";
             let planAdd = [], planUpdate = [], planKeep = [];
 
@@ -3388,15 +3420,11 @@ $("importApply").onclick = function(){
                 const localMap = new Map();
                 petList.forEach(function(p){ localMap.set(p.id, p); });
                 migrated.forEach(function(mp){
-                    if(!localMap.has(mp.id)){
-                        planAdd.push(mp);
-                    } else {
+                    if(!localMap.has(mp.id)){ planAdd.push(mp); }
+                    else {
                         const exist = localMap.get(mp.id);
-                        if(petDiffers(mp, exist)){
-                            planUpdate.push({ mp: mp, exist: exist });
-                        } else {
-                            planKeep.push(mp);
-                        }
+                        if(petDiffers(mp, exist)) planUpdate.push({ mp: mp, exist: exist });
+                        else planKeep.push(mp);
                     }
                 });
                 confirmMsg = "智能合并（按内容比较）：\n\n"
@@ -3408,58 +3436,43 @@ $("importApply").onclick = function(){
             }
             if(!confirm(confirmMsg)) return;
 
-            /* ============ 顺序处理图片（避免一次性创建大量 Promise 卡死手机） ============ */
             function processImagesSequentially(callback){
                 let i = 0;
                 const total = base64List.length + imgIds.length;
                 if(total === 0){ callback(); return; }
-
                 function step(){
                     if(i >= base64List.length){
                         const j = i - base64List.length;
                         if(j >= imgIds.length){ callback(); return; }
                         const id = imgIds[j];
                         i++;
-                        base64ToBlob(images[id]).then(function(blob){
-                            return saveImage(id, blob);
-                        }).catch(function(){}).then(function(){
-                            setTimeout(step, 0);
-                        });
+                        base64ToBlob(images[id]).then(function(blob){ return saveImage(id, blob); })
+                        .catch(function(){}).then(function(){ setTimeout(step, 0); });
                         return;
                     }
                     const item = base64List[i];
                     i++;
                     base64ToBlob(getFieldValue(item.p, item.field)).then(function(blob){
                         const nid = "img_" + genId();
-                        return saveImage(nid, blob).then(function(){
-                            setFieldValue(item.p, item.field, nid);
-                        });
-                    }).catch(function(){
-                        setFieldValue(item.p, item.field, "");
-                    }).then(function(){
-                        setTimeout(step, 0);
-                    });
+                        return saveImage(nid, blob).then(function(){ setFieldValue(item.p, item.field, nid); });
+                    }).catch(function(){ setFieldValue(item.p, item.field, ""); })
+                    .then(function(){ setTimeout(step, 0); });
                 }
                 step();
             }
 
             processImagesSequentially(function(){
-                /* ============ 合并数据 ============ */
                 let stat = { added: 0, updated: 0, kept: 0 };
 
                 if(mode === "replace"){
                     petList = migrated;
                     stat.added = migrated.length;
                 } else {
-                    planAdd.forEach(function(mp){
-                        petList.push(mp);
-                        stat.added++;
-                    });
+                    planAdd.forEach(function(mp){ petList.push(mp); stat.added++; });
                     planUpdate.forEach(function(item){
                         const idx = petList.findIndex(function(x){ return x.id === item.mp.id; });
                         if(idx < 0) return;
                         const merged = Object.assign({}, item.mp);
-                        /* 备份没图时保留本地图 */
                         if(!merged.img && item.exist.img) merged.img = item.exist.img;
                         if(merged.cp1 && !merged.cp1.img && item.exist.cp1 && item.exist.cp1.img) merged.cp1.img = item.exist.cp1.img;
                         if(merged.cp2 && !merged.cp2.img && item.exist.cp2 && item.exist.cp2.img) merged.cp2.img = item.exist.cp2.img;
@@ -3469,10 +3482,13 @@ $("importApply").onclick = function(){
                     stat.kept = planKeep.length;
                 }
 
-                /* 账号 / 品种 / 特征 */
                 if(mode === "replace"){
                     accountOptions = Array.isArray(obj.accounts) ? obj.accounts : [];
                     if(obj.breedMap && typeof obj.breedMap === "object") breedMap = obj.breedMap;
+                    flawScores = obj.flawScores && typeof obj.flawScores === "object" ? obj.flawScores : {};
+                    mainAccount = obj.mainAccount || "";
+                    matchSchemes = Array.isArray(obj.matchSchemes) ? obj.matchSchemes : [];
+                    currentSchemeId = obj.currentSchemeId || "";
                     if(obj.featureMap && typeof obj.featureMap === "object"){
                         const keys = Object.keys(obj.featureMap);
                         const isOld = keys.length > 0 && typeof obj.featureMap[keys[0]] === "string";
@@ -3481,13 +3497,8 @@ $("importApply").onclick = function(){
                             Object.keys(obj.featureMap).forEach(function(name){
                                 const color = obj.featureMap[name];
                                 const guess = guessFeatureCategory(name);
-                                if(guess){
-                                    if(!featureMap[guess]) featureMap[guess] = {};
-                                    featureMap[guess][name] = color;
-                                } else {
-                                    if(!featureMap[CAT_COMMON]) featureMap[CAT_COMMON] = {};
-                                    featureMap[CAT_COMMON][name] = color;
-                                }
+                                if(guess){ if(!featureMap[guess]) featureMap[guess] = {}; featureMap[guess][name] = color; }
+                                else { if(!featureMap[CAT_COMMON]) featureMap[CAT_COMMON] = {}; featureMap[CAT_COMMON][name] = color; }
                             });
                         } else {
                             featureMap = obj.featureMap;
@@ -3504,6 +3515,17 @@ $("importApply").onclick = function(){
                             (obj.breedMap[cat] || []).forEach(function(b){
                                 if(breedMap[cat].indexOf(b) === -1) breedMap[cat].push(b);
                             });
+                        });
+                    }
+                    if(obj.flawScores && typeof obj.flawScores === "object"){
+                        Object.keys(obj.flawScores).forEach(function(k){
+                            if(flawScores[k] === undefined) flawScores[k] = obj.flawScores[k];
+                        });
+                    }
+                    if(obj.mainAccount && !mainAccount) mainAccount = obj.mainAccount;
+                    if(Array.isArray(obj.matchSchemes)){
+                        obj.matchSchemes.forEach(s => {
+                            if(!matchSchemes.some(x => x.id === s.id)) matchSchemes.push(s);
                         });
                     }
                     if(obj.featureMap && typeof obj.featureMap === "object"){
@@ -3534,8 +3556,9 @@ $("importApply").onclick = function(){
                 });
 
                 saveLocal();
+                lastSnapshot = null;
+                updateUndoBtn();
 
-                /* 让出一帧，让 saveLocal 完成后再渲染和弹窗，避免手机卡死 */
                 setTimeout(function(){
                     render();
                     setTimeout(function(){
@@ -3555,10 +3578,7 @@ $("importApply").onclick = function(){
         reader.readAsText(f);
     };
 
-    /* 用户取消文件选择时不触发 onchange，60 秒后清理 */
     setTimeout(cleanupInput, 60000);
-
-    /* 稍微延迟一点再打开文件选择器 */
     setTimeout(function(){ ipt.click(); }, 50);
 };
 
@@ -3568,53 +3588,40 @@ function refreshBmBreedAll(){
     sel.innerHTML = '<option value="">--请选择--</option>';
     const set = new Set();
     Object.keys(breedMap).forEach(cat => (breedMap[cat]||[]).forEach(b => set.add(b)));
-    Array.from(set).sort().forEach(b => {
-        const o = document.createElement("option"); o.value = b; o.textContent = b; sel.appendChild(o);
-    });
+    Array.from(set).sort().forEach(b => { const o = document.createElement("option"); o.value = b; o.textContent = b; sel.appendChild(o); });
 }
 function refreshBmBreedByCat(cat){
     const sel = $("bmBreed");
     sel.innerHTML = '<option value="">--请选择--</option>';
-    if(cat){
-        (breedMap[cat]||[]).forEach(b => {
-            const o = document.createElement("option"); o.value = b; o.textContent = b; sel.appendChild(o);
-        });
-    } else {
-        refreshBmBreedAll();
-    }
+    if(cat){ (breedMap[cat]||[]).forEach(b => { const o = document.createElement("option"); o.value = b; o.textContent = b; sel.appendChild(o); }); }
+    else refreshBmBreedAll();
 }
 $("batchModify").onclick = () => {
     if(selectedIds.size === 0) return;
     $("bmCount").textContent = selectedIds.size;
     const accSel = $("bmAcc"); accSel.innerHTML = '<option value="">--请选择--</option>';
-    accountOptions.forEach(a => {
-        const o = document.createElement("option"); o.value = a; o.textContent = a; accSel.appendChild(o);
-    });
+    accountOptions.forEach(a => { const o = document.createElement("option"); o.value = a; o.textContent = a; accSel.appendChild(o); });
     const catSel = $("bmCat"); catSel.innerHTML = '<option value="">--请选择--</option>';
-    Object.keys(breedMap).forEach(c => {
-        const o = document.createElement("option"); o.value = c; o.textContent = c; catSel.appendChild(o);
-    });
+    Object.keys(breedMap).forEach(c => { const o = document.createElement("option"); o.value = c; o.textContent = c; catSel.appendChild(o); });
     refreshBmBreedAll();
-    const dl = $("bmFeatList");
-    dl.innerHTML = "";
-    getAllFeatureNames().forEach(f => {
-        const o = document.createElement("option"); o.value = f; dl.appendChild(o);
-    });
-    ["bmAccEnable","bmCatEnable","bmBreedEnable","bmStatusEnable","bmFeatAddEnable","bmFeatDelEnable"].forEach(id => $(id).checked = false);
-    $("bmStatus").value = "";
-    $("bmFeatAdd").value = "";
-    $("bmFeatDel").value = "";
+    const dl = $("bmFeatList"); dl.innerHTML = "";
+    getAllFeatureNames().forEach(f => { const o = document.createElement("option"); o.value = f; dl.appendChild(o); });
+    const tl = $("bmTagList"); tl.innerHTML = "";
+    const tagSet = new Set();
+    petList.forEach(p => (p.tags||[]).forEach(t => tagSet.add(t)));
+    Array.from(tagSet).sort().forEach(t => { const o = document.createElement("option"); o.value = t; tl.appendChild(o); });
+    ["bmAccEnable","bmCatEnable","bmBreedEnable","bmStatusEnable","bmFeatAddEnable","bmFeatDelEnable","bmTagDelEnable","bmTagAddEnable"].forEach(id => $(id).checked = false);
+    $("bmStatus").value = ""; $("bmFeatAdd").value = ""; $("bmFeatDel").value = ""; $("bmTagDel").value = ""; $("bmTagAdd").value = "";
     $("batchModifyModal").classList.remove("hidden");
 };
 $("bmAcc").onchange = function(){ if(this.value) $("bmAccEnable").checked = true; };
-$("bmCat").onchange = function(){
-    if(this.value) $("bmCatEnable").checked = true;
-    refreshBmBreedByCat(this.value);
-};
+$("bmCat").onchange = function(){ if(this.value) $("bmCatEnable").checked = true; refreshBmBreedByCat(this.value); };
 $("bmBreed").onchange = function(){ if(this.value) $("bmBreedEnable").checked = true; };
 $("bmStatus").onchange = function(){ if(this.value) $("bmStatusEnable").checked = true; };
 $("bmFeatAdd").oninput = function(){ if(this.value.trim()) $("bmFeatAddEnable").checked = true; };
 $("bmFeatDel").oninput = function(){ if(this.value.trim()) $("bmFeatDelEnable").checked = true; };
+$("bmTagDel").oninput = function(){ if(this.value.trim()) $("bmTagDelEnable").checked = true; };
+$("bmTagAdd").oninput = function(){ if(this.value.trim()) $("bmTagAddEnable").checked = true; };
 
 $("bmCancel").onclick = () => $("batchModifyModal").classList.add("hidden");
 $("bmApply").onclick = () => {
@@ -3624,8 +3631,10 @@ $("bmApply").onclick = () => {
     const doStatus = $("bmStatusEnable").checked && $("bmStatus").value;
     const doFeatAdd = $("bmFeatAddEnable").checked && $("bmFeatAdd").value.trim();
     const doFeatDel = $("bmFeatDelEnable").checked && $("bmFeatDel").value.trim();
+    const doTagDel = $("bmTagDelEnable").checked && $("bmTagDel").value.trim();
+    const doTagAdd = $("bmTagAddEnable").checked && $("bmTagAdd").value.trim();
 
-    if(!doAcc && !doCat && !doBreed && !doStatus && !doFeatAdd && !doFeatDel){
+    if(!doAcc && !doCat && !doBreed && !doStatus && !doFeatAdd && !doFeatDel && !doTagDel && !doTagAdd){
         alert("请至少勾选一个要修改的字段，并选择目标值");
         return;
     }
@@ -3636,9 +3645,10 @@ $("bmApply").onclick = () => {
     const statusVal = doStatus ? $("bmStatus").value : "";
     const featAddVal = doFeatAdd ? $("bmFeatAdd").value.trim() : "";
     const featDelVal = doFeatDel ? $("bmFeatDel").value.trim() : "";
+    const tagDelVal = doTagDel ? $("bmTagDel").value.trim() : "";
+    const tagAddVal = doTagAdd ? $("bmTagAdd").value.trim() : "";
 
     takeSnapshot("批量修改 " + selectedIds.size + " 只");
-
     const now = Date.now();
     let count = 0;
     selectedIds.forEach(id => {
@@ -3647,15 +3657,13 @@ $("bmApply").onclick = () => {
         if(doAcc) p.account = accVal;
         if(doCat){
             p.category = catVal;
-            if(!doBreed){
-                if(!breedMap[catVal] || breedMap[catVal].indexOf(p.breed) < 0) p.breed = "";
-            }
+            if(!doBreed){ if(!breedMap[catVal] || breedMap[catVal].indexOf(p.breed) < 0) p.breed = ""; }
         }
         if(doBreed) p.breed = breedVal;
         if(doStatus){
             if(statusVal === "idle"){
                 p.totalMs = 0; p.pausedAt = 0; p.isRunning = false; p.locked = false;
-                p.timerMode = "normal"; p.startTs = null; p.runStartRemain = null;
+                p.timerMode = "normal"; p.startTs = null; p.runStartRemain = null; p.recoveredAt = 0;
             } else if(statusVal === "4h"){
                 p.totalMs = hmToMs(4, 0); p.timerMode = "normal";
                 p.pausedAt = p.totalMs; p.isRunning = false; p.startTs = null; p.runStartRemain = null; p.locked = false;
@@ -3668,31 +3676,24 @@ $("bmApply").onclick = () => {
                 p.totalMs = hmToMs(144, 0); p.timerMode = "breedFemale";
                 p.pausedAt = p.totalMs; p.isRunning = false; p.startTs = null; p.runStartRemain = null; p.locked = false;
                 startTimer(p, now);
-            } else if(statusVal === "reset"){
-                resetTimer(p, now);
-            } else if(statusVal === "pause"){
-                if(p.isRunning) pauseTimer(p, now);
-            } else if(statusVal === "start"){
-                if(!p.isRunning && !p.locked) startTimer(p, now);
-            }
+            } else if(statusVal === "reset"){ resetTimer(p, now); }
+            else if(statusVal === "pause"){ if(p.isRunning) pauseTimer(p, now); }
+            else if(statusVal === "start"){ if(!p.isRunning && !p.locked) startTimer(p, now); }
         }
         if(doFeatAdd){
             if(!p.features) p.features = [];
-            if(p.features.indexOf(featAddVal) < 0){
-                p.features.push(featAddVal);
-                ensureFeatureExists(featAddVal, p.category);
-            }
+            if(p.features.indexOf(featAddVal) < 0){ p.features.push(featAddVal); ensureFeatureExists(featAddVal, p.category); }
         }
-        if(doFeatDel){
-            if(p.features){
-                p.features = p.features.filter(f => f !== featDelVal);
-            }
+        if(doFeatDel){ if(p.features) p.features = p.features.filter(f => f !== featDelVal); }
+        if(doTagDel){ if(p.tags) p.tags = p.tags.filter(t => t !== tagDelVal); }
+        if(doTagAdd){
+            if(!p.tags) p.tags = [];
+            if(p.tags.indexOf(tagAddVal) === -1) p.tags.push(tagAddVal);
         }
         touchPet(p, now); count++;
     });
     $("batchModifyModal").classList.add("hidden");
-    saveLocal(); render();
-    updateUndoBtn();
+    saveLocal(); render(); updateUndoBtn();
     alert("已修改 " + count + " 只宠物");
 };
 
@@ -3702,10 +3703,7 @@ $("sortModeSel").onchange = () => render();
 /* ==================== 备份提醒横幅 ==================== */
 function initBackupBanner(){
     const closedAt = localStorage.getItem(BACKUP_BANNER_KEY);
-    if(closedAt){
-        const diff = Date.now() - Number(closedAt);
-        if(diff < 7 * 86400000) return;
-    }
+    if(closedAt){ const diff = Date.now() - Number(closedAt); if(diff < 7 * 86400000) return; }
     $("backupBanner").style.display = "flex";
 }
 $("closeBackupBanner").onclick = () => {
@@ -3715,9 +3713,7 @@ $("closeBackupBanner").onclick = () => {
 
 /* ==================== 猫爪菜单 ==================== */
 let pawMenuEl = null;
-function closePawMenu(){
-    if(pawMenuEl){ pawMenuEl.remove(); pawMenuEl = null; }
-}
+function closePawMenu(){ if(pawMenuEl){ pawMenuEl.remove(); pawMenuEl = null; } }
 $("pawBtn").onclick = e => {
     e.stopPropagation();
     if(pawMenuEl){ closePawMenu(); return; }
@@ -3747,11 +3743,8 @@ document.addEventListener("click", e => {
 
 /* ==================== 打赏弹窗 ==================== */
 function openTipModal(){
-    tipCurrentTab = "wechat";
-    tipCurrentAmt = null;
-    document.querySelectorAll(".tip-tab").forEach(t => {
-        t.classList.toggle("active", t.dataset.tab === "wechat");
-    });
+    tipCurrentTab = "wechat"; tipCurrentAmt = null;
+    document.querySelectorAll(".tip-tab").forEach(t => { t.classList.toggle("active", t.dataset.tab === "wechat"); });
     document.querySelectorAll(".tip-amt").forEach(a => a.classList.remove("active"));
     $("tipQrPanel").classList.add("hidden");
     $("tipModal").classList.remove("hidden");
@@ -3808,27 +3801,1032 @@ $("copyEmailBtn").onclick = async () => {
     try{
         await navigator.clipboard.writeText(input.value);
         const btn = $("copyEmailBtn");
-        btn.textContent = "✓ 已复制";
-        btn.classList.add("copied");
-        setTimeout(() => {
-            btn.textContent = "复制";
-            btn.classList.remove("copied");
-        }, 1500);
+        btn.textContent = "✓ 已复制"; btn.classList.add("copied");
+        setTimeout(() => { btn.textContent = "复制"; btn.classList.remove("copied"); }, 1500);
     }catch(e){
-        input.select();
-        document.execCommand("copy");
+        input.select(); document.execCommand("copy");
         const btn = $("copyEmailBtn");
-        btn.textContent = "✓ 已复制";
-        btn.classList.add("copied");
-        setTimeout(() => {
-            btn.textContent = "复制";
-            btn.classList.remove("copied");
-        }, 1500);
+        btn.textContent = "✓ 已复制"; btn.classList.add("copied");
+        setTimeout(() => { btn.textContent = "复制"; btn.classList.remove("copied"); }, 1500);
     }
 };
-$("openQuestionnaireBtn").onclick = () => {
-    window.open(FEEDBACK_URL, "_blank");
+$("openQuestionnaireBtn").onclick = () => { window.open(FEEDBACK_URL, "_blank"); };
+
+/* ==================== 宠物速配 ==================== */
+function isCloseRelative(petA, petB){
+    function getParents(p){ return [p.sire, p.dam].filter(Boolean); }
+    function getGrandParents(p){
+        const parents = getParents(p);
+        const gp = [];
+        parents.forEach(name => {
+            const parentPet = petList.find(x => x.name === name);
+            if(parentPet) gp.push(...getParents(parentPet));
+        });
+        return gp.filter(Boolean);
+    }
+    const aParents = getParents(petA), bParents = getParents(petB);
+    if(aParents.includes(petB.name) || bParents.includes(petA.name)) return true;
+    const aGP = getGrandParents(petA), bGP = getGrandParents(petB);
+    if(aGP.includes(petB.name) || bGP.includes(petA.name)) return true;
+    if(aParents.length && bParents.length){
+        const sameSire = petA.sire && petA.sire === petB.sire;
+        const sameDam = petA.dam && petA.dam === petB.dam;
+        if(sameSire && sameDam) return true;
+    }
+    return false;
+}
+
+function isDogConflict(petA, petB){
+    if(petA.category !== "狗狗" || petB.category !== "狗狗") return false;
+    const dogBreeds = ["金毛", "萨摩耶"];
+    if(petA.breed !== petB.breed && dogBreeds.includes(petA.breed) && dogBreeds.includes(petB.breed)) return true;
+    return false;
+}
+
+function canMatch(petA, petB, scheme){
+    if(petA.gender === petB.gender) return false;
+    if(isCloseRelative(petA, petB)) return false;
+    if(petA.category !== petB.category) return false;
+    if(isDogConflict(petA, petB)) return false;
+    if(scheme){
+        if(Array.isArray(scheme.accounts) && scheme.accounts.length > 0){
+            if(scheme.accounts.indexOf(petB.account) === -1) return false;
+        }
+        if(Array.isArray(scheme.categories) && scheme.categories.length > 0){
+            if(scheme.categories.indexOf(petB.category) === -1) return false;
+        }
+        if(Array.isArray(scheme.breeds) && scheme.breeds.length > 0){
+            if(scheme.breeds.indexOf(petB.breed) === -1) return false;
+        }
+    }
+    return true;
+}
+
+function calculateMatchScore(petA, petB, scheme){
+    let score = 0;
+    const plusItems = [];
+    const minusItems = [];
+
+    /* 匹配度计算：近亲 / 同性扣 999 分 */
+    if(petA.gender === petB.gender){
+        score -= 999;
+        minusItems.push({ label: "⚠️ 同性", weight: 999 });
+    }
+    if(isCloseRelative(petA, petB)){
+        score -= 999;
+        minusItems.push({ label: "⚠️ 近亲", weight: 999 });
+    }
+
+    const aFeats = petA.features || [];
+    const bFeats = petB.features || [];
+    const aTags = petA.tags || [];
+    const bTags = petB.tags || [];
+    const combined = new Set([...aFeats, ...bFeats]);
+
+    Object.keys(scheme.plusFeatures || {}).forEach(fname => {
+        const w = Number(scheme.plusFeatures[fname]) || 0;
+        if(w === 0) return;
+        if(combined.has(fname)){ score += w; plusItems.push({ label: fname, weight: w }); }
+    });
+    Object.keys(scheme.plusTags || {}).forEach(tagName => {
+        const w = Number(scheme.plusTags[tagName]) || 0;
+        if(w === 0) return;
+        if(aTags.indexOf(tagName) >= 0 || bTags.indexOf(tagName) >= 0){
+            score += w; plusItems.push({ label: "🏷️ " + tagName, weight: w });
+        }
+    });
+    Object.keys(scheme.minusFeatures || {}).forEach(fname => {
+        const w = Number(scheme.minusFeatures[fname]) || 0;
+        if(w === 0) return;
+        if(combined.has(fname)){ score -= w; minusItems.push({ label: fname, weight: w }); }
+    });
+    Object.keys(scheme.minusTags || {}).forEach(tagName => {
+        const w = Number(scheme.minusTags[tagName]) || 0;
+        if(w === 0) return;
+        if(aTags.indexOf(tagName) >= 0 && bTags.indexOf(tagName) >= 0){
+            score -= w; minusItems.push({ label: "🏷️ 共同标签 " + tagName, weight: w });
+        }
+    });
+
+    if(!scheme.acceptFlaw){
+        const aFlaws = aFeats.filter(f => isFlawFeature(f));
+        const bFlaws = bFeats.filter(f => isFlawFeature(f));
+        const allFlaws = new Set([...aFlaws, ...bFlaws]);
+        if(allFlaws.size > 0){
+            const penalty = allFlaws.size * 20;
+            score -= penalty;
+            minusItems.push({ label: "⚠️ 有瑕疵（" + Array.from(allFlaws).join("、") + "）", weight: penalty });
+        }
+    }
+    if(!scheme.acceptSamePartFlaw){
+        const aFlaws = aFeats.filter(f => isFlawFeature(f));
+        const bFlaws = bFeats.filter(f => isFlawFeature(f));
+        const shared = aFlaws.filter(f => bFlaws.indexOf(f) >= 0);
+        if(shared.length > 0){
+            let penalty = 0;
+            shared.forEach(f => { penalty += getFlawScore(f); });
+            score -= penalty;
+            minusItems.push({ label: "⚠️ 同部位瑕疵（" + shared.join("、") + "）", weight: penalty });
+        }
+    }
+    return { score: score, plusItems: plusItems, minusItems: minusItems };
+}
+
+function initDefaultScheme(){
+    return {
+        id: "scheme_" + genId(),
+        name: "默认方案",
+        accounts: [],
+        categories: [],
+        breeds: [],
+        acceptFlaw: true,
+        acceptSamePartFlaw: false,
+        plusFeatures: {},
+        plusTags: {},
+        minusFeatures: {},
+        minusTags: {}
+    };
+}
+function getCurrentScheme(){
+    if(matchSchemes.length === 0){
+        const def = initDefaultScheme();
+        matchSchemes.push(def);
+        currentSchemeId = def.id;
+    }
+    let s = matchSchemes.find(x => x.id === currentSchemeId);
+    if(!s){ s = matchSchemes[0]; currentSchemeId = s.id; }
+    if(!s.plusFeatures) s.plusFeatures = {};
+    if(!s.plusTags) s.plusTags = {};
+    if(!s.minusFeatures) s.minusFeatures = {};
+    if(!s.minusTags) s.minusTags = {};
+    if(!Array.isArray(s.categories)) s.categories = [];
+    if(!Array.isArray(s.breeds)) s.breeds = [];
+    return s;
+}
+function renderSchemeSelect(){
+    const sel = $("matchSchemeSelect");
+    if(!sel) return;
+    sel.innerHTML = "";
+    matchSchemes.forEach(s => {
+        const o = document.createElement("option");
+        o.value = s.id;
+        o.textContent = s.name;
+        sel.appendChild(o);
+    });
+    sel.value = currentSchemeId;
+}
+
+function saveCurrentScheme(){
+    schemeDirty = false;
+    updateSchemeDirtyTip();
+    saveLocal();
+    alert("✓ 已保存方案【" + getCurrentScheme().name + "】");
+}
+
+function renderSchemeParams(){
+    const wrap = $("schemeParams");
+    if(!wrap) return;
+    wrap.innerHTML = "";
+    const scheme = getCurrentScheme();
+    const petA = petList.find(p => p.id === $("matchPetSelect").value);
+    const petCategory = petA ? petA.category : "";
+
+    /* 品种大类 / 品种 —— 下拉多选按钮 */
+    const catDiv = document.createElement("div");
+    catDiv.style.cssText = "margin-bottom:12px";
+    catDiv.innerHTML = '<div style="font-weight:bold;font-size:13px;margin-bottom:6px">品种大类 / 品种（不勾选 = 全部）</div>';
+    const catBtnWrap = document.createElement("div");
+    catBtnWrap.style.cssText = "display:flex;flex-wrap:wrap;gap:6px;align-items:center";
+    const catBtn = document.createElement("button");
+    catBtn.className = "mf-btn";
+    const totalSel = scheme.categories.length + scheme.breeds.length;
+    catBtn.innerHTML = '选择品种 / 大类' + (totalSel > 0 ? '<span class="cnt">'+totalSel+'</span>' : '');
+    catBtn.onclick = e => { e.stopPropagation(); openSchemeCategoryPanel(catBtn, scheme); };
+    catBtnWrap.appendChild(catBtn);
+    if(scheme.categories.length > 0){
+        const tip = document.createElement("span");
+        tip.style.cssText = "font-size:12px;color:#3070ee";
+        tip.textContent = scheme.categories.join("、");
+        catBtnWrap.appendChild(tip);
+    } else {
+        const tip = document.createElement("span");
+        tip.style.cssText = "font-size:12px;color:#999";
+        tip.textContent = "全部";
+        catBtnWrap.appendChild(tip);
+    }
+    catDiv.appendChild(catBtnWrap);
+    wrap.appendChild(catDiv);
+
+    /* 账号范围 —— 下拉多选按钮 */
+    const accDiv = document.createElement("div");
+    accDiv.style.cssText = "margin-bottom:12px";
+    accDiv.innerHTML = '<div style="font-weight:bold;font-size:13px;margin-bottom:6px">账号范围（不勾选 = 全部账号）</div>';
+    const accBtnWrap = document.createElement("div");
+    accBtnWrap.style.cssText = "display:flex;flex-wrap:wrap;gap:6px;align-items:center";
+    const accBtn = document.createElement("button");
+    accBtn.className = "mf-btn";
+    accBtn.innerHTML = '选择账号' + (scheme.accounts.length > 0 ? '<span class="cnt">'+scheme.accounts.length+'</span>' : '');
+    accBtn.onclick = e => { e.stopPropagation(); openSchemeAccountPanel(accBtn, scheme); };
+    accBtnWrap.appendChild(accBtn);
+    const accTip = document.createElement("span");
+    accTip.style.cssText = "font-size:12px;color:" + (scheme.accounts.length > 0 ? "#3070ee" : "#999");
+    accTip.textContent = scheme.accounts.length > 0 ? scheme.accounts.join("、") : "全部";
+    accBtnWrap.appendChild(accTip);
+    accDiv.appendChild(accBtnWrap);
+    wrap.appendChild(accDiv);
+
+    /* 瑕疵接受度 + 瑕疵管理 */
+    const flawDiv = document.createElement("div");
+    flawDiv.style.cssText = "margin-bottom:12px;font-size:13px;display:flex;gap:16px;align-items:center;flex-wrap:wrap";
+    const flawLb1 = document.createElement("label");
+    flawLb1.style.cssText = "display:inline-flex;align-items:center;gap:4px";
+    const flawCb1 = document.createElement("input");
+    flawCb1.type = "checkbox"; flawCb1.checked = scheme.acceptFlaw;
+    flawLb1.appendChild(flawCb1);
+    flawLb1.appendChild(document.createTextNode("接受瑕疵"));
+    flawCb1.onchange = () => { scheme.acceptFlaw = flawCb1.checked; schemeDirty = true; updateSchemeDirtyTip(); };
+
+    const flawLb2 = document.createElement("label");
+    flawLb2.style.cssText = "display:inline-flex;align-items:center;gap:4px";
+    const flawCb2 = document.createElement("input");
+    flawCb2.type = "checkbox"; flawCb2.checked = scheme.acceptSamePartFlaw;
+    flawLb2.appendChild(flawCb2);
+    flawLb2.appendChild(document.createTextNode("接受同部位瑕疵"));
+    flawCb2.onchange = () => { scheme.acceptSamePartFlaw = flawCb2.checked; schemeDirty = true; updateSchemeDirtyTip(); };
+
+    const flawBtn = document.createElement("button");
+    flawBtn.textContent = "瑕疵管理";
+    flawBtn.style.cssText = "font-size:12px;padding:3px 10px;background:#fff8e6;border-color:#f0b840;color:#a06a10";
+    flawBtn.onclick = () => {
+        currentFeatCat = CAT_COMMON;
+        featSelected.clear();
+        renderFeatCatTabs();
+        renderFeatManage();
+        $("featManageModal").classList.remove("hidden");
+    };
+    flawDiv.appendChild(flawLb1);
+    flawDiv.appendChild(flawLb2);
+    flawDiv.appendChild(flawBtn);
+    wrap.appendChild(flawDiv);
+
+    renderSchemeFeatureList(wrap, "加分项（特征）", scheme.plusFeatures, petCategory);
+    renderSchemeTagInput(wrap, "加分项（标签，每行一个标签，可写「标签名=权重」）", scheme.plusTags);
+    renderSchemeFeatureList(wrap, "减分项（特征）", scheme.minusFeatures, petCategory);
+    renderSchemeTagInput(wrap, "减分项（标签，每行一个标签，可写「标签名=权重」）", scheme.minusTags);
+
+    /* 底部保存按钮 */
+    const btnRow = document.createElement("div");
+    btnRow.style.cssText = "display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid #eee";
+    const saveBtn = document.createElement("button");
+    saveBtn.className = "primary";
+    saveBtn.textContent = "💾 保存";
+    saveBtn.onclick = saveCurrentScheme;
+    const saveAsBtn = document.createElement("button");
+    saveAsBtn.textContent = "📋 另存为方案";
+    saveAsBtn.onclick = () => { $("btnSaveAsScheme").click(); };
+    btnRow.appendChild(saveBtn);
+    btnRow.appendChild(saveAsBtn);
+    wrap.appendChild(btnRow);
+}
+
+/* 品种大类/品种 多选面板 */
+function openSchemeCategoryPanel(btn, scheme){
+    closeFilterPanel();
+    const panel = document.createElement("div");
+    panel.className = "mf-panel";
+    panel.id = "__mfPanel";
+    panel.style.minWidth = "260px";
+    panel.appendChild(document.createElement("h5")).textContent = "品种大类 / 品种";
+
+    const catCbs = [], breedCbs = [];
+
+    Object.keys(breedMap).forEach(cat => {
+        const catRow = document.createElement("label");
+        catRow.style.cssText = "display:flex;align-items:center;gap:6px;padding:4px 6px;font-weight:600;cursor:pointer;border-radius:4px";
+        const catCb = document.createElement("input");
+        catCb.type = "checkbox";
+        catCb.checked = scheme.categories.indexOf(cat) >= 0;
+        catRow.appendChild(catCb);
+        catRow.appendChild(document.createTextNode(cat));
+        panel.appendChild(catRow);
+
+        const breedsWrap = document.createElement("div");
+        breedsWrap.style.cssText = "padding-left:22px;display:flex;flex-wrap:wrap;gap:4px 10px;margin-bottom:6px";
+        if(!catCb.checked) breedsWrap.style.display = "none";
+
+        (breedMap[cat] || []).forEach(b => {
+            const bLb = document.createElement("label");
+            bLb.style.cssText = "display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer";
+            const bCb = document.createElement("input");
+            bCb.type = "checkbox";
+            bCb.checked = scheme.breeds.indexOf(b) >= 0;
+            bLb.appendChild(bCb);
+            bLb.appendChild(document.createTextNode(b));
+            bCb.onchange = () => {
+                if(bCb.checked){
+                    if(scheme.breeds.indexOf(b) === -1) scheme.breeds.push(b);
+                    if(scheme.categories.indexOf(cat) === -1){
+                        scheme.categories.push(cat);
+                        catCb.checked = true;
+                        breedsWrap.style.display = "flex";
+                    }
+                } else {
+                    scheme.breeds = scheme.breeds.filter(x => x !== b);
+                }
+                schemeDirty = true; updateSchemeDirtyTip();
+            };
+            breedsWrap.appendChild(bLb);
+            breedCbs.push({ cat, breed: b, cb: bCb });
+        });
+        panel.appendChild(breedsWrap);
+
+        catCb.onchange = () => {
+            if(catCb.checked){
+                if(scheme.categories.indexOf(cat) === -1) scheme.categories.push(cat);
+                breedsWrap.style.display = "flex";
+            } else {
+                scheme.categories = scheme.categories.filter(x => x !== cat);
+                breedsWrap.style.display = "none";
+                (breedMap[cat] || []).forEach(b => {
+                    scheme.breeds = scheme.breeds.filter(x => x !== b);
+                });
+                breedsWrap.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = false);
+            }
+            schemeDirty = true; updateSchemeDirtyTip();
+        };
+        catCbs.push({ cat, cb: catCb });
+    });
+
+    const btnRow = document.createElement("div");
+    btnRow.style.cssText = "display:flex;gap:6px;margin-top:6px;padding-top:6px;border-top:1px solid #eee";
+    const sAll = document.createElement("button");
+    sAll.textContent = "全选";
+    sAll.style.cssText = "flex:1;font-size:12px;padding:4px";
+    sAll.onclick = () => {
+        scheme.categories = Object.keys(breedMap);
+        scheme.breeds = [];
+        Object.keys(breedMap).forEach(c => (breedMap[c]||[]).forEach(b => scheme.breeds.push(b)));
+        catCbs.forEach(x => x.cb.checked = true);
+        breedCbs.forEach(x => x.cb.checked = true);
+        panel.querySelectorAll("div").forEach(d => { if(d.style.display === "none") d.style.display = "flex"; });
+        schemeDirty = true; updateSchemeDirtyTip();
+    };
+    const sNone = document.createElement("button");
+    sNone.textContent = "全不选";
+    sNone.style.cssText = "flex:1;font-size:12px;padding:4px";
+    sNone.onclick = () => {
+        scheme.categories = [];
+        scheme.breeds = [];
+        catCbs.forEach(x => x.cb.checked = false);
+        breedCbs.forEach(x => x.cb.checked = false);
+        breedCbs.forEach(x => { x.cb.parentNode.parentNode.style.display = "none"; });
+        schemeDirty = true; updateSchemeDirtyTip();
+    };
+    btnRow.appendChild(sAll); btnRow.appendChild(sNone);
+    panel.appendChild(btnRow);
+
+    document.body.appendChild(panel);
+    const r = btn.getBoundingClientRect();
+    panel.style.left = Math.min(r.left, window.innerWidth - 320) + "px";
+    panel.style.top = (r.bottom + 4) + "px";
+
+    const outsideHandler = e => {
+        if(e.target.closest(".mf-panel") || btn.contains(e.target)) return;
+        closeFilterPanel();
+        document.removeEventListener("click", outsideHandler);
+        renderSchemeParams();
+    };
+    setTimeout(() => document.addEventListener("click", outsideHandler), 0);
+}
+
+/* 账号 多选面板 */
+function openSchemeAccountPanel(btn, scheme){
+    closeFilterPanel();
+    const panel = document.createElement("div");
+    panel.className = "mf-panel";
+    panel.id = "__mfPanel";
+    panel.appendChild(document.createElement("h5")).textContent = "账号范围";
+
+    if(accountOptions.length === 0){
+        const empty = document.createElement("div");
+        empty.style.cssText = "color:#999;font-size:12px;padding:6px";
+        empty.textContent = "暂无账号";
+        panel.appendChild(empty);
+    }
+    const cbMap = [];
+    accountOptions.forEach(a => {
+        const lb = document.createElement("label");
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = scheme.accounts.length === 0 || scheme.accounts.indexOf(a) >= 0;
+        cb.onchange = () => {
+            if(scheme.accounts.length === 0){
+                scheme.accounts = accountOptions.filter(x => x !== a);
+            } else {
+                if(cb.checked){
+                    if(scheme.accounts.indexOf(a) === -1) scheme.accounts.push(a);
+                    if(scheme.accounts.length === accountOptions.length) scheme.accounts = [];
+                } else {
+                    scheme.accounts = scheme.accounts.filter(x => x !== a);
+                }
+            }
+            schemeDirty = true; updateSchemeDirtyTip();
+        };
+        lb.appendChild(cb);
+        lb.appendChild(document.createTextNode(a));
+        panel.appendChild(lb);
+        cbMap.push({ a, cb });
+    });
+
+    const btnRow = document.createElement("div");
+    btnRow.style.cssText = "display:flex;gap:6px;margin-top:6px;padding-top:6px;border-top:1px solid #eee";
+    const sAll = document.createElement("button");
+    sAll.textContent = "全选";
+    sAll.style.cssText = "flex:1;font-size:12px;padding:4px";
+    sAll.onclick = () => {
+        scheme.accounts = [];
+        cbMap.forEach(x => x.cb.checked = true);
+        schemeDirty = true; updateSchemeDirtyTip();
+    };
+    const sNone = document.createElement("button");
+    sNone.textContent = "全不选";
+    sNone.style.cssText = "flex:1;font-size:12px;padding:4px";
+    sNone.onclick = () => {
+        scheme.accounts = [];
+        cbMap.forEach(x => x.cb.checked = false);
+        schemeDirty = true; updateSchemeDirtyTip();
+    };
+    btnRow.appendChild(sAll); btnRow.appendChild(sNone);
+    panel.appendChild(btnRow);
+
+    document.body.appendChild(panel);
+    const r = btn.getBoundingClientRect();
+    panel.style.left = Math.min(r.left, window.innerWidth - 320) + "px";
+    panel.style.top = (r.bottom + 4) + "px";
+
+    const outsideHandler = e => {
+        if(e.target.closest(".mf-panel") || btn.contains(e.target)) return;
+        closeFilterPanel();
+        document.removeEventListener("click", outsideHandler);
+        renderSchemeParams();
+    };
+    setTimeout(() => document.addEventListener("click", outsideHandler), 0);
+}
+
+function renderSchemeFeatureList(container, title, items, filterCategory){
+    const div = document.createElement("div");
+    div.style.cssText = "margin-bottom:12px";
+
+    const head = document.createElement("div");
+    head.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:6px";
+    const titleEl = document.createElement("div");
+    titleEl.style.cssText = "font-weight:bold;font-size:13px";
+    titleEl.textContent = title;
+    head.appendChild(titleEl);
+    const btnGroup = document.createElement("div");
+    btnGroup.style.cssText = "display:flex;gap:4px";
+    const selAllBtn = document.createElement("button");
+    selAllBtn.textContent = "全选"; selAllBtn.style.cssText = "font-size:11px;padding:2px 8px";
+    const selNoneBtn = document.createElement("button");
+    selNoneBtn.textContent = "全不选"; selNoneBtn.style.cssText = "font-size:11px;padding:2px 8px";
+    btnGroup.appendChild(selAllBtn); btnGroup.appendChild(selNoneBtn);
+    head.appendChild(btnGroup);
+    div.appendChild(head);
+
+    const list = document.createElement("div");
+    list.style.cssText = "max-height:220px;overflow:auto;border:1px solid #e3e8ef;border-radius:6px;padding:6px;background:#fafbfd";
+
+    let featureNames = [];
+    if(filterCategory){
+        const set = new Set();
+        Object.keys(featureMap[CAT_COMMON] || {}).forEach(n => set.add(n));
+        if(featureMap[filterCategory]) Object.keys(featureMap[filterCategory]).forEach(n => set.add(n));
+        featureNames = Array.from(set);
+    } else {
+        featureNames = getAllFeatureNames();
+    }
+    featureNames.sort();
+
+    selAllBtn.onclick = () => {
+        featureNames.forEach(f => { if(items[f] === undefined) items[f] = 10; });
+        list.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = true);
+        list.querySelectorAll("input[type=number]").forEach(inp => { if(inp.value === "" || Number(inp.value) === 0) inp.value = 10; });
+        schemeDirty = true; updateSchemeDirtyTip();
+    };
+    selNoneBtn.onclick = () => {
+        featureNames.forEach(f => { delete items[f]; });
+        list.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = false);
+        schemeDirty = true; updateSchemeDirtyTip();
+    };
+
+    if(featureNames.length === 0){
+        list.innerHTML = '<div style="color:#999;font-size:12px;padding:6px">暂无特征</div>';
+    }
+    featureNames.forEach(fname => {
+        const row = document.createElement("div");
+        row.style.cssText = "display:flex;align-items:center;gap:6px;padding:3px 4px;font-size:12px";
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = items[fname] !== undefined;
+        const label = document.createElement("span");
+        label.textContent = fname;
+        label.style.flex = "1";
+        const weight = document.createElement("input");
+        weight.type = "number";
+        weight.value = items[fname] !== undefined ? items[fname] : 10;
+        weight.min = 0;
+        weight.style.cssText = "width:60px;padding:2px 4px";
+        cb.onchange = () => {
+            if(cb.checked){ items[fname] = Number(weight.value) || 10; }
+            else { delete items[fname]; }
+            schemeDirty = true; updateSchemeDirtyTip();
+        };
+        weight.oninput = () => {
+            if(items[fname] !== undefined){
+                items[fname] = Number(weight.value) || 0;
+                schemeDirty = true; updateSchemeDirtyTip();
+            }
+        };
+        row.appendChild(cb); row.appendChild(label); row.appendChild(weight);
+        list.appendChild(row);
+    });
+    div.appendChild(list);
+    container.appendChild(div);
+}
+
+function renderSchemeTagInput(container, title, items){
+    const div = document.createElement("div");
+    div.style.cssText = "margin-bottom:12px";
+    div.innerHTML = '<div style="font-weight:bold;font-size:13px;margin-bottom:6px">' + title + '</div>';
+    const ta = document.createElement("textarea");
+    ta.rows = 3;
+    ta.style.cssText = "width:100%;font-family:Consolas,Monaco,monospace;font-size:12px;padding:6px";
+    const lines = Object.keys(items).map(k => {
+        const w = items[k];
+        return (w === 10) ? k : (k + "=" + w);
+    });
+    ta.value = lines.join("\n");
+    ta.oninput = () => {
+        Object.keys(items).forEach(k => delete items[k]);
+        ta.value.split("\n").map(s => s.trim()).filter(Boolean).forEach(line => {
+            const eq = line.indexOf("=");
+            if(eq > 0){
+                const name = line.slice(0, eq).trim();
+                const w = Number(line.slice(eq + 1).trim()) || 10;
+                if(name) items[name] = w;
+            } else { items[line] = 10; }
+        });
+        schemeDirty = true;
+        updateSchemeDirtyTip();
+    };
+    div.appendChild(ta);
+    container.appendChild(div);
+}
+
+function updateSchemeDirtyTip(){
+    const el = $("schemeDirtyTip");
+    if(!el) return;
+    el.style.display = schemeDirty ? "inline" : "none";
+}
+
+function renderMatchResults(petA, scheme){
+    const results = [];
+    petList.forEach(petB => {
+        if(petB.id === petA.id) return;
+        if(!canMatch(petA, petB, scheme)) return;
+        const m = calculateMatchScore(petA, petB, scheme);
+        results.push({ pet: petB, score: m.score, plusItems: m.plusItems, minusItems: m.minusItems });
+    });
+    results.sort((a,b) => b.score - a.score);
+    const wrap = $("matchResults");
+    if(results.length === 0){
+        wrap.innerHTML = '<div style="color:#999;padding:20px;text-align:center">暂无符合条件的宠物</div>';
+        return;
+    }
+    wrap.innerHTML = results.map(r => {
+        const p = r.pet;
+        const gTag = p.gender === "m" ? '<span class="gender-m">公</span>' : '<span class="gender-f">母</span>';
+        const imgHtml = p.img
+            ? '<img class="match-thumb" data-imgid="'+esc(p.img)+'" style="width:48px;height:48px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid #eee;flex-shrink:0" alt="">'
+            : '<div style="width:48px;height:48px;border-radius:6px;background:#f0f2f5;flex-shrink:0"></div>';
+        const plusHtml = r.plusItems.length ? r.plusItems.map(x => '<div style="color:#20b060;font-size:11px">' + esc(x.label) + ' +' + x.weight + '</div>').join("") : "";
+        const minusHtml = r.minusItems.length ? r.minusItems.map(x => '<div style="color:#c82424;font-size:11px">' + esc(x.label) + ' -' + x.weight + '</div>').join("") : "";
+        const scoreColor = r.score < 0 ? "#c82424" : "#3070ee";
+        return '<div class="match-result-item" style="display:flex;gap:8px;align-items:flex-start">'
+            + imgHtml
+            + '<div style="flex:1;min-width:0">'
+            + '<div><span class="name">' + esc(p.name) + '</span> ' + gTag
+            + ' <span class="score" style="color:'+scoreColor+'">' + r.score + ' 分</span>'
+            + ' <button class="mini-btn" data-match-jump="'+p.id+'">跳转</button></div>'
+            + '<div style="font-size:12px;color:#666;margin-top:2px">' + esc(p.breed||"-") + '｜' + esc(p.account||"-") + '</div>'
+            + (plusHtml || minusHtml ? '<div style="margin-top:4px;border-top:1px dashed #eee;padding-top:3px">' + plusHtml + minusHtml + '</div>' : '')
+            + '</div></div>';
+    }).join("");
+    fillImgElements(wrap);
+}
+
+function runMatch(){
+    const selectedId = $("matchPetSelect").value;
+    const petA = petList.find(p => p.id === selectedId);
+    if(!petA){ alert("请先选择宠物"); return; }
+    const scheme = getCurrentScheme();
+    renderMatchResults(petA, scheme);
+}
+
+function initMatchSelect(){
+    const sel = $("matchPetSelect");
+    if(!sel) return;
+    const curVal = sel.value;
+    sel.innerHTML = '<option value="">--请选择--</option>';
+    const filtered = getFilteredList();
+    filtered.forEach(p => {
+        const o = document.createElement("option");
+        o.value = p.id;
+        o.textContent = p.name + "（" + (p.account||"-") + " / " + (p.breed||"-") + "）";
+        sel.appendChild(o);
+    });
+    if(curVal) sel.value = curVal;
+    const petA = petList.find(p => p.id === sel.value);
+    $("matchPetInfo").innerHTML = petA
+        ? '已选：<b>' + esc(petA.name) + '</b> ' + (petA.gender === "m" ? "公" : "母")
+          + '<br>特征：' + ((petA.features||[]).map(f => featureChip(f)).join("") || "-")
+          + '<br>标签：' + ((petA.tags||[]).map(t => '<span class="tag">' + esc(t) + '</span>').join("") || "-")
+        : "";
+    renderSchemeSelect();
+    renderSchemeParams();
+    if(petA){
+        const scheme = getCurrentScheme();
+        renderMatchResults(petA, scheme);
+    }
+}
+
+$("matchPetSelect").onchange = initMatchSelect;
+$("matchRunBtn").onclick = runMatch;
+
+$("matchSchemeSelect").onchange = function(){
+    if(schemeDirty){
+        if(!confirm("当前方案有未保存的修改，切换后将丢失。\n\n是否继续切换？")){
+            this.value = currentSchemeId;
+            return;
+        }
+    }
+    currentSchemeId = this.value;
+    schemeDirty = false;
+    updateSchemeDirtyTip();
+    renderSchemeParams();
+    const petA = petList.find(p => p.id === $("matchPetSelect").value);
+    if(petA) renderMatchResults(petA, getCurrentScheme());
 };
+
+$("btnSaveScheme").onclick = saveCurrentScheme;
+
+$("btnSaveAsScheme").onclick = () => {
+    const name = prompt("请输入新方案名称：", "方案 " + (matchSchemes.length + 1));
+    if(!name || !name.trim()) return;
+    const cur = getCurrentScheme();
+    const newScheme = JSON.parse(JSON.stringify(cur));
+    newScheme.id = "scheme_" + genId();
+    newScheme.name = name.trim();
+    matchSchemes.push(newScheme);
+    currentSchemeId = newScheme.id;
+    schemeDirty = false;
+    updateSchemeDirtyTip();
+    saveLocal();
+    renderSchemeSelect();
+    renderSchemeParams();
+    alert("已另存为方案：" + newScheme.name);
+};
+
+function renderSchemeManage(){
+    const wrap = $("schemeListWrap");
+    wrap.innerHTML = "";
+    if(matchSchemes.length === 0){
+        wrap.innerHTML = '<div style="color:#999;padding:12px;text-align:center">暂无方案</div>';
+        return;
+    }
+    matchSchemes.forEach((s, i) => {
+        const row = document.createElement("div");
+        row.style.cssText = "display:flex;align-items:center;gap:6px;padding:8px 6px;border-bottom:1px solid #eef1f5";
+        const isCur = s.id === currentSchemeId ? ' <span style="color:#3070ee;font-size:12px">（当前）</span>' : "";
+        row.innerHTML =
+            '<span style="flex:1;font-size:13px"><b>' + esc(s.name) + '</b>' + isCur + '</span>' +
+            '<button class="mini-btn" data-scheme-set="' + s.id + '">设为当前</button>' +
+            '<button class="mini-btn" data-scheme-rename="' + i + '">改名</button>' +
+            '<button class="del-opt" data-scheme-del="' + i + '">删除</button>';
+        wrap.appendChild(row);
+    });
+}
+$("schemeListWrap").addEventListener("click", e => {
+    const setBtn = e.target.closest("[data-scheme-set]");
+    if(setBtn){
+        currentSchemeId = setBtn.dataset.schemeSet;
+        schemeDirty = false;
+        saveLocal();
+        renderSchemeSelect();
+        renderSchemeParams();
+        renderSchemeManage();
+        const petA = petList.find(p => p.id === $("matchPetSelect").value);
+        if(petA) renderMatchResults(petA, getCurrentScheme());
+        return;
+    }
+    const renameBtn = e.target.closest("[data-scheme-rename]");
+    if(renameBtn){
+        const i = Number(renameBtn.dataset.schemeRename);
+        const nv = prompt("新名称：", matchSchemes[i].name);
+        if(nv && nv.trim()){
+            matchSchemes[i].name = nv.trim();
+            saveLocal();
+            renderSchemeSelect();
+            renderSchemeManage();
+        }
+        return;
+    }
+    const delBtn = e.target.closest("[data-scheme-del]");
+    if(delBtn){
+        const i = Number(delBtn.dataset.schemeDel);
+        if(matchSchemes.length <= 1){ alert("至少保留一个方案"); return; }
+        if(!confirm("确认删除方案【" + matchSchemes[i].name + "】？")) return;
+        const wasCur = matchSchemes[i].id === currentSchemeId;
+        matchSchemes.splice(i, 1);
+        if(wasCur) currentSchemeId = matchSchemes[0].id;
+        saveLocal();
+        renderSchemeSelect();
+        renderSchemeParams();
+        renderSchemeManage();
+        return;
+    }
+});
+$("btnManageSchemes").onclick = () => {
+    renderSchemeManage();
+    $("schemeManageModal").classList.remove("hidden");
+};
+$("closeSchemeManage").onclick = () => $("schemeManageModal").classList.add("hidden");
+$("addSchemeBtn").onclick = () => {
+    const name = $("newSchemeName").value.trim();
+    if(!name){ alert("请输入方案名"); return; }
+    const s = initDefaultScheme();
+    s.name = name;
+    matchSchemes.push(s);
+    $("newSchemeName").value = "";
+    saveLocal();
+    renderSchemeSelect();
+    renderSchemeManage();
+};
+
+/* ==================== 匹配度计算 ==================== */
+$("matchScoreBtn").onclick = () => {
+    $("scoreCalcBody").innerHTML = '<div style="color:#999;padding:16px;text-align:center">请选择计算方式</div>';
+    $("scoreCalcModal").classList.remove("hidden");
+};
+$("closeScoreCalc").onclick = () => $("scoreCalcModal").classList.add("hidden");
+
+$("scoreCalcExisting").onclick = () => {
+    const body = $("scoreCalcBody");
+    const mainPet = petList.find(p => p.id === $("matchPetSelect").value);
+    const defaultCat = mainPet ? mainPet.category : "";
+    const defaultBreed = mainPet ? mainPet.breed : "";
+
+    body.innerHTML = ''
+        + '<div class="form-row"><label>账号筛选</label><select id="scAcc" style="width:100%"><option value="">全部账号</option></select></div>'
+        + '<div class="form-row"><label>品种筛选</label><select id="scBreed" style="width:100%"><option value="">全部品种</option></select></div>'
+        + '<div class="form-row"><label>昵称搜索</label><input type="text" id="scKw" style="width:100%" placeholder="输入昵称关键词"></div>'
+        + '<div class="form-row"><label>选择宠物</label><div id="scList" style="max-height:240px;overflow:auto;border:1px solid #e3e8ef;border-radius:6px;padding:6px"></div></div>';
+
+    const accSel = $("scAcc");
+    accountOptions.forEach(a => {
+        const o = document.createElement("option"); o.value = a; o.textContent = a; accSel.appendChild(o);
+    });
+
+    const breedSel = $("scBreed");
+    (breedMap[defaultCat] || []).forEach(b => {
+        const o = document.createElement("option"); o.value = b; o.textContent = b; breedSel.appendChild(o);
+    });
+    breedSel.value = defaultBreed;
+
+    function refreshList(){
+        const acc = accSel.value;
+        const bd = breedSel.value;
+        const kw = $("scKw").value.trim().toLowerCase();
+        const list = petList.filter(p => {
+            if(p.id === (mainPet && mainPet.id)) return false;
+            if(acc && p.account !== acc) return false;
+            if(bd && p.breed !== bd) return false;
+            if(kw && p.name.toLowerCase().indexOf(kw) < 0) return false;
+            return true;
+        });
+        const listEl = $("scList");
+        if(list.length === 0){
+            listEl.innerHTML = '<div style="color:#999;font-size:12px;padding:8px">无匹配宠物</div>';
+            return;
+        }
+        listEl.innerHTML = "";
+        list.forEach(p => {
+            const row = document.createElement("div");
+            row.style.cssText = "display:flex;align-items:center;gap:8px;padding:6px;border-bottom:1px solid #f2f5f9;cursor:pointer";
+            row.innerHTML = '<span style="flex:1;font-size:13px">' + esc(p.name) + ' <span style="color:#888;font-size:11px">' + esc(p.breed||"-") + '｜' + esc(p.account||"-") + '</span></span>'
+                + '<button class="mini-btn" style="padding:2px 10px">选择</button>';
+            row.querySelector("button").onclick = () => {
+                if(!mainPet){ alert("请先返回速配界面选择目标宠物"); return; }
+                const scheme = getCurrentScheme();
+                const m = calculateMatchScore(mainPet, p, scheme);
+                $("scoreCalcModal").classList.add("hidden");
+                showScoreDetail(mainPet, p, m);
+            };
+            listEl.appendChild(row);
+        });
+    }
+    accSel.onchange = refreshList;
+    breedSel.onchange = refreshList;
+    $("scKw").oninput = refreshList;
+    refreshList();
+};
+
+$("scoreCalcTemp").onclick = () => {
+    const mainPet = petList.find(p => p.id === $("matchPetSelect").value);
+    if(!mainPet){ alert("请先在速配界面选择目标宠物"); return; }
+    const defaultCat = mainPet.category;
+    const defaultBreed = mainPet.breed;
+
+    const breedSel = $("tempPetBreed");
+    breedSel.innerHTML = '<option value="">--请选择--</option>';
+    (breedMap[defaultCat] || []).forEach(b => {
+        const o = document.createElement("option"); o.value = b; o.textContent = b;
+        if(b === defaultBreed) o.selected = true;
+        breedSel.appendChild(o);
+    });
+    tempPetImgBlob = null;
+    $("tempPetFeatures").value = "";
+    $("tempPetTags").value = "";
+    $("tempPetName").value = "";
+    $("tempPetPreviewWrap").style.display = "none";
+    $("scoreCalcModal").classList.add("hidden");
+    $("tempPetModal").classList.remove("hidden");
+    renderTempPetFeatureQuick();
+};
+
+/* 临时宠物特征快捷区 */
+function renderTempPetFeatureQuick(){
+    const wrap = $("tempPetFeatQuick");
+    if(!wrap) return;
+    wrap.innerHTML = "";
+    const mainPet = petList.find(p => p.id === $("matchPetSelect").value);
+    const cat = mainPet ? mainPet.category : "";
+    const cur = $("tempPetFeatures").value.split("\n").map(s => s.trim()).filter(Boolean);
+    const curSet = new Set(cur);
+
+    function makeGroup(title, names){
+        if(!names || names.length === 0) return;
+        const g = document.createElement("div");
+        g.className = "feat-quick-group";
+        g.innerHTML = '<div class="feat-quick-title">' + title + '</div>';
+        const chips = document.createElement("div");
+        chips.className = "feat-quick-chips";
+        names.forEach(name => {
+            const color = getFeatureColor(name);
+            const chip = document.createElement("div");
+            chip.className = "feat-quick-chip" + (curSet.has(name) ? " on" : "");
+            chip.textContent = name;
+            if(curSet.has(name)){ chip.style.background = color; chip.style.borderColor = color; }
+            else { chip.style.color = color; chip.style.borderColor = hexToRgba(color, 0.4); }
+            chip.onclick = () => {
+                const arr = $("tempPetFeatures").value.split("\n").map(s => s.trim()).filter(Boolean);
+                const i = arr.indexOf(name);
+                if(i >= 0) arr.splice(i, 1); else arr.push(name);
+                $("tempPetFeatures").value = arr.join("\n");
+                renderTempPetFeatureQuick();
+            };
+            chips.appendChild(chip);
+        });
+        g.appendChild(chips);
+        wrap.appendChild(g);
+    }
+
+    makeGroup("共有特征（所有品种大类通用）", Object.keys(featureMap[CAT_COMMON] || {}));
+    if(cat && featureMap[cat]) makeGroup(esc(cat) + " 专属特征", Object.keys(featureMap[cat]));
+
+    if(!wrap.innerHTML){
+        wrap.innerHTML = '<div class="chip-empty">暂无可选特征</div>';
+    }
+}
+$("tempPetFeatures").addEventListener("input", renderTempPetFeatureQuick);
+
+$("tempPetCancel").onclick = () => $("tempPetModal").classList.add("hidden");
+
+$("tempPetImg").onchange = e => {
+    const f = e.target.files[0]; if(!f) return;
+    compressToBlob(f, 2000, 0.9).then(blob => {
+        tempPetImgBlob = blob;
+        $("tempPetPreview").src = URL.createObjectURL(blob);
+        $("tempPetPreviewWrap").style.display = "flex";
+    }).catch(err => alert("图片处理失败：" + err.message));
+    e.target.value = "";
+};
+$("tempPetPasteZone").addEventListener("paste", e => {
+    for(const it of e.clipboardData.items){
+        if(it.type.indexOf("image/") === 0){
+            const f = it.getAsFile(); e.preventDefault();
+            compressToBlob(f, 2000, 0.9).then(blob => {
+                tempPetImgBlob = blob;
+                $("tempPetPreview").src = URL.createObjectURL(blob);
+                $("tempPetPreviewWrap").style.display = "flex";
+            }).catch(err => alert("图片处理失败：" + err.message));
+            break;
+        }
+    }
+});
+$("tempPetClearImg").onclick = () => {
+    tempPetImgBlob = null;
+    $("tempPetPreview").src = "";
+    $("tempPetPreviewWrap").style.display = "none";
+};
+
+$("tempPetCalc").onclick = () => {
+    const mainPet = petList.find(p => p.id === $("matchPetSelect").value);
+    if(!mainPet){ alert("请先选择目标宠物"); return; }
+    const scheme = getCurrentScheme();
+
+    const tempPet = {
+        id: "temp_" + genId(),
+        name: $("tempPetName").value.trim() || "临时宠物",
+        gender: mainPet.gender === "m" ? "f" : "m",
+        category: mainPet.category,
+        breed: $("tempPetBreed").value || "",
+        features: $("tempPetFeatures").value.split("\n").map(s => s.trim()).filter(Boolean),
+        tags: $("tempPetTags").value.split("\n").map(s => s.trim()).filter(Boolean),
+        account: ""
+    };
+
+    const m = calculateMatchScore(mainPet, tempPet, scheme);
+    $("tempPetModal").classList.add("hidden");
+    showScoreDetail(mainPet, tempPet, m, tempPetImgBlob);
+};
+
+function showScoreDetail(petA, petB, result, tempBlob){
+    const wrap = $("matchScoreDetail");
+    const imgA = petA.img
+        ? (isIndexedImg(petA.img) ? (getImageUrlSync(petA.img) || "") : petA.img)
+        : "";
+    const imgB = petB.img
+        ? (isIndexedImg(petB.img) ? (getImageUrlSync(petB.img) || "") : petB.img)
+        : (tempBlob ? URL.createObjectURL(tempBlob) : "");
+
+    const plusHtml = result.plusItems.length ? result.plusItems.map(x => '<div style="color:#20b060;font-size:12px">' + esc(x.label) + ' +' + x.weight + '</div>').join("") : '<div style="color:#999;font-size:12px">无</div>';
+    const minusHtml = result.minusItems.length ? result.minusItems.map(x => '<div style="color:#c82424;font-size:12px">' + esc(x.label) + ' -' + x.weight + '</div>').join("") : '<div style="color:#999;font-size:12px">无</div>';
+    const scoreColor = result.score < 0 ? "#c82424" : "#3070ee";
+
+    wrap.innerHTML = ''
+        + '<div style="border:1px solid #e3e8ef;border-radius:10px;padding:12px;background:#fff">'
+        + '<div style="display:flex;gap:10px;align-items:center;justify-content:center;margin-bottom:10px">'
+        + '<div style="text-align:center;flex:1">'
+        + (imgA ? '<img src="'+imgA+'" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #eee">' : '<div style="width:64px;height:64px;border-radius:8px;background:#f0f2f5;margin:0 auto"></div>')
+        + '<div style="font-size:12px;margin-top:4px">'+esc(petA.name)+'</div>'
+        + '</div>'
+        + '<div style="font-size:22px;color:#888">💗</div>'
+        + '<div style="text-align:center;flex:1">'
+        + (imgB ? '<img src="'+imgB+'" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #eee">' : '<div style="width:64px;height:64px;border-radius:8px;background:#f0f2f5;margin:0 auto"></div>')
+        + '<div style="font-size:12px;margin-top:4px">'+esc(petB.name)+'</div>'
+        + '</div>'
+        + '</div>'
+        + '<div style="text-align:center;font-size:22px;font-weight:bold;color:'+scoreColor+';margin-bottom:10px">总分 '+result.score+' 分</div>'
+        + '<div style="display:flex;gap:12px;font-size:12px">'
+        + '<div style="flex:1"><div style="font-weight:bold;color:#20b060;margin-bottom:4px">加分项</div>'+plusHtml+'</div>'
+        + '<div style="flex:1"><div style="font-weight:bold;color:#c82424;margin-bottom:4px">减分项</div>'+minusHtml+'</div>'
+        + '</div>'
+        + '</div>';
+    wrap.scrollIntoView({behavior:"smooth", block:"center"});
+}
+
+/* 跳转宠物卡片 */
+document.addEventListener("click", e => {
+    const jumpBtn = e.target.closest("[data-match-jump]");
+    if(jumpBtn){
+        const id = jumpBtn.dataset.matchJump;
+        const pet = petList.find(x => x.id === id);
+        if(pet){
+            $("searchInput").value = pet.name;
+            document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+            const cardTab = document.querySelector('.view-tab[data-view="card"]');
+            if(cardTab) cardTab.classList.add("active");
+            currentView = "card";
+            $("cardView").classList.remove("hidden");
+            $("tableView").classList.add("hidden");
+            $("dashboardView").classList.add("hidden");
+            $("benchView").classList.add("hidden");
+            $("matchView").classList.add("hidden");
+            render();
+        }
+        return;
+    }
+    const matchThumb = e.target.closest(".match-thumb");
+    if(matchThumb){
+        const id = matchThumb.getAttribute("data-imgid");
+        if(id){
+            if(isIndexedImg(id)) getImageUrl(id).then(u => u && openBigPreview(u));
+            else openBigPreview(id);
+        }
+        return;
+    }
+});
 
 /* ==================== 使用教程 ==================== */
 const TOUR_STEPS = [
@@ -3845,35 +4843,25 @@ function startTour(){
     tourStep = 0;
     if(!tourHl){
         tourHl = document.createElement("div");
-        tourHl.className = "tour-highlight";
-        tourHl.id = "__tourHl";
+        tourHl.className = "tour-highlight"; tourHl.id = "__tourHl";
         document.body.appendChild(tourHl);
     }
     if(!tourTip){
         tourTip = document.createElement("div");
-        tourTip.className = "tour-tip arrow-top";
-        tourTip.id = "__tourTip";
+        tourTip.className = "tour-tip arrow-top"; tourTip.id = "__tourTip";
         document.body.appendChild(tourTip);
     }
     showTourStep(0);
     window.addEventListener("resize", repositionTour);
     window.addEventListener("scroll", repositionTour, true);
 }
-
 function showTourStep(idx){
-    if(idx < 0 || idx >= TOUR_STEPS.length){
-        endTour();
-        return;
-    }
+    if(idx < 0 || idx >= TOUR_STEPS.length){ endTour(); return; }
     tourStep = idx;
     const step = TOUR_STEPS[idx];
     const el = document.querySelector(step.target);
-    if(!el){
-        showTourStep(idx + 1);
-        return;
-    }
+    if(!el){ showTourStep(idx + 1); return; }
     try{ el.scrollIntoView({block: "center", behavior: "smooth"}); }catch(e){ el.scrollIntoView(); }
-
     setTimeout(() => {
         repositionTour();
         const total = TOUR_STEPS.length;
@@ -3893,7 +4881,6 @@ function showTourStep(idx){
         repositionTour();
     }, 260);
 }
-
 function repositionTour(){
     if(!tourHl || !tourTip) return;
     const step = TOUR_STEPS[tourStep];
@@ -3906,40 +4893,24 @@ function repositionTour(){
     tourHl.style.top = (rect.top - pad) + "px";
     tourHl.style.width = (rect.width + pad*2) + "px";
     tourHl.style.height = (rect.height + pad*2) + "px";
-
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    const tipW = tourTip.offsetWidth || 300;
-    const tipH = tourTip.offsetHeight || 160;
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const tipW = tourTip.offsetWidth || 300, tipH = tourTip.offsetHeight || 160;
     const gap = 14;
-
     let tipLeft, tipTop, arrow;
     if(step.tipPos === "bottom"){
-        tipLeft = rect.left;
-        tipTop = rect.bottom + gap;
-        arrow = "top";
-        if(tipTop + tipH > vh - 12){
-            tipTop = rect.top - tipH - gap;
-            arrow = "bottom";
-        }
+        tipLeft = rect.left; tipTop = rect.bottom + gap; arrow = "top";
+        if(tipTop + tipH > vh - 12){ tipTop = rect.top - tipH - gap; arrow = "bottom"; }
     } else {
-        tipLeft = rect.left;
-        tipTop = rect.top - tipH - gap;
-        arrow = "bottom";
-        if(tipTop < 12){
-            tipTop = rect.bottom + gap;
-            arrow = "top";
-        }
+        tipLeft = rect.left; tipTop = rect.top - tipH - gap; arrow = "bottom";
+        if(tipTop < 12){ tipTop = rect.bottom + gap; arrow = "top"; }
     }
     if(tipLeft + tipW > vw - 12) tipLeft = vw - tipW - 12;
     if(tipLeft < 12) tipLeft = 12;
     if(tipTop < 12) tipTop = 12;
-
     tourTip.style.left = tipLeft + "px";
     tourTip.style.top = tipTop + "px";
     tourTip.className = "tour-tip arrow-" + arrow;
 }
-
 function endTour(){
     if(tourHl){ tourHl.remove(); tourHl = null; }
     if(tourTip){ tourTip.remove(); tourTip = null; }
@@ -3947,8 +4918,76 @@ function endTour(){
     window.removeEventListener("scroll", repositionTour, true);
 }
 
+/* ==================== 每秒文本 tick（不重建 DOM） ==================== */
+function tickUpdate(){
+    const now = Date.now();
+    let needFullRender = false;
+
+    document.querySelectorAll("[data-card-id]").forEach(cardEl => {
+        const id = cardEl.dataset.cardId;
+        const p = petList.find(x => x.id === id);
+        if(!p){ needFullRender = true; return; }
+        const rem = getRemain(p, now);
+        const recover = getRecoverTime(p, now);
+        const cp1Name = (p.cp1 && p.cp1.name || "").trim();
+        const newStateKey = p.locked ? "locked" : (rem <= 0 ? (cp1Name ? "waitpair" : "idle") : (p.isRunning ? "cd" : "paused"));
+        if(cardEl.dataset.stateKey !== newStateKey){
+            needFullRender = true;
+            return;
+        }
+        const remainEl = cardEl.querySelector(".remain-text");
+        if(remainEl) remainEl.textContent = msToHMS(rem);
+        const recoverEl = cardEl.querySelector(".recover-text");
+        if(recoverEl) recoverEl.textContent = recover ? "预计恢复 " + fmtDT(recover) : "";
+           const idleEl = cardEl.querySelector(".idle-info");
+        if(idleEl && idleEl.dataset.showIdle === "1"){
+            if(!p.isRunning && !p.locked && rem <= 0 && p.recoveredAt){
+                const idleMs = now - p.recoveredAt;
+                idleEl.textContent = "已空闲 " + msToHMS(idleMs) + "（" + fmtDT(p.recoveredAt) + " 恢复）";
+            } else {
+                idleEl.textContent = "";
+            }
+        }
+    });
+
+    document.querySelectorAll("#tableBody tr[data-id]").forEach(tr => {
+        const id = tr.dataset.id;
+        const p = petList.find(x => x.id === id);
+        if(!p){ needFullRender = true; return; }
+        const rem = getRemain(p, now);
+        const recover = getRecoverTime(p, now);
+        const cp1Name = (p.cp1 && p.cp1.name || "").trim();
+        const newStateKey = p.locked ? "locked" : (rem <= 0 ? (cp1Name ? "waitpair" : "idle") : (p.isRunning ? "cd" : "paused"));
+        if(tr.dataset.stateKey !== newStateKey){
+            needFullRender = true;
+            return;
+        }
+        const statusCell = tr.querySelector(".status-cell");
+        if(statusCell){
+            let status = "";
+            if(p.locked) status = "🔒待接生";
+            else if(rem <= 0){ status = cp1Name ? "💗待配对" : "🟢空闲"; }
+            else if(p.isRunning) status = "⏱运行中";
+            else status = "⏸暂停";
+            statusCell.textContent = status;
+        }
+        const recoverCell = tr.querySelector(".recover-cell");
+        if(recoverCell) recoverCell.textContent = recover ? fmtDT(recover) : "-";
+        const waitCell = tr.querySelector(".wait-cell");
+        if(waitCell) waitCell.textContent = calcWaitTime(p, now);
+    });
+
+    if(needFullRender) render();
+}
+
 /* ==================== 启动 ==================== */
 loadFromLocal();
+if(matchSchemes.length === 0){
+    const def = initDefaultScheme();
+    matchSchemes.push(def);
+    currentSchemeId = def.id;
+}
+getCurrentScheme();
 applyCpColVisibility();
 initBackupBanner();
 render();
@@ -3956,13 +4995,18 @@ updateUndoBtn();
 setInterval(() => {
     if(editInProgress) return;
     if(currentView === "dashboard") return;
+    if(currentView === "match") return;
     if(!$("editModal").classList.contains("hidden")) return;
     if(!$("batchModifyModal").classList.contains("hidden")) return;
     if(!$("featManageModal").classList.contains("hidden")) return;
     if(!$("batchAddModal").classList.contains("hidden")) return;
     if(!$("exportModal").classList.contains("hidden")) return;
     if(!$("importModal").classList.contains("hidden")) return;
-    render();
+    if(!$("schemeManageModal").classList.contains("hidden")) return;
+    if(!$("scoreCalcModal").classList.contains("hidden")) return;
+    if(!$("tempPetModal").classList.contains("hidden")) return;
+    if(checkAutoLock(Date.now())) saveLocal();
+    tickUpdate();
 }, 1000);
 </script>
 </body>
