@@ -52,6 +52,9 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .star-btn{position:absolute;top:6px;right:6px;background:transparent;border:none;font-size:18px;cursor:pointer;padding:2px 4px;line-height:1;color:#ddd;transition:.15s}
 .star-btn:hover{color:#f0b840}
 .star-btn.on{color:#f0b840}
+.share-mini-btn{position:absolute;top:6px;right:30px;background:transparent;border:none;cursor:pointer;padding:2px 4px;line-height:1;color:#c8c8d0;transition:.15s;display:flex;align-items:center;justify-content:center}
+.share-mini-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.share-mini-btn:hover{color:#3070ee}
 .table-wrap{overflow:auto;max-height:calc(100vh - 300px);border:1px solid #e3e8ef;border-radius:8px}
 .pet-table{width:100%;border-collapse:collapse;font-size:13px;background:#fff}
 .pet-table th,.pet-table td{padding:6px;border-bottom:1px solid #eef1f5;text-align:left;vertical-align:middle;white-space:nowrap}
@@ -229,9 +232,26 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .match-result-item .name{font-weight:bold;font-size:14px}
 .match-result-item .score{color:#3070ee;font-weight:bold}
 .match-result-item .reasons{font-size:12px;color:#666;margin-top:4px}
+.cp-verdict-box{text-align:center;padding:16px;border-radius:14px;background:linear-gradient(135deg,#fff5fa 0%,#f0f4ff 100%);margin-bottom:12px}
+.cp-verdict-emoji{font-size:42px;line-height:1}
+.cp-verdict-text{font-size:28px;font-weight:bold;letter-spacing:2px;margin:6px 0}
+.cp-verdict-tip{font-size:12px;color:#888;margin-top:4px}
+.cp-score-big{font-size:48px;font-weight:bold;line-height:1;text-align:center;margin:8px 0}
+.cp-score-big .unit{font-size:18px;font-weight:normal;color:#aaa;margin-left:4px}
+.cp-vs-row{display:flex;gap:12px;align-items:center;justify-content:center;margin:12px 0}
+.cp-vs-pet{flex:1;text-align:center;min-width:0}
+.cp-vs-pet img{width:80px;height:80px;object-fit:cover;border-radius:12px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.cp-vs-pet .ph{width:80px;height:80px;border-radius:12px;background:#f0f2f5;margin:0 auto;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:12px}
+.cp-vs-pet .nm{font-size:13px;font-weight:bold;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cp-vs-heart{font-size:28px;color:#e85496}
+.share-settings-group{margin-bottom:16px}
+.share-settings-group h4{margin:0 0 8px;font-size:14px;color:#3070ee}
+.share-settings-group label{display:inline-flex;align-items:center;gap:5px;font-size:13px;margin-right:14px;margin-bottom:6px;cursor:pointer;color:#444}
+.share-settings-group select{padding:4px 8px;font-size:13px}
 </style>
-</head>
-<body>
+</head><body>
+
+<div style="text-align:center;font-size:11px;color:#aaa;padding:4px 0;background:#fafbfd">© 2026 绒光宠物录 · 保留所有权利 · 未经许可请勿二次分发</div>
 
 <div id="compatWarn" class="compat-warn hidden">
   <b>⚠️ 检测到你的浏览器版本较旧</b><br>
@@ -255,6 +275,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <button id="btnImport">📂导入备份</button>
 <button id="btnManageOpt">⚙️管理账号/品种</button>
 <button id="btnManageFeat">🎨管理特征</button>
+<button id="btnShareSettings">📤分享设置</button>
 <button id="btnUndo" class="btn-undo" style="font-size:12px;padding:5px 10px" disabled>↶ 撤回</button>
 </div>
 
@@ -380,6 +401,15 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
       <h4>选择目标宠物（优先显示工作台，按剩余时间排序）</h4>
       <select id="matchPetSelect" style="width:100%"></select>
       <div id="matchPetInfo" style="margin-top:8px;font-size:13px;color:#666"></div>
+      <div style="margin-top:10px;padding:8px 10px;background:#fffdf3;border:1px solid #f0e0a0;border-radius:8px">
+        <div style="font-size:12px;color:#a06a10;margin-bottom:6px">🎨 目标宠物临时颜值（仅本次速配有效，不保存）</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;color:#999">0</span>
+          <input type="range" id="matchPetAppearance" min="0" max="100" value="50" style="flex:1" oninput="onMatchTargetAppearanceChange(this)">
+          <span style="font-size:11px;color:#999">100</span>
+        </div>
+        <div id="matchPetAppearanceLabel" style="text-align:center;font-size:13px;color:#e85496;font-weight:500;margin-top:4px">品貌端正（50）</div>
+      </div>
       <button id="matchRunBtn" class="primary" style="margin-top:8px;width:100%">开始匹配</button>
       <button id="matchScoreBtn" style="margin-top:6px;width:100%;background:#28c76f;color:#fff;border-color:#20b060">📊 匹配度计算</button>
       <div id="matchScoreDetail" style="margin-top:10px;font-size:13px"></div>
@@ -398,7 +428,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
           <button id="matchSortByTime" class="mf-btn" style="font-size:12px;padding:4px 10px">按时间排序</button>
         </div>
       </div>
-      <div id="matchResults" style="max-height:65vh;overflow:auto"></div>
+      <div id="matchResults"></div>
     </div>
   </div>
 </div>
@@ -459,12 +489,48 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
       <button id="closeSchemeManage">关闭</button>
     </div>
   </div>
-  <div style="font-size:12px;color:#666;margin-bottom:8px">每个方案独立配置账号范围、品种大类/品种、瑕疵接受度、加分项、减分项。方案会随备份一起导出/导入。</div>
+  <div style="font-size:12px;color:#666;margin-bottom:8px">每个方案独立配置账号范围、品种大类/品种、瑕疵接受度、加分项、减分项。方案会随备份一起导出/导入。可用 ↑↓ 调整顺序。</div>
   <div id="schemeListWrap" style="max-height:50vh;overflow:auto"></div>
   <div style="margin-top:10px;display:flex;gap:6px">
     <input id="newSchemeName" placeholder="新方案名" style="flex:1">
     <button id="addSchemeBtn">新建方案</button>
   </div>
+</div></div>
+
+<!-- 分享卡片弹窗 -->
+<div class="modal hidden" id="shareModal"><div class="modal-box" style="max-width:520px;background:linear-gradient(135deg,#fef8fa 0%,#f0f4ff 100%)">
+  <div class="modal-header" style="background:transparent;border-bottom:none">
+    <h3 style="color:#a06080">🐾 宠物分享卡</h3>
+    <div class="modal-header-btns">
+      <button id="shareCloseBtn">关闭</button>
+    </div>
+  </div>
+  <div id="shareContent" style="padding:8px"></div>
+  <div style="text-align:center;font-size:11px;color:#aaa;margin-top:8px">截图后即可分享给朋友 💌</div>
+</div></div>
+
+<!-- CP 趣味分享弹窗 -->
+<div class="modal hidden" id="cpShareModal"><div class="modal-box" style="max-width:520px;background:linear-gradient(135deg,#ffeef5 0%,#f0f4ff 100%)">
+  <div class="modal-header" style="background:transparent;border-bottom:none">
+    <h3 style="color:#a06080">💞 CP 趣味分享</h3>
+    <div class="modal-header-btns">
+      <button id="cpShareCloseBtn">关闭</button>
+    </div>
+  </div>
+  <div id="cpShareContent" style="padding:8px"></div>
+  <div style="text-align:center;font-size:11px;color:#aaa;margin-top:8px">截图后即可分享给朋友 💌</div>
+</div></div>
+
+<!-- 分享设置弹窗 -->
+<div class="modal hidden" id="shareSettingsModal"><div class="modal-box" style="max-width:620px">
+  <div class="modal-header">
+    <h3>分享设置</h3>
+    <div class="modal-header-btns">
+      <button class="primary" id="shareSettingsSave">保存</button>
+      <button id="shareSettingsCancel">取消</button>
+    </div>
+  </div>
+  <div id="shareSettingsBody"></div>
 </div></div>
 
 <div class="batch-bar hidden" id="batchBar">
@@ -879,9 +945,31 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
   <p>💾 <b>你的数据只保存在本机浏览器里</b>，不会上传到任何服务器。请定期导出备份，换设备时用导入恢复。</p>
   <p>💌 反馈入口在右下角 🐾 菜单里。</p>
   <p style="color:#a06080;margin-top:16px">如果这个工具帮到了你，欢迎投喂小咪 🐱</p>
+  <p style="font-size:11px;color:#aaa;margin-top:12px;border-top:1px solid #eee;padding-top:8px">© 2026 绒光宠物录 · 保留所有权利 · 请勿商业分发</p>
 </div>
 </div></div>
 <script>
+/* ==================== 版权与代码防护 ==================== */
+(function(){
+    document.addEventListener("contextmenu", e => {
+        const t = e.target;
+        if(t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+        e.preventDefault();
+    });
+    document.addEventListener("keydown", e => {
+        if(e.key === "F12" ||
+           (e.ctrlKey && e.shiftKey && ["I","i","J","j","C","c"].indexOf(e.key) >= 0) ||
+           (e.ctrlKey && ["U","u","S","s"].indexOf(e.key) >= 0 && !e.shiftKey)){
+            e.preventDefault();
+            return false;
+        }
+    });
+    try{
+        console.log("%c绒光宠物录", "font-size:22px;color:#e85496;font-weight:bold");
+        console.log("%c© 2026 · 保留所有权利 · 请尊重原作者劳动成果", "font-size:12px;color:#999");
+    }catch(e){}
+})();
+
 /* ==================== 兼容性检测 ==================== */
 (function checkCompat(){
   var ok = true;
@@ -968,6 +1056,19 @@ let schemeDirty = false;
 let tempPetImgBlob = null;
 let matchSortMode = "score"; // "score" | "time"
 
+/* 临时颜值（仅当次速配会话有效，不保存） */
+let tempAppearance = {};
+function getPetAppearance(petId){
+    if(tempAppearance[petId] !== undefined) return tempAppearance[petId];
+    return 50;
+}
+
+/* 分享卡展示设置 */
+let shareSettings = {
+    card: { img: "large", name: true, gender: true, category: true, breed: true, account: true, tags: true, recoverTime: true, remainTime: true, note: false, features: false },
+    bigImg: { name: true, gender: true, category: true, breed: true, account: true, tags: true, features: true, note: true, recoverTime: true, remainTime: true }
+};
+
 const filterState = {
     status: new Set(), gender: new Set(), category: new Set(),
     breed: new Set(), account: new Set(), feature: new Set()
@@ -986,6 +1087,23 @@ const fmtDT = ts => { if(!ts) return "-"; const d = new Date(ts);
 const isIndexedImg = img => img && img.indexOf("img_") === 0;
 const isBase64Img = img => img && img.indexOf("data:image/") === 0;
 const touchPet = (p,ts) => { if(p) p.utime = ts || Date.now(); };
+
+function appearanceLabel(v){
+    v = Number(v) || 0;
+    if(v < 15) return "惨不忍睹";
+    if(v < 35) return "泯然众人";
+    if(v < 55) return "品貌端正";
+    if(v < 70) return "赏心悦目";
+    if(v < 85) return "气质不凡";
+    if(v < 95) return "惊为天人";
+    return "绝代风华";
+}
+function updateAppearanceLabel(){
+    const el = $("petAppearance");
+    if(!el) return;
+    const v = el.value;
+    $("appearanceLabel").textContent = appearanceLabel(v) + "（" + v + "）";
+}
 
 function hexToRgba(hex, alpha){
     if(!hex || hex[0] !== "#" || (hex.length !== 7 && hex.length !== 4)) return "rgba(64,128,255,"+alpha+")";
@@ -1238,13 +1356,14 @@ function safeSave(){
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
             pets: petList, accounts: accountOptions, breedMap, featureMap,
             flawScores: flawScores, mainAccount: mainAccount,
-            matchSchemes: matchSchemes, currentSchemeId: currentSchemeId
+            matchSchemes: matchSchemes, currentSchemeId: currentSchemeId,
+            shareSettings: shareSettings
         }));
         return true;
     }catch(e){
         console.warn("写入失败", e);
         try{
-            const slim = {pets:petList.map(p => Object.assign({}, p, {img:""})), accounts:accountOptions, breedMap, featureMap, flawScores:flawScores, mainAccount:mainAccount, matchSchemes:matchSchemes, currentSchemeId:currentSchemeId};
+            const slim = {pets:petList.map(p => Object.assign({}, p, {img:""})), accounts:accountOptions, breedMap, featureMap, flawScores:flawScores, mainAccount:mainAccount, matchSchemes:matchSchemes, currentSchemeId:currentSchemeId, shareSettings:shareSettings};
             localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
             alert("⚠️ 本地存储已满！已紧急丢弃图片字段。请立即导出备份。"); return false;
         }catch(e2){ alert("⚠️ 本地存储写不进去！请立即导出备份。"); return false; }
@@ -1304,6 +1423,10 @@ function loadFromLocal(){
         mainAccount = obj.mainAccount || "";
         matchSchemes = Array.isArray(obj.matchSchemes) ? obj.matchSchemes : [];
         currentSchemeId = obj.currentSchemeId || "";
+        if(obj.shareSettings){
+            if(obj.shareSettings.card) Object.assign(shareSettings.card, obj.shareSettings.card);
+            if(obj.shareSettings.bigImg) Object.assign(shareSettings.bigImg, obj.shareSettings.bigImg);
+        }
         if(obj.breedMap && typeof obj.breedMap === "object"){
             breedMap = obj.breedMap;
             Object.keys(DEFAULT_CATEGORIES).forEach(k => { if(!(k in breedMap)) breedMap[k] = DEFAULT_CATEGORIES[k]; });
@@ -1428,9 +1551,13 @@ function buildCard(p, now, showIdle){
     else status = "⏸托管暂停";
 
     let idleInfo = "";
-    if(showIdle && !p.isRunning && !p.locked && rem <= 0 && p.recoveredAt){
-        const idleMs = now - p.recoveredAt;
-        idleInfo = '已空闲 ' + msToHMS(idleMs) + '（' + fmtDT(p.recoveredAt) + ' 恢复）';
+    if(showIdle && !p.isRunning && !p.locked && rem <= 0){
+        if(p.recoveredAt){
+            const idleMs = now - p.recoveredAt;
+            idleInfo = '已空闲 ' + msToHMS(idleMs) + '（' + fmtDT(p.recoveredAt) + ' 恢复）';
+        } else {
+            idleInfo = '已空闲（恢复时间未记录）';
+        }
     }
 
     let cpLine = "";
@@ -1450,6 +1577,7 @@ function buildCard(p, now, showIdle){
     const noteHtml = p.note ? '<div style="margin-top:6px;font-size:12px;color:#555">备注：'+esc(p.note)+'</div>' : '';
     div.innerHTML =
         '<button class="star-btn'+(p.inBench?' on':'')+'" data-star="'+p.id+'" title="加入/移出工作台">'+(p.inBench?'★':'☆')+'</button>'+
+        '<button class="share-mini-btn" data-act="share" data-id="'+p.id+'" title="分享卡片"><svg viewBox="0 0 24 24"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></button>'+
         '<div class="card-head">'+imgHtml+
         '<div class="info-main">'+
             '<div class="pet-name">'+esc(p.name||"未命名")+' '+gTag+'</div>'+
@@ -1529,6 +1657,7 @@ function buildTableRow(p, now){
         '<td class="edit-cell cp-col" data-field="cp2.name" data-id="'+p.id+'">'+esc(cp2.name||"-")+'</td>'+
         '<td class="edit-cell cp-col" data-field="cp2.pairTime" data-id="'+p.id+'">'+esc(cp2.pairTime||"-")+'</td>'+
         '<td><button data-act="edit" data-id="'+p.id+'" style="padding:2px 5px;font-size:12px">✏</button> '+
+            '<button data-act="share" data-id="'+p.id+'" style="padding:2px 5px;font-size:12px">📤</button> '+
             '<button data-act="copy" data-id="'+p.id+'" style="padding:2px 5px;font-size:12px">📋</button> '+
             '<button data-act="del" data-id="'+p.id+'" style="padding:2px 5px;font-size:12px;color:#c82424">✕</button></td>';
     return tr;
@@ -1774,6 +1903,7 @@ function freezeCurrentOrder(){
     const list = getFilteredList(Date.now());
     frozenOrder = list.map(p => p.id);
 }
+
 function render(){
     const now = Date.now();
     if(checkAutoLock(now)) saveLocal();
@@ -1818,7 +1948,6 @@ function render(){
     updateFilterButtons();
     updateBenchCount();
 }
-
 function updateBenchCount(){
     const n = petList.filter(p => p.inBench).length;
     $("benchCount").textContent = n > 0 ? " (" + n + ")" : "";
@@ -2040,14 +2169,23 @@ document.addEventListener("click", e => {
     const wrap = e.target.closest(".avatar-wrap");
     if(wrap){
         const src = wrap.dataset.bigimg;
-        if(src){ if(isIndexedImg(src)) getImageUrl(src).then(u => u && openBigPreview(u)); else openBigPreview(src); }
+        const cardEl = wrap.closest("[data-card-id]");
+        const petId = cardEl ? cardEl.dataset.cardId : null;
+        const pet = petId ? petList.find(x => x.id === petId) : null;
+        if(src){
+            if(isIndexedImg(src)) getImageUrl(src).then(u => u && openBigPreview(u, pet));
+            else openBigPreview(src, pet);
+        }
         return;
     }
     const thumb = e.target.closest(".pet-thumb");
     if(thumb && thumb.dataset.imgid && !thumb.dataset.cpimg){
         const id = thumb.dataset.imgid;
-        if(isIndexedImg(id)) getImageUrl(id).then(u => u && openBigPreview(u));
-        else if(id) openBigPreview(id);
+        const tr = thumb.closest("tr");
+        const petId = tr ? tr.dataset.id : null;
+        const pet = petId ? petList.find(x => x.id === petId) : null;
+        if(isIndexedImg(id)) getImageUrl(id).then(u => u && openBigPreview(u, pet));
+        else if(id) openBigPreview(id, pet);
         return;
     }
     const cpImgEl = e.target.closest("[data-cpimg]");
@@ -2144,6 +2282,7 @@ document.addEventListener("click", e => {
         deliverBaby(pet, now); saveLocal(); render();
     }
     else if(act === "edit"){ openEdit(pid); }
+    else if(act === "share"){ showShareCard(pid); }
     else if(act === "copy"){ copyPet(pid); }
     else if(act === "del"){ if(confirm("确定删除【"+(pet.name||"未命名")+"】？")) deletePet(pid); }
 });
@@ -2192,9 +2331,337 @@ function uploadRowImage(pet, field){
     }, 5 * 60 * 1000);
 }
 
-function openBigPreview(src){ $("previewBigImg").src = src; $("imgPreviewModal").classList.add("show"); }
-$("imgPreviewModal").onclick = () => $("imgPreviewModal").classList.remove("show");
-document.addEventListener("keydown", e => { if(e.key === "Escape") $("imgPreviewModal").classList.remove("show"); });
+function openBigPreview(src, pet){
+    const modal = $("imgPreviewModal");
+    const old = modal.querySelector(".big-info-panel");
+    if(old) old.remove();
+    $("previewBigImg").src = src;
+
+    if(pet){
+        const cfg = shareSettings.bigImg;
+        const now = Date.now();
+        const rem = getRemain(pet, now);
+        const recover = getRecoverTime(pet, now);
+        const isIdle = !pet.isRunning && !pet.locked && rem <= 0;
+
+        const panel = document.createElement("div");
+        panel.className = "big-info-panel";
+        panel.style.cssText = "position:absolute;left:12px;bottom:12px;right:12px;background:rgba(255,255,255,.94);color:#333;padding:12px 16px;border-radius:10px;font-size:13px;line-height:1.7;max-width:600px;margin:0 auto;box-shadow:0 4px 20px rgba(0,0,0,.3)";
+        let html = '';
+        if(cfg.name){
+            const gTag = cfg.gender ? (pet.gender === "m" ? ' <span style="color:#348ede;font-weight:bold">♂ 公</span>' : ' <span style="color:#e85496;font-weight:bold">♀ 母</span>') : "";
+            html += '<div style="font-weight:bold;font-size:18px;margin-bottom:4px">'+esc(pet.name||"未命名")+gTag+'</div>';
+        }
+        if(cfg.category || cfg.breed || cfg.account){
+            const parts = [];
+            if(cfg.category) parts.push(esc(pet.category||"-"));
+            if(cfg.breed) parts.push(esc(pet.breed||"-"));
+            if(cfg.account) parts.push(esc(pet.account||"-"));
+            html += '<div style="color:#666;margin-bottom:4px">'+parts.join(" · ")+'</div>';
+        }
+        if(cfg.recoverTime && recover){
+            html += '<div style="background:linear-gradient(135deg,#e8f4ff 0%,#f0e8ff 100%);border-radius:8px;padding:10px 12px;margin:8px 0;text-align:center">' +
+                '<div style="font-size:12px;color:#888;margin-bottom:4px">⏰ 预计恢复时间</div>' +
+                '<div style="font-size:22px;font-weight:bold;color:#3070ee;letter-spacing:1px">'+fmtDT(recover)+'</div>' +
+            '</div>';
+        }
+        if(cfg.remainTime){
+            let timeLine;
+            if(isIdle){
+                const idleMs = pet.recoveredAt ? (now - pet.recoveredAt) : 0;
+                timeLine = '<div style="color:#20b060;font-size:16px;font-weight:bold;text-align:center;margin:4px 0">🟢 已空闲 '+(idleMs?msToHMS(idleMs):"未知时长")+'</div>';
+            } else if(recover){
+                timeLine = '<div style="color:#e85496;font-size:16px;font-weight:bold;text-align:center;margin:4px 0">⏱️ 剩余 '+msToHMS(rem)+'</div>';
+            } else {
+                timeLine = '<div style="color:#888;font-size:16px;font-weight:bold;text-align:center;margin:4px 0">⏸️ 剩余 '+msToHMS(rem)+'</div>';
+            }
+            html += timeLine;
+        }
+        if(cfg.tags && (pet.tags||[]).length){
+            html += '<div style="margin-bottom:4px">'+(pet.tags||[]).map(t=>'<span style="background:#e8edf4;padding:1px 6px;border-radius:3px;font-size:11px;margin-right:4px">'+esc(t)+'</span>').join("")+'</div>';
+        }
+        if(cfg.features && (pet.features||[]).length){
+            html += '<div>'+(pet.features||[]).map(f=>featureChip(f)).join("")+'</div>';
+        }
+        if(cfg.note && pet.note){
+            html += '<div style="margin-top:4px;color:#555;font-size:12px">备注：'+esc(pet.note)+'</div>';
+        }
+        panel.innerHTML = html || '<div style="color:#999;font-size:12px">未配置展示内容</div>';
+        modal.appendChild(panel);
+    }
+    modal.classList.add("show");
+}
+$("imgPreviewModal").onclick = () => {
+    const panel = $("imgPreviewModal").querySelector(".big-info-panel");
+    if(panel) panel.remove();
+    $("imgPreviewModal").classList.remove("show");
+};
+document.addEventListener("keydown", e => {
+    if(e.key === "Escape"){
+        const panel = $("imgPreviewModal").querySelector(".big-info-panel");
+        if(panel) panel.remove();
+        $("imgPreviewModal").classList.remove("show");
+    }
+});
+
+/* ==================== 分享卡片 ==================== */
+function showShareCard(petId){
+    const pet = petList.find(x => x.id === petId);
+    if(!pet) return;
+    renderShareCardHtml(pet, $("shareContent"), shareSettings.card);
+    $("shareModal").classList.remove("hidden");
+}
+
+function renderShareCardInfoBlock(pet, cfg){
+    let html = '';
+    if(cfg.name){
+        const gTag = cfg.gender ? (pet.gender === "m" ? " ♂" : " ♀") : "";
+        html += '<div style="font-weight:bold;font-size:20px;color:#333;margin-bottom:6px">'+esc(pet.name||"未命名")+'<span style="color:'+(pet.gender==="m"?"#348ede":"#e85496")+'">'+gTag+'</span></div>';
+    }
+    if(cfg.category || cfg.breed){
+        const catPart = cfg.category ? esc(pet.category||"-") : "";
+        const breedPart = cfg.breed ? esc(pet.breed||"-") : "";
+        const line = [catPart, breedPart].filter(Boolean).join(" · ");
+        if(line) html += '<div style="font-size:14px;color:#666;margin-bottom:6px">'+line+'</div>';
+    }
+    if(cfg.account){
+        html += '<div style="font-size:12px;color:#999">账号：'+esc(pet.account||"-")+'</div>';
+    }
+    return html;
+}
+
+function renderShareCardHtml(pet, wrap, cfg){
+    const now = Date.now();
+    const rem = getRemain(pet, now);
+    const recover = getRecoverTime(pet, now);
+    const isIdle = !pet.isRunning && !pet.locked && rem <= 0;
+
+    const imgUrl = pet.img ? (isIndexedImg(pet.img) ? (getImageUrlSync(pet.img) || "") : pet.img) : "";
+    const hasInfo = cfg.name || cfg.gender || cfg.category || cfg.breed || cfg.account;
+
+    let html = '<div style="background:#fff;border-radius:14px;padding:16px;box-shadow:0 4px 12px rgba(0,0,0,.06)">';
+
+    if(cfg.img === "large"){
+        if(imgUrl){
+            html += '<img src="'+imgUrl+'" style="width:100%;max-height:340px;object-fit:contain;border-radius:12px;border:2px solid #f5e8ee;margin-bottom:12px;background:#fafafa;display:block">';
+        } else {
+            html += '<div style="width:100%;height:200px;border-radius:12px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;color:#ccc;margin-bottom:12px">无图</div>';
+        }
+        if(hasInfo){
+            html += '<div style="margin-bottom:12px">' + renderShareCardInfoBlock(pet, cfg) + '</div>';
+        }
+    } else if(cfg.img === "small"){
+        html += '<div style="display:flex;gap:14px;margin-bottom:12px">';
+        html += imgUrl
+            ? '<img src="'+imgUrl+'" style="width:120px;height:120px;object-fit:cover;border-radius:12px;border:2px solid #f5e8ee;flex-shrink:0">'
+            : '<div style="width:120px;height:120px;border-radius:12px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;color:#ccc;flex-shrink:0">无图</div>';
+        if(hasInfo){
+            html += '<div style="flex:1;min-width:0">' + renderShareCardInfoBlock(pet, cfg) + '</div>';
+        }
+        html += '</div>';
+    } else {
+        if(hasInfo){
+            html += '<div style="margin-bottom:12px">' + renderShareCardInfoBlock(pet, cfg) + '</div>';
+        }
+    }
+
+    if(cfg.recoverTime && recover){
+        html += '<div style="background:linear-gradient(135deg,#e8f4ff 0%,#f0e8ff 100%);border-radius:10px;padding:12px;margin:10px 0;text-align:center">' +
+            '<div style="font-size:13px;color:#888;margin-bottom:6px">⏰ 预计恢复时间</div>' +
+            '<div style="font-size:22px;font-weight:bold;color:#3070ee;letter-spacing:1px">'+fmtDT(recover)+'</div>' +
+        '</div>';
+    }
+
+    if(cfg.remainTime){
+        let timeLine = "";
+        if(isIdle){
+            const idleMs = pet.recoveredAt ? (now - pet.recoveredAt) : 0;
+            timeLine = '<div style="color:#20b060;font-size:16px;font-weight:bold;margin-top:6px;text-align:center">🟢 已空闲 ' + (idleMs ? msToHMS(idleMs) : "未知时长") + '</div>';
+        } else if(recover){
+            timeLine = '<div style="color:#e85496;font-size:16px;font-weight:bold;margin-top:6px;text-align:center">⏱️ 剩余 ' + msToHMS(rem) + '</div>';
+        } else if(pet.locked){
+            timeLine = '<div style="color:#c82424;font-size:16px;font-weight:bold;margin-top:6px;text-align:center">🔒 待接生</div>';
+        } else {
+            timeLine = '<div style="color:#888;font-size:16px;font-weight:bold;margin-top:6px;text-align:center">⏸️ 托管中 · 剩余 ' + msToHMS(rem) + '</div>';
+        }
+        html += timeLine;
+    }
+
+    if(cfg.tags && (pet.tags||[]).length){
+        html += '<div style="margin-top:10px"><div style="font-size:11px;color:#999;margin-bottom:4px">标签</div>' +
+            (pet.tags||[]).map(t => '<span style="background:#f0e8f5;color:#9b59b6;padding:2px 10px;border-radius:10px;font-size:12px;margin-right:4px;display:inline-block;margin-bottom:4px">'+esc(t)+'</span>').join("") +
+        '</div>';
+    }
+
+    if(cfg.features && (pet.features||[]).length){
+        html += '<div style="margin-top:8px"><div style="font-size:11px;color:#999;margin-bottom:4px">特征</div>' +
+            (pet.features||[]).map(f => featureChip(f)).join("") +
+        '</div>';
+    }
+
+    if(cfg.note && pet.note){
+        html += '<div style="margin-top:8px;font-size:12px;color:#666;background:#f8f9fb;padding:8px;border-radius:6px">备注：'+esc(pet.note)+'</div>';
+    }
+
+    html += '<div style="text-align:center;font-size:10px;color:#ccc;margin-top:14px;border-top:1px dashed #eee;padding-top:8px">由「绒光宠物录」生成 · 仅供约亲分享</div>';
+    html += '</div>';
+
+    wrap.innerHTML = html;
+}
+
+function showCpShareCard(petA, petB){
+    const scheme = getCurrentScheme();
+    const m = calculateMatchScore(petA, petB, scheme);
+    const dispScore = calcDisplayScore(petA, petB, m.score);
+    const verdict = getCpVerdict(dispScore, petA, petB);
+
+    const imgA = petA.img ? (isIndexedImg(petA.img) ? (getImageUrlSync(petA.img) || "") : petA.img) : "";
+    const imgB = petB.img ? (isIndexedImg(petB.img) ? (getImageUrlSync(petB.img) || "") : petB.img) : "";
+
+    let html = '';
+
+    html += '<div class="cp-verdict-box">' +
+        '<div class="cp-verdict-emoji">'+verdict.emoji+'</div>' +
+        '<div class="cp-verdict-text" style="color:'+verdict.color+'">'+verdict.text+'</div>' +
+        (verdict.tip ? '<div class="cp-verdict-tip">'+verdict.tip+'</div>' : '') +
+    '</div>';
+
+    html += '<div class="cp-vs-row">' +
+        '<div class="cp-vs-pet">' +
+            (imgA ? '<img src="'+imgA+'">' : '<div class="ph">无图</div>') +
+            '<div class="nm">'+esc(petA.name||"未命名")+'</div>' +
+            '<div style="font-size:11px;color:#888">'+esc(petA.breed||"-")+'</div>' +
+        '</div>' +
+        '<div class="cp-vs-heart">💞</div>' +
+        '<div class="cp-vs-pet">' +
+            (imgB ? '<img src="'+imgB+'">' : '<div class="ph">无图</div>') +
+            '<div class="nm">'+esc(petB.name||"未命名")+'</div>' +
+            '<div style="font-size:11px;color:#888">'+esc(petB.breed||"-")+'</div>' +
+        '</div>' +
+    '</div>';
+
+    html += '<div class="cp-score-big" style="color:'+verdict.color+'">' +
+        dispScore + '<span class="unit">分</span>' +
+    '</div>';
+    html += '<div style="text-align:center;font-size:12px;color:#aaa;margin-bottom:8px">匹配度评分</div>';
+
+    if(m.plusItems.length || m.minusItems.length){
+        html += '<div style="background:#fafbfd;border-radius:10px;padding:10px;font-size:12px;margin-top:8px">';
+        if(m.plusItems.length){
+            html += '<div style="color:#20b060;font-weight:bold;margin-bottom:4px">✅ 优势</div>';
+            m.plusItems.slice(0, 5).forEach(x => { html += '<div style="color:#20b060;font-size:11px">· '+esc(x.label)+' +'+x.weight+'</div>'; });
+        }
+        if(m.minusItems.length){
+            html += '<div style="color:#c82424;font-weight:bold;margin:6px 0 4px">❌ 顾虑</div>';
+            m.minusItems.slice(0, 5).forEach(x => { html += '<div style="color:#c82424;font-size:11px">· '+esc(x.label)+' -'+x.weight+'</div>'; });
+        }
+        html += '</div>';
+    }
+
+    html += '<div style="text-align:center;font-size:10px;color:#ccc;margin-top:14px;border-top:1px dashed #eee;padding-top:8px">由「绒光宠物录」生成 · 仅供娱乐参考</div>';
+
+    $("cpShareContent").innerHTML = html;
+    $("cpShareModal").classList.remove("hidden");
+}
+
+$("cpShareCloseBtn").onclick = () => $("cpShareModal").classList.add("hidden");
+$("cpShareModal").addEventListener("click", e => { if(e.target === $("cpShareModal")) $("cpShareModal").classList.add("hidden"); });
+$("shareCloseBtn").onclick = () => $("shareModal").classList.add("hidden");
+$("shareModal").addEventListener("click", e => { if(e.target === $("shareModal")) $("shareModal").classList.add("hidden"); });
+
+/* ==================== 分享设置 ==================== */
+function openShareSettings(){
+    const body = $("shareSettingsBody");
+    const s = shareSettings;
+    body.innerHTML = '';
+
+    const g1 = document.createElement("div");
+    g1.className = "share-settings-group";
+    g1.innerHTML = '<h4>📇 宠物卡片分享（点卡片右上角分享图标）</h4>';
+    g1.innerHTML += '<div style="margin-bottom:6px"><label>图片：<select id="ssCardImg"><option value="large">大图（完整大图）</option><option value="small">小图（卡片视图头像）</option><option value="none">不显示</option></select></label></div>';
+    g1.innerHTML +=
+        '<label><input type="checkbox" id="ssCardName"> 名字</label>' +
+        '<label><input type="checkbox" id="ssCardGender"> 性别</label>' +
+        '<label><input type="checkbox" id="ssCardCategory"> 品种大类</label>' +
+        '<label><input type="checkbox" id="ssCardBreed"> 品种</label>' +
+        '<label><input type="checkbox" id="ssCardAccount"> 账号</label>' +
+        '<label><input type="checkbox" id="ssCardTags"> 标签</label>' +
+        '<label><input type="checkbox" id="ssCardFeatures"> 特征</label>' +
+        '<label><input type="checkbox" id="ssCardNote"> 备注</label>' +
+        '<label><input type="checkbox" id="ssCardRecover"> 预计恢复时间</label>' +
+        '<label><input type="checkbox" id="ssCardRemain"> 剩余时间</label>';
+    body.appendChild(g1);
+
+    const g2 = document.createElement("div");
+    g2.className = "share-settings-group";
+    g2.innerHTML = '<h4>🖼️ 大图预览（点击宠物图片时显示）</h4>';
+    g2.innerHTML +=
+        '<label><input type="checkbox" id="ssBigName"> 名字</label>' +
+        '<label><input type="checkbox" id="ssBigGender"> 性别</label>' +
+        '<label><input type="checkbox" id="ssBigCategory"> 品种大类</label>' +
+        '<label><input type="checkbox" id="ssBigBreed"> 品种</label>' +
+        '<label><input type="checkbox" id="ssBigAccount"> 账号</label>' +
+        '<label><input type="checkbox" id="ssBigTags"> 标签</label>' +
+        '<label><input type="checkbox" id="ssBigFeatures"> 特征</label>' +
+        '<label><input type="checkbox" id="ssBigNote"> 备注</label>' +
+        '<label><input type="checkbox" id="ssBigRecover"> 预计恢复时间</label>' +
+        '<label><input type="checkbox" id="ssBigRemain"> 剩余时间</label>';
+    body.appendChild(g2);
+
+    $("ssCardImg").value = s.card.img || "large";
+    $("ssCardName").checked = !!s.card.name;
+    $("ssCardGender").checked = !!s.card.gender;
+    $("ssCardCategory").checked = !!s.card.category;
+    $("ssCardBreed").checked = !!s.card.breed;
+    $("ssCardAccount").checked = !!s.card.account;
+    $("ssCardTags").checked = !!s.card.tags;
+    $("ssCardFeatures").checked = !!s.card.features;
+    $("ssCardNote").checked = !!s.card.note;
+    $("ssCardRecover").checked = !!s.card.recoverTime;
+    $("ssCardRemain").checked = !!s.card.remainTime;
+    $("ssBigName").checked = !!s.bigImg.name;
+    $("ssBigGender").checked = !!s.bigImg.gender;
+    $("ssBigCategory").checked = !!s.bigImg.category;
+    $("ssBigBreed").checked = !!s.bigImg.breed;
+    $("ssBigAccount").checked = !!s.bigImg.account;
+    $("ssBigTags").checked = !!s.bigImg.tags;
+    $("ssBigFeatures").checked = !!s.bigImg.features;
+    $("ssBigNote").checked = !!s.bigImg.note;
+    $("ssBigRecover").checked = !!s.bigImg.recoverTime;
+    $("ssBigRemain").checked = !!s.bigImg.remainTime;
+
+    $("shareSettingsModal").classList.remove("hidden");
+}
+$("shareSettingsSave").onclick = () => {
+    shareSettings.card.img = $("ssCardImg").value;
+    shareSettings.card.name = $("ssCardName").checked;
+    shareSettings.card.gender = $("ssCardGender").checked;
+    shareSettings.card.category = $("ssCardCategory").checked;
+    shareSettings.card.breed = $("ssCardBreed").checked;
+    shareSettings.card.account = $("ssCardAccount").checked;
+    shareSettings.card.tags = $("ssCardTags").checked;
+    shareSettings.card.features = $("ssCardFeatures").checked;
+    shareSettings.card.note = $("ssCardNote").checked;
+    shareSettings.card.recoverTime = $("ssCardRecover").checked;
+    shareSettings.card.remainTime = $("ssCardRemain").checked;
+
+    shareSettings.bigImg.name = $("ssBigName").checked;
+    shareSettings.bigImg.gender = $("ssBigGender").checked;
+    shareSettings.bigImg.category = $("ssBigCategory").checked;
+    shareSettings.bigImg.breed = $("ssBigBreed").checked;
+    shareSettings.bigImg.account = $("ssBigAccount").checked;
+    shareSettings.bigImg.tags = $("ssBigTags").checked;
+    shareSettings.bigImg.features = $("ssBigFeatures").checked;
+    shareSettings.bigImg.note = $("ssBigNote").checked;
+    shareSettings.bigImg.recoverTime = $("ssBigRecover").checked;
+    shareSettings.bigImg.remainTime = $("ssBigRemain").checked;
+
+    saveLocal();
+    $("shareSettingsModal").classList.add("hidden");
+    alert("✓ 分享设置已保存");
+};
+$("shareSettingsCancel").onclick = () => $("shareSettingsModal").classList.add("hidden");
+$("shareSettingsModal").addEventListener("click", e => { if(e.target === $("shareSettingsModal")) $("shareSettingsModal").classList.add("hidden"); });
 
 function deletePet(id){
     const p = petList.find(x => x.id === id);
@@ -2662,6 +3129,7 @@ $("btnManageFeat").onclick = () => {
     $("featManageModal").classList.remove("hidden");
 };
 $("closeFeatManage").onclick = () => $("featManageModal").classList.add("hidden");
+$("btnShareSettings").onclick = () => { openShareSettings(); };
 
 /* ==================== 编辑弹窗 ==================== */
 function renderAccountPicker(){
@@ -3346,6 +3814,7 @@ $("exportApply").onclick = async () => {
             pets: pets, accounts: accountOptions, breedMap: breedMap, featureMap: featureMap,
             flawScores: flawScores, mainAccount: mainAccount,
             matchSchemes: matchSchemes, currentSchemeId: currentSchemeId,
+            shareSettings: shareSettings,
             images: imgMap,
             exportInfo: { scope: scope, withImages: withImages, count: pets.length, ts: Date.now() }
         };
@@ -3498,6 +3967,10 @@ $("importApply").onclick = function(){
                     mainAccount = obj.mainAccount || "";
                     matchSchemes = Array.isArray(obj.matchSchemes) ? obj.matchSchemes : [];
                     currentSchemeId = obj.currentSchemeId || "";
+                    if(obj.shareSettings){
+                        if(obj.shareSettings.card) Object.assign(shareSettings.card, obj.shareSettings.card);
+                        if(obj.shareSettings.bigImg) Object.assign(shareSettings.bigImg, obj.shareSettings.bigImg);
+                    }
                     if(obj.featureMap && typeof obj.featureMap === "object"){
                         const keys = Object.keys(obj.featureMap);
                         const isOld = keys.length > 0 && typeof obj.featureMap[keys[0]] === "string";
@@ -3672,7 +4145,8 @@ $("bmApply").onclick = () => {
         if(doStatus){
             if(statusVal === "idle"){
                 p.totalMs = 0; p.pausedAt = 0; p.isRunning = false; p.locked = false;
-                p.timerMode = "normal"; p.startTs = null; p.runStartRemain = null; p.recoveredAt = 0;
+                p.timerMode = "normal"; p.startTs = null; p.runStartRemain = null;
+                p.recoveredAt = p.recoveredAt || now;
             } else if(statusVal === "4h"){
                 p.totalMs = hmToMs(4, 0); p.timerMode = "normal";
                 p.pausedAt = p.totalMs; p.isRunning = false; p.startTs = null; p.runStartRemain = null; p.locked = false;
@@ -3877,7 +4351,6 @@ function calculateMatchScore(petA, petB, scheme){
     const plusItems = [];
     const minusItems = [];
 
-    /* 匹配度计算：近亲 / 同性扣 999 分 */
     if(petA.gender === petB.gender){
         score -= 999;
         minusItems.push({ label: "⚠️ 同性", weight: 999 });
@@ -3890,14 +4363,11 @@ function calculateMatchScore(petA, petB, scheme){
     const bFeats = petB.features || [];
     const bTags = petB.tags || [];
 
-    /* 加分项（特征）：只看候选宠物 petB 是否有该特征 */
     Object.keys(scheme.plusFeatures || {}).forEach(fname => {
         const w = Number(scheme.plusFeatures[fname]) || 0;
         if(w === 0) return;
         if(bFeats.indexOf(fname) >= 0){ score += w; plusItems.push({ label: fname, weight: w }); }
     });
-
-    /* 加分项（标签）：只看候选宠物 petB 是否有该标签 */
     Object.keys(scheme.plusTags || {}).forEach(tagName => {
         const w = Number(scheme.plusTags[tagName]) || 0;
         if(w === 0) return;
@@ -3905,15 +4375,11 @@ function calculateMatchScore(petA, petB, scheme){
             score += w; plusItems.push({ label: "🏷️ " + tagName, weight: w });
         }
     });
-
-    /* 减分项（特征）：只看候选宠物 petB 是否有该特征 */
     Object.keys(scheme.minusFeatures || {}).forEach(fname => {
         const w = Number(scheme.minusFeatures[fname]) || 0;
         if(w === 0) return;
         if(bFeats.indexOf(fname) >= 0){ score -= w; minusItems.push({ label: fname, weight: w }); }
     });
-
-    /* 减分项（标签）：只看候选宠物 petB 是否有该标签 */
     Object.keys(scheme.minusTags || {}).forEach(tagName => {
         const w = Number(scheme.minusTags[tagName]) || 0;
         if(w === 0) return;
@@ -3922,7 +4388,6 @@ function calculateMatchScore(petA, petB, scheme){
         }
     });
 
-    /* 接受瑕疵：只看候选宠物 petB 是否有瑕疵，每个瑕疵独立扣分 */
     if(!scheme.acceptFlaw){
         const bFlaws = bFeats.filter(f => isFlawFeature(f));
         bFlaws.forEach(f => {
@@ -3931,8 +4396,6 @@ function calculateMatchScore(petA, petB, scheme){
             minusItems.push({ label: "⚠️ 瑕疵：" + f, weight: w });
         });
     }
-
-    /* 接受同部位瑕疵：判断目标宠物 petA 与候选宠物 petB 是否拥有同一个瑕疵 */
     if(!scheme.acceptSamePartFlaw){
         const aFlaws = (petA.features || []).filter(f => isFlawFeature(f));
         const bFlaws2 = bFeats.filter(f => isFlawFeature(f));
@@ -3946,6 +4409,36 @@ function calculateMatchScore(petA, petB, scheme){
     }
 
     return { score: score, plusItems: plusItems, minusItems: minusItems };
+}
+
+function calcDisplayScore(petA, petB, score){
+    const aApp = getPetAppearance(petA.id);
+    const bApp = getPetAppearance(petB.id);
+    const avgApp = (aApp + bApp) / 2;
+    const appBonus = (avgApp - 50) * 0.25;
+
+    let display = 65 + score * 0.4 + appBonus;
+
+    const aFlaws = (petA.features || []).filter(f => isFlawFeature(f));
+    const bFlaws = (petB.features || []).filter(f => isFlawFeature(f));
+    if(aFlaws.length === 0 && bFlaws.length === 0) display += 15;
+
+    return Math.max(0, Math.min(100, Math.round(display)));
+}
+
+function getCpVerdict(displayScore, petA, petB){
+    const aFlaws = (petA.features || []).filter(f => isFlawFeature(f));
+    const bFlaws = (petB.features || []).filter(f => isFlawFeature(f));
+    const bothPerfect = aFlaws.length === 0 && bFlaws.length === 0;
+
+    if(displayScore >= 95) return { text: "天作之合", emoji: "💖", color: "#e85496", tip: bothPerfect ? "双方皆无瑕，恰似天造地设的一对" : "匹配度极高，令人羡慕的一对" };
+    if(displayScore >= 85) return { text: "天生一对", emoji: "💕", color: "#e85496", tip: "相当契合，值得深交" };
+    if(displayScore >= 75) return { text: "佳偶天成", emoji: "🌸", color: "#9b59b6", tip: "条件相当，堪称良配" };
+    if(displayScore >= 65) return { text: "珠联璧合", emoji: "✨", color: "#3070ee", tip: "搭配不俗，值得一试" };
+    if(displayScore >= 55) return { text: "门当户对", emoji: "👍", color: "#4080ff", tip: "中规中矩的一对" };
+    if(displayScore >= 45) return { text: "尚可一试", emoji: "🤔", color: "#888", tip: "有亮点也有不足" };
+    if(displayScore >= 30) return { text: "需要磨合", emoji: "😅", color: "#e08030", tip: "差异较大，需慎重考虑" };
+    return { text: "缘分尚浅", emoji: "😐", color: "#c82424", tip: "不太建议配对的组合" };
 }
 
 function initDefaultScheme(){
@@ -3999,7 +4492,6 @@ function saveCurrentScheme(){
     alert("✓ 已保存方案【" + getCurrentScheme().name + "】");
 }
 
-/* 虚拟品种大类：把狗狗拆成「金毛」「萨摩耶」两个独立大类 */
 function getVirtualCategories(){
     const result = [];
     Object.keys(breedMap).forEach(cat => {
@@ -4015,7 +4507,6 @@ function getVirtualCategories(){
     return result;
 }
 
-/* 同步 scheme.categories：真实大类下有任何品种在 breeds 里就保留 */
 function syncCategories(scheme){
     const catSet = new Set();
     Object.keys(breedMap).forEach(cat => {
@@ -4027,7 +4518,6 @@ function syncCategories(scheme){
     scheme.categories = Array.from(catSet);
 }
 
-/* 根据方案勾选的品种大类过滤特征（通用 + 各大类专属） */
 function getFeaturesForScheme(scheme){
     const set = new Set();
     Object.keys(featureMap[CAT_COMMON] || {}).forEach(n => set.add(n));
@@ -4047,7 +4537,6 @@ function renderSchemeParams(){
     wrap.innerHTML = "";
     const scheme = getCurrentScheme();
 
-    /* 品种大类 / 品种 —— 下拉多选按钮 */
     const catDiv = document.createElement("div");
     catDiv.style.cssText = "margin-bottom:12px";
     catDiv.innerHTML = '<div style="font-weight:bold;font-size:13px;margin-bottom:6px">品种大类 / 品种（不勾选 = 全部，金毛与萨摩耶为独立大类）</div>';
@@ -4072,7 +4561,6 @@ function renderSchemeParams(){
     catDiv.appendChild(catBtnWrap);
     wrap.appendChild(catDiv);
 
-    /* 账号范围 —— 下拉多选按钮 */
     const accDiv = document.createElement("div");
     accDiv.style.cssText = "margin-bottom:12px";
     accDiv.innerHTML = '<div style="font-weight:bold;font-size:13px;margin-bottom:6px">账号范围（不勾选 = 全部账号）</div>';
@@ -4096,7 +4584,6 @@ function renderSchemeParams(){
     accDiv.appendChild(accBtnWrap);
     wrap.appendChild(accDiv);
 
-    /* 瑕疵接受度 + 瑕疵管理 */
     const flawDiv = document.createElement("div");
     flawDiv.style.cssText = "margin-bottom:12px;font-size:13px;display:flex;gap:16px;align-items:center;flex-wrap:wrap";
     const flawLb1 = document.createElement("label");
@@ -4130,7 +4617,6 @@ function renderSchemeParams(){
     flawDiv.appendChild(flawBtn);
     wrap.appendChild(flawDiv);
 
-    /* 加分项和减分项左右两列齐放 */
     const twoCol = document.createElement("div");
     twoCol.style.cssText = "display:flex;gap:12px;flex-wrap:wrap";
     const leftCol = document.createElement("div");
@@ -4145,7 +4631,6 @@ function renderSchemeParams(){
     twoCol.appendChild(rightCol);
     wrap.appendChild(twoCol);
 
-    /* 底部保存按钮 */
     const btnRow = document.createElement("div");
     btnRow.style.cssText = "display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid #eee";
     const saveBtn = document.createElement("button");
@@ -4160,7 +4645,6 @@ function renderSchemeParams(){
     wrap.appendChild(btnRow);
 }
 
-/* 品种大类/品种 多选面板（金毛 / 萨摩耶作为独立大类；全不选不折叠列表） */
 function openSchemeCategoryPanel(btn, scheme){
     closeFilterPanel();
     const panel = document.createElement("div");
@@ -4280,7 +4764,6 @@ function openSchemeCategoryPanel(btn, scheme){
         catEntries.push({ entry, catCb, breedCbs, refreshCatCheckbox });
     });
 
-    /* 底部：全局全选 / 全不选 */
     const btnRow = document.createElement("div");
     btnRow.style.cssText = "display:flex;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid #eee";
     const sAll = document.createElement("button");
@@ -4330,7 +4813,6 @@ function openSchemeCategoryPanel(btn, scheme){
     setTimeout(() => document.addEventListener("click", outsideHandler), 0);
 }
 
-/* 账号 多选面板 —— 用 "__NONE__" 哨兵表示"全部未勾选" */
 function openSchemeAccountPanel(btn, scheme){
     closeFilterPanel();
     const panel = document.createElement("div");
@@ -4348,7 +4830,6 @@ function openSchemeAccountPanel(btn, scheme){
     const isNone = scheme.accounts.length === 1 && scheme.accounts[0] === "__NONE__";
     const cbMap = [];
 
-    /* 从复选框状态重建 scheme.accounts */
     function rebuildAccounts(){
         const selected = [];
         cbMap.forEach(({a, cb}) => { if(cb.checked) selected.push(a); });
@@ -4538,9 +5019,12 @@ function renderMatchResults(petA, scheme){
         results.push({ pet: petB, score: m.score, plusItems: m.plusItems, minusItems: m.minusItems, rem, recover, isIdle });
     });
 
-    /* 按当前模式排序 */
     if(matchSortMode === "score"){
-        results.sort((a, b) => b.score - a.score);
+        results.sort((a, b) => {
+            const da = calcDisplayScore(petA, a.pet, a.score);
+            const db = calcDisplayScore(petA, b.pet, b.score);
+            return db - da;
+        });
     } else {
         results.sort((a, b) => {
             if(a.rem !== b.rem) return a.rem - b.rem;
@@ -4553,7 +5037,6 @@ function renderMatchResults(petA, scheme){
         });
     }
 
-    /* 更新排序按钮高亮 */
     const scoreBtn = $("matchSortByScore");
     const timeBtn = $("matchSortByTime");
     if(scoreBtn && timeBtn){
@@ -4570,7 +5053,7 @@ function renderMatchResults(petA, scheme){
         const p = r.pet;
         const gTag = p.gender === "m" ? '<span class="gender-m">公</span>' : '<span class="gender-f">母</span>';
         const imgHtml = p.img
-            ? '<img class="match-thumb" data-imgid="'+esc(p.img)+'" style="width:48px;height:48px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid #eee;flex-shrink:0" alt="">'
+            ? '<img class="match-thumb" data-imgid="'+esc(p.img)+'" data-pet-id="'+esc(p.id)+'" style="width:48px;height:48px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid #eee;flex-shrink:0" alt="">'
             : '<div style="width:48px;height:48px;border-radius:6px;background:#f0f2f5;flex-shrink:0"></div>';
 
         let timeHtml = "";
@@ -4585,20 +5068,70 @@ function renderMatchResults(petA, scheme){
 
         const plusHtml = r.plusItems.length ? r.plusItems.map(x => '<div style="color:#20b060;font-size:11px">✅ ' + esc(x.label) + ' +' + x.weight + '</div>').join("") : "";
         const minusHtml = r.minusItems.length ? r.minusItems.map(x => '<div style="color:#c82424;font-size:11px">❌ ' + esc(x.label) + ' -' + x.weight + '</div>').join("") : "";
-        const scoreColor = r.score < 0 ? "#c82424" : "#3070ee";
+        const dispScore = calcDisplayScore(petA, p, r.score);
+        const verdict = getCpVerdict(dispScore, petA, p);
+        const scoreColor = verdict.color;
+        const candApp = getPetAppearance(p.id);
+        const candAppLabel = appearanceLabel(candApp);
 
-               return '<div class="match-result-item" style="display:flex;gap:8px;align-items:flex-start">'
+        return '<div class="match-result-item" data-result-id="'+p.id+'" style="display:flex;gap:8px;align-items:flex-start">'
             + imgHtml
             + '<div style="flex:1;min-width:0">'
             + '<div><button class="star-btn'+(p.inBench?' on':'')+'" data-match-star="'+p.id+'" style="position:static;font-size:16px;padding:0 4px;color:'+(p.inBench?'#f0b840':'#ddd')+'" title="'+(p.inBench?'移出工作台':'加入工作台')+'">'+(p.inBench?'★':'☆')+'</button> <span class="name">' + esc(p.name) + '</span> ' + gTag
-            + ' <span class="score" style="color:'+scoreColor+'">' + r.score + ' 分</span>'
+            + ' <span class="score" data-score-for="'+p.id+'" style="color:'+scoreColor+';font-size:15px">' + dispScore + ' 分 ' + verdict.emoji + ' ' + verdict.text + '</span>'
             + timeHtml
-            + ' <button class="mini-btn" data-match-edit="'+p.id+'" title="编辑档案">✏编辑</button></div>'
+            + ' <button class="mini-btn" data-match-edit="'+p.id+'" title="编辑档案">✏编辑</button>'
+            + ' <button class="mini-btn" data-match-share="'+p.id+'" title="分享趣味CP">📤分享</button></div>'
             + '<div style="font-size:12px;color:#666;margin-top:2px">' + esc(p.breed||"-") + '｜' + esc(p.account||"-") + '</div>'
+            + '<div style="margin-top:6px;display:flex;align-items:center;gap:6px;font-size:11px;color:#888">'
+            +   '<span>🎨</span>'
+            +   '<input type="range" data-appa-for="'+p.id+'" min="0" max="100" value="'+candApp+'" style="flex:1;height:4px" oninput="onMatchCandidateAppearanceChange(this)">'
+            +   '<span data-appa-label="'+p.id+'" style="min-width:64px;text-align:right;color:#e85496">'+candAppLabel+'</span>'
+            + '</div>'
             + (plusHtml || minusHtml ? '<div style="margin-top:4px;border-top:1px dashed #eee;padding-top:3px">' + plusHtml + minusHtml + '</div>' : '')
             + '</div></div>';
     }).join("");
     fillImgElements(wrap);
+}
+
+function onMatchTargetAppearanceChange(slider){
+    const petA = petList.find(p => p.id === $("matchPetSelect").value);
+    if(!petA) return;
+    tempAppearance[petA.id] = Number(slider.value);
+    const label = appearanceLabel(slider.value);
+    $("matchPetAppearanceLabel").textContent = label + "（" + slider.value + "）";
+    const scheme = getCurrentScheme();
+    petList.forEach(petB => {
+        if(petB.id === petA.id) return;
+        if(!canMatch(petA, petB, scheme)) return;
+        const scoreEl = document.querySelector('[data-score-for="' + petB.id + '"]');
+        if(!scoreEl) return;
+        const m = calculateMatchScore(petA, petB, scheme);
+        const disp = calcDisplayScore(petA, petB, m.score);
+        const v = getCpVerdict(disp, petA, petB);
+        scoreEl.style.color = v.color;
+        scoreEl.textContent = disp + " 分 " + v.emoji + " " + v.text;
+    });
+}
+
+function onMatchCandidateAppearanceChange(slider){
+    const candId = slider.dataset.appaFor;
+    if(!candId) return;
+    tempAppearance[candId] = Number(slider.value);
+    const labelEl = document.querySelector('[data-appa-label="' + candId + '"]');
+    if(labelEl) labelEl.textContent = appearanceLabel(slider.value);
+
+    const petA = petList.find(p => p.id === $("matchPetSelect").value);
+    const petB = petList.find(p => p.id === candId);
+    if(!petA || !petB) return;
+    const scoreEl = document.querySelector('[data-score-for="' + candId + '"]');
+    if(!scoreEl) return;
+    const scheme = getCurrentScheme();
+    const m = calculateMatchScore(petA, petB, scheme);
+    const disp = calcDisplayScore(petA, petB, m.score);
+    const v = getCpVerdict(disp, petA, petB);
+    scoreEl.style.color = v.color;
+    scoreEl.textContent = disp + " 分 " + v.emoji + " " + v.text;
 }
 
 function runMatch(){
@@ -4654,7 +5187,14 @@ function initMatchSelect(){
         : "";
     renderSchemeSelect();
     renderSchemeParams();
+
     if(petA){
+        const curApp = getPetAppearance(petA.id);
+        const slider = $("matchPetAppearance");
+        if(slider){
+            slider.value = curApp;
+            $("matchPetAppearanceLabel").textContent = appearanceLabel(curApp) + "（" + curApp + "）";
+        }
         const scheme = getCurrentScheme();
         renderMatchResults(petA, scheme);
     }
@@ -4720,6 +5260,8 @@ function renderSchemeManage(){
         const isCur = s.id === currentSchemeId ? ' <span style="color:#3070ee;font-size:12px">（当前）</span>' : "";
         row.innerHTML =
             '<span style="flex:1;font-size:13px"><b>' + esc(s.name) + '</b>' + isCur + '</span>' +
+            '<button class="mini-btn" data-scheme-up="' + i + '" ' + (i === 0 ? 'disabled' : '') + ' title="上移">↑</button>' +
+            '<button class="mini-btn" data-scheme-down="' + i + '" ' + (i === matchSchemes.length - 1 ? 'disabled' : '') + ' title="下移">↓</button>' +
             '<button class="mini-btn" data-scheme-set="' + s.id + '">设为当前</button>' +
             '<button class="mini-btn" data-scheme-rename="' + i + '">改名</button>' +
             '<button class="del-opt" data-scheme-del="' + i + '">删除</button>';
@@ -4727,6 +5269,32 @@ function renderSchemeManage(){
     });
 }
 $("schemeListWrap").addEventListener("click", e => {
+    const upBtn = e.target.closest("[data-scheme-up]");
+    if(upBtn){
+        const i = Number(upBtn.dataset.schemeUp);
+        if(i > 0){
+            const tmp = matchSchemes[i - 1];
+            matchSchemes[i - 1] = matchSchemes[i];
+            matchSchemes[i] = tmp;
+            saveLocal();
+            renderSchemeSelect();
+            renderSchemeManage();
+        }
+        return;
+    }
+    const downBtn = e.target.closest("[data-scheme-down]");
+    if(downBtn){
+        const i = Number(downBtn.dataset.schemeDown);
+        if(i < matchSchemes.length - 1){
+            const tmp = matchSchemes[i + 1];
+            matchSchemes[i + 1] = matchSchemes[i];
+            matchSchemes[i] = tmp;
+            saveLocal();
+            renderSchemeSelect();
+            renderSchemeManage();
+        }
+        return;
+    }
     const setBtn = e.target.closest("[data-scheme-set]");
     if(setBtn){
         currentSchemeId = setBtn.dataset.schemeSet;
@@ -4979,9 +5547,11 @@ function showScoreDetail(petA, petB, result, tempBlob){
         ? (isIndexedImg(petB.img) ? (getImageUrlSync(petB.img) || "") : petB.img)
         : (tempBlob ? URL.createObjectURL(tempBlob) : "");
 
+    const dispScore = calcDisplayScore(petA, petB, result.score);
+    const verdict = getCpVerdict(dispScore, petA, petB);
+
     const plusHtml = result.plusItems.length ? result.plusItems.map(x => '<div style="color:#20b060;font-size:12px">✅ ' + esc(x.label) + ' +' + x.weight + '</div>').join("") : '<div style="color:#999;font-size:12px">无</div>';
     const minusHtml = result.minusItems.length ? result.minusItems.map(x => '<div style="color:#c82424;font-size:12px">❌ ' + esc(x.label) + ' -' + x.weight + '</div>').join("") : '<div style="color:#999;font-size:12px">无</div>';
-    const scoreColor = result.score < 0 ? "#c82424" : "#3070ee";
 
     wrap.innerHTML = ''
         + '<div style="border:1px solid #e3e8ef;border-radius:10px;padding:12px;background:#fff">'
@@ -4996,7 +5566,8 @@ function showScoreDetail(petA, petB, result, tempBlob){
         + '<div style="font-size:12px;margin-top:4px">'+esc(petB.name)+'</div>'
         + '</div>'
         + '</div>'
-        + '<div style="text-align:center;font-size:22px;font-weight:bold;color:'+scoreColor+';margin-bottom:10px">总分 '+result.score+' 分</div>'
+        + '<div style="text-align:center;font-size:13px;color:'+verdict.color+';font-weight:bold;margin-bottom:6px">'+verdict.emoji+' '+verdict.text+'</div>'
+        + '<div style="text-align:center;font-size:22px;font-weight:bold;color:'+verdict.color+';margin-bottom:10px">总分 '+dispScore+' 分</div>'
         + '<div style="display:flex;gap:12px;font-size:12px">'
         + '<div style="flex:1"><div style="font-weight:bold;color:#20b060;margin-bottom:4px">加分项</div>'+plusHtml+'</div>'
         + '<div style="flex:1"><div style="font-weight:bold;color:#c82424;margin-bottom:4px">减分项</div>'+minusHtml+'</div>'
@@ -5005,7 +5576,7 @@ function showScoreDetail(petA, petB, result, tempBlob){
     wrap.scrollIntoView({behavior:"smooth", block:"center"});
 }
 
-/* 编辑按钮 / 星号收藏（推荐列表内） */
+/* 编辑按钮 / 星号收藏 / 分享按钮 / 缩略图预览（推荐列表内） */
 document.addEventListener("click", e => {
     const matchStarBtn = e.target.closest("[data-match-star]");
     if(matchStarBtn){
@@ -5016,7 +5587,6 @@ document.addEventListener("click", e => {
             pet.inBench = !pet.inBench;
             if(!pet.inBench) benchSelectedIds.delete(id);
             touchPet(pet); saveLocal();
-            /* 只更新按钮和计数，不重建整个推荐列表，避免滚动位置被重置 */
             matchStarBtn.textContent = pet.inBench ? '★' : '☆';
             matchStarBtn.classList.toggle('on', pet.inBench);
             matchStarBtn.style.color = pet.inBench ? '#f0b840' : '#ddd';
@@ -5030,6 +5600,27 @@ document.addEventListener("click", e => {
         e.stopPropagation();
         const id = editBtn.dataset.matchEdit;
         if(id) openEdit(id);
+        return;
+    }
+    const shareBtn = e.target.closest("[data-match-share]");
+    if(shareBtn){
+        e.stopPropagation();
+        const id = shareBtn.dataset.matchShare;
+        const petA = petList.find(p => p.id === $("matchPetSelect").value);
+        const petB = petList.find(p => p.id === id);
+        if(petA && petB) showCpShareCard(petA, petB);
+        return;
+    }
+    const matchThumb = e.target.closest(".match-thumb");
+    if(matchThumb){
+        e.stopPropagation();
+        const id = matchThumb.getAttribute("data-imgid");
+        const petId = matchThumb.getAttribute("data-pet-id");
+        if(id){
+            const pet = petId ? petList.find(x => x.id === petId) : null;
+            if(isIndexedImg(id)) getImageUrl(id).then(u => u && openBigPreview(u, pet));
+            else openBigPreview(id, pet);
+        }
         return;
     }
 });
@@ -5147,9 +5738,13 @@ function tickUpdate(){
         if(recoverEl) recoverEl.textContent = recover ? "预计恢复 " + fmtDT(recover) : "";
         const idleEl = cardEl.querySelector(".idle-info");
         if(idleEl && idleEl.dataset.showIdle === "1"){
-            if(!p.isRunning && !p.locked && rem <= 0 && p.recoveredAt){
-                const idleMs = now - p.recoveredAt;
-                idleEl.textContent = "已空闲 " + msToHMS(idleMs) + "（" + fmtDT(p.recoveredAt) + " 恢复）";
+            if(!p.isRunning && !p.locked && rem <= 0){
+                if(p.recoveredAt){
+                    const idleMs = now - p.recoveredAt;
+                    idleEl.textContent = "已空闲 " + msToHMS(idleMs) + "（" + fmtDT(p.recoveredAt) + " 恢复）";
+                } else {
+                    idleEl.textContent = "已空闲（恢复时间未记录）";
+                }
             } else {
                 idleEl.textContent = "";
             }
@@ -5188,6 +5783,15 @@ function tickUpdate(){
 
 /* ==================== 启动 ==================== */
 loadFromLocal();
+/* 旧数据补全：空闲但没有 recoveredAt 的宠物，用 utime 兜底 */
+(function fixRecoveredAt(){
+    const now = Date.now();
+    petList.forEach(p => {
+        if(!p.recoveredAt && !p.isRunning && !p.locked && (p.pausedAt || 0) <= 0 && (p.totalMs || 0) === 0){
+            p.recoveredAt = p.utime || now;
+        }
+    });
+})();
 if(matchSchemes.length === 0){
     const def = initDefaultScheme();
     matchSchemes.push(def);
@@ -5211,9 +5815,16 @@ setInterval(() => {
     if(!$("schemeManageModal").classList.contains("hidden")) return;
     if(!$("scoreCalcModal").classList.contains("hidden")) return;
     if(!$("tempPetModal").classList.contains("hidden")) return;
+    if(!$("shareModal").classList.contains("hidden")) return;
+    if(!$("cpShareModal").classList.contains("hidden")) return;
+    if(!$("shareSettingsModal").classList.contains("hidden")) return;
     if(checkAutoLock(Date.now())) saveLocal();
     tickUpdate();
 }, 1000);
 </script>
+<footer style="text-align:center;font-size:11px;color:#aaa;padding:16px 0 8px;border-top:1px solid #eee;margin-top:20px">
+  © 2026 绒光宠物录 · 保留所有权利<br>
+  本工具仅供个人使用，请勿商业分发
+</footer>
 </body>
 </html>
