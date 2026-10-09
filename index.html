@@ -250,7 +250,6 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .share-settings-group select{padding:4px 8px;font-size:13px}
 </style>
 </head><body>
-
 <div style="text-align:center;font-size:11px;color:#aaa;padding:4px 0;background:#fafbfd">© 2026 绒光宠物录 · 保留所有权利 · 未经许可请勿二次分发</div>
 
 <div id="compatWarn" class="compat-warn hidden">
@@ -498,27 +497,29 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 </div></div>
 
 <!-- 分享卡片弹窗 -->
-<div class="modal hidden" id="shareModal"><div class="modal-box" style="max-width:520px;background:linear-gradient(135deg,#fef8fa 0%,#f0f4ff 100%)">
+<div class="modal hidden" id="shareModal"><div class="modal-box" style="max-width:420px;background:linear-gradient(135deg,#fef8fa 0%,#f0f4ff 100%)">
   <div class="modal-header" style="background:transparent;border-bottom:none">
     <h3 style="color:#a06080">🐾 宠物分享卡</h3>
     <div class="modal-header-btns">
+      <button class="primary" id="shareSaveBtn">💾 保存图片</button>
       <button id="shareCloseBtn">关闭</button>
     </div>
   </div>
   <div id="shareContent" style="padding:8px"></div>
-  <div style="text-align:center;font-size:11px;color:#aaa;margin-top:8px">截图后即可分享给朋友 💌</div>
+  <div style="text-align:center;font-size:11px;color:#aaa;margin-top:8px">点「保存图片」可直接存到本地，也可截图分享 💌</div>
 </div></div>
 
 <!-- CP 趣味分享弹窗 -->
-<div class="modal hidden" id="cpShareModal"><div class="modal-box" style="max-width:520px;background:linear-gradient(135deg,#ffeef5 0%,#f0f4ff 100%)">
+<div class="modal hidden" id="cpShareModal"><div class="modal-box" style="max-width:420px;background:linear-gradient(135deg,#ffeef5 0%,#f0f4ff 100%)">
   <div class="modal-header" style="background:transparent;border-bottom:none">
     <h3 style="color:#a06080">💞 CP 趣味分享</h3>
     <div class="modal-header-btns">
+      <button class="primary" id="cpShareSaveBtn">💾 保存图片</button>
       <button id="cpShareCloseBtn">关闭</button>
     </div>
   </div>
   <div id="cpShareContent" style="padding:8px"></div>
-  <div style="text-align:center;font-size:11px;color:#aaa;margin-top:8px">截图后即可分享给朋友 💌</div>
+  <div style="text-align:center;font-size:11px;color:#aaa;margin-top:8px">点「保存图片」可直接存到本地，也可截图分享 💌</div>
 </div></div>
 
 <!-- 分享设置弹窗 -->
@@ -1063,10 +1064,10 @@ function getPetAppearance(petId){
     return 50;
 }
 
-/* 分享卡展示设置 */
+/* 分享卡展示设置（大类和特征不显示，cat 已被移除） */
 let shareSettings = {
-    card: { img: "large", name: true, gender: true, category: true, breed: true, account: true, tags: true, recoverTime: true, remainTime: true, note: false, features: false },
-    bigImg: { name: true, gender: true, category: true, breed: true, account: true, tags: true, features: true, note: true, recoverTime: true, remainTime: true }
+    card: { img: "large", name: true, gender: true, category: false, breed: true, account: true, tags: true, recoverTime: true, remainTime: true, note: false, features: false },
+    bigImg: { name: true, gender: true, category: false, breed: true, account: true, tags: true, features: true, note: true, recoverTime: true, remainTime: true }
 };
 
 const filterState = {
@@ -1081,6 +1082,16 @@ const genId = () => Date.now().toString(36) + Math.random().toString(36).slice(2
 const hmToMs = (h,m) => (h*60+m)*60*1000;
 const msToHMS = ms => { const t = Math.floor(Math.max(0,ms)/1000);
     return Math.floor(t/3600)+"时"+Math.floor((t%3600)/60)+"分"+(t%60)+"秒"; };
+/* 剩余时间到天/时/分，用于分享卡 */
+const msToHM = ms => {
+    const t = Math.floor(Math.max(0,ms)/1000);
+    const d = Math.floor(t/86400);
+    const h = Math.floor((t%86400)/3600);
+    const m = Math.floor((t%3600)/60);
+    if(d > 0) return d + "天" + h + "时" + m + "分";
+    if(h > 0) return h + "时" + m + "分";
+    return m + "分";
+};
 const fmtDT = ts => { if(!ts) return "-"; const d = new Date(ts);
     return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")
         +" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); };
@@ -1275,7 +1286,6 @@ function petDiffers(a, b){
     if((ac2.pairTime||"") !== (bc2.pairTime||"")) return true;
     return false;
 }
-
 /* ==================== IndexedDB ==================== */
 let imgDBPromise = null;
 function openImgDB(){
@@ -2352,9 +2362,8 @@ function openBigPreview(src, pet){
             const gTag = cfg.gender ? (pet.gender === "m" ? ' <span style="color:#348ede;font-weight:bold">♂ 公</span>' : ' <span style="color:#e85496;font-weight:bold">♀ 母</span>') : "";
             html += '<div style="font-weight:bold;font-size:18px;margin-bottom:4px">'+esc(pet.name||"未命名")+gTag+'</div>';
         }
-        if(cfg.category || cfg.breed || cfg.account){
+        if(cfg.breed || cfg.account){
             const parts = [];
-            if(cfg.category) parts.push(esc(pet.category||"-"));
             if(cfg.breed) parts.push(esc(pet.breed||"-"));
             if(cfg.account) parts.push(esc(pet.account||"-"));
             html += '<div style="color:#666;margin-bottom:4px">'+parts.join(" · ")+'</div>';
@@ -2405,29 +2414,33 @@ document.addEventListener("keydown", e => {
 });
 
 /* ==================== 分享卡片 ==================== */
+let currentSharePetId = "";
+let currentCpShareNames = "";
+
 function showShareCard(petId){
     const pet = petList.find(x => x.id === petId);
     if(!pet) return;
+    currentSharePetId = petId;
     renderShareCardHtml(pet, $("shareContent"), shareSettings.card);
     $("shareModal").classList.remove("hidden");
 }
 
+/* 昵称 / 品种 / 账号 同排显示 */
 function renderShareCardInfoBlock(pet, cfg){
-    let html = '';
+    const parts = [];
     if(cfg.name){
         const gTag = cfg.gender ? (pet.gender === "m" ? " ♂" : " ♀") : "";
-        html += '<div style="font-weight:bold;font-size:20px;color:#333;margin-bottom:6px">'+esc(pet.name||"未命名")+'<span style="color:'+(pet.gender==="m"?"#348ede":"#e85496")+'">'+gTag+'</span></div>';
+        const genderColor = pet.gender === "m" ? "#348ede" : "#e85496";
+        parts.push('<span style="font-weight:bold;font-size:19px;color:#333;line-height:1.2">'+esc(pet.name||"未命名")+'<span style="color:'+genderColor+'">'+gTag+'</span></span>');
     }
-    if(cfg.category || cfg.breed){
-        const catPart = cfg.category ? esc(pet.category||"-") : "";
-        const breedPart = cfg.breed ? esc(pet.breed||"-") : "";
-        const line = [catPart, breedPart].filter(Boolean).join(" · ");
-        if(line) html += '<div style="font-size:14px;color:#666;margin-bottom:6px">'+line+'</div>';
+    if(cfg.breed){
+        parts.push('<span style="font-size:13px;color:#666">'+esc(pet.breed||"-")+'</span>');
     }
     if(cfg.account){
-        html += '<div style="font-size:12px;color:#999">账号：'+esc(pet.account||"-")+'</div>';
+        parts.push('<span style="font-size:12px;color:#999">'+esc(pet.account||"-")+'</span>');
     }
-    return html;
+    if(!parts.length) return '';
+    return '<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px">' + parts.join('') + '</div>';
 }
 
 function renderShareCardHtml(pet, wrap, cfg){
@@ -2437,38 +2450,38 @@ function renderShareCardHtml(pet, wrap, cfg){
     const isIdle = !pet.isRunning && !pet.locked && rem <= 0;
 
     const imgUrl = pet.img ? (isIndexedImg(pet.img) ? (getImageUrlSync(pet.img) || "") : pet.img) : "";
-    const hasInfo = cfg.name || cfg.gender || cfg.category || cfg.breed || cfg.account;
+    const hasInfo = cfg.name || cfg.gender || cfg.breed || cfg.account;
 
-    let html = '<div style="background:#fff;border-radius:14px;padding:16px;box-shadow:0 4px 12px rgba(0,0,0,.06)">';
+    let html = '<div style="width:375px;max-width:100%;box-sizing:border-box;background:#fff;border-radius:14px;padding:14px;box-shadow:0 4px 12px rgba(0,0,0,.06);margin:0 auto">';
 
     if(cfg.img === "large"){
         if(imgUrl){
-            html += '<img src="'+imgUrl+'" style="width:100%;max-height:340px;object-fit:contain;border-radius:12px;border:2px solid #f5e8ee;margin-bottom:12px;background:#fafafa;display:block">';
+            html += '<img src="'+imgUrl+'" style="display:block;width:100%;height:auto;border-radius:12px;border:2px solid #f5e8ee;margin-bottom:10px">';
         } else {
-            html += '<div style="width:100%;height:200px;border-radius:12px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;color:#ccc;margin-bottom:12px">无图</div>';
+            html += '<div style="width:100%;height:200px;border-radius:12px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;color:#ccc;margin-bottom:10px">无图</div>';
         }
         if(hasInfo){
-            html += '<div style="margin-bottom:12px">' + renderShareCardInfoBlock(pet, cfg) + '</div>';
+            html += renderShareCardInfoBlock(pet, cfg);
         }
     } else if(cfg.img === "small"){
-        html += '<div style="display:flex;gap:14px;margin-bottom:12px">';
+        html += '<div style="display:flex;gap:12px;margin-bottom:10px;align-items:flex-start">';
         html += imgUrl
-            ? '<img src="'+imgUrl+'" style="width:120px;height:120px;object-fit:cover;border-radius:12px;border:2px solid #f5e8ee;flex-shrink:0">'
-            : '<div style="width:120px;height:120px;border-radius:12px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;color:#ccc;flex-shrink:0">无图</div>';
+            ? '<img src="'+imgUrl+'" style="width:100px;height:100px;object-fit:cover;border-radius:10px;border:2px solid #f5e8ee;flex-shrink:0">'
+            : '<div style="width:100px;height:100px;border-radius:10px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;color:#ccc;flex-shrink:0">无图</div>';
         if(hasInfo){
             html += '<div style="flex:1;min-width:0">' + renderShareCardInfoBlock(pet, cfg) + '</div>';
         }
         html += '</div>';
     } else {
         if(hasInfo){
-            html += '<div style="margin-bottom:12px">' + renderShareCardInfoBlock(pet, cfg) + '</div>';
+            html += renderShareCardInfoBlock(pet, cfg);
         }
     }
 
     if(cfg.recoverTime && recover){
-        html += '<div style="background:linear-gradient(135deg,#e8f4ff 0%,#f0e8ff 100%);border-radius:10px;padding:12px;margin:10px 0;text-align:center">' +
-            '<div style="font-size:13px;color:#888;margin-bottom:6px">⏰ 预计恢复时间</div>' +
-            '<div style="font-size:22px;font-weight:bold;color:#3070ee;letter-spacing:1px">'+fmtDT(recover)+'</div>' +
+        html += '<div style="background:linear-gradient(135deg,#e8f4ff 0%,#f0e8ff 100%);border-radius:10px;padding:10px;margin:8px 0;text-align:center">' +
+            '<div style="font-size:12px;color:#888;margin-bottom:4px">⏰ 预计恢复时间</div>' +
+            '<div style="font-size:20px;font-weight:bold;color:#3070ee;letter-spacing:0.5px">'+fmtDT(recover)+'</div>' +
         '</div>';
     }
 
@@ -2476,26 +2489,27 @@ function renderShareCardHtml(pet, wrap, cfg){
         let timeLine = "";
         if(isIdle){
             const idleMs = pet.recoveredAt ? (now - pet.recoveredAt) : 0;
-            timeLine = '<div style="color:#20b060;font-size:16px;font-weight:bold;margin-top:6px;text-align:center">🟢 已空闲 ' + (idleMs ? msToHMS(idleMs) : "未知时长") + '</div>';
+            timeLine = '<div style="color:#20b060;font-size:15px;font-weight:bold;margin:6px 0;text-align:center">🟢 已空闲 ' + (idleMs ? msToHM(idleMs) : "未知时长") + '</div>';
         } else if(recover){
-            timeLine = '<div style="color:#e85496;font-size:16px;font-weight:bold;margin-top:6px;text-align:center">⏱️ 剩余 ' + msToHMS(rem) + '</div>';
+            timeLine = '<div style="color:#e85496;font-size:15px;font-weight:bold;margin:6px 0;text-align:center">⏱️ 剩余 ' + msToHM(rem) + '</div>';
         } else if(pet.locked){
-            timeLine = '<div style="color:#c82424;font-size:16px;font-weight:bold;margin-top:6px;text-align:center">🔒 待接生</div>';
+            timeLine = '<div style="color:#c82424;font-size:15px;font-weight:bold;margin:6px 0;text-align:center">🔒 待接生</div>';
         } else {
-            timeLine = '<div style="color:#888;font-size:16px;font-weight:bold;margin-top:6px;text-align:center">⏸️ 托管中 · 剩余 ' + msToHMS(rem) + '</div>';
+            timeLine = '<div style="color:#888;font-size:15px;font-weight:bold;margin:6px 0;text-align:center">⏸️ 托管中 · 剩余 ' + msToHM(rem) + '</div>';
         }
         html += timeLine;
     }
 
-    if(cfg.tags && (pet.tags||[]).length){
-        html += '<div style="margin-top:10px"><div style="font-size:11px;color:#999;margin-bottom:4px">标签</div>' +
-            (pet.tags||[]).map(t => '<span style="background:#f0e8f5;color:#9b59b6;padding:2px 10px;border-radius:10px;font-size:12px;margin-right:4px;display:inline-block;margin-bottom:4px">'+esc(t)+'</span>').join("") +
-        '</div>';
-    }
-
+    /* 特征在标签前 */
     if(cfg.features && (pet.features||[]).length){
         html += '<div style="margin-top:8px"><div style="font-size:11px;color:#999;margin-bottom:4px">特征</div>' +
             (pet.features||[]).map(f => featureChip(f)).join("") +
+        '</div>';
+    }
+
+    if(cfg.tags && (pet.tags||[]).length){
+        html += '<div style="margin-top:8px"><div style="font-size:11px;color:#999;margin-bottom:4px">标签</div>' +
+            (pet.tags||[]).map(t => '<span style="background:#f0e8f5;color:#9b59b6;padding:2px 10px;border-radius:10px;font-size:12px;margin-right:4px;display:inline-block;margin-bottom:4px">'+esc(t)+'</span>').join("") +
         '</div>';
     }
 
@@ -2503,7 +2517,7 @@ function renderShareCardHtml(pet, wrap, cfg){
         html += '<div style="margin-top:8px;font-size:12px;color:#666;background:#f8f9fb;padding:8px;border-radius:6px">备注：'+esc(pet.note)+'</div>';
     }
 
-    html += '<div style="text-align:center;font-size:10px;color:#ccc;margin-top:14px;border-top:1px dashed #eee;padding-top:8px">由「绒光宠物录」生成 · 仅供约亲分享</div>';
+    html += '<div style="text-align:center;font-size:10px;color:#ccc;margin-top:12px;border-top:1px dashed #eee;padding-top:6px">由「绒光宠物录」生成 · 仅供约亲分享</div>';
     html += '</div>';
 
     wrap.innerHTML = html;
@@ -2514,6 +2528,7 @@ function showCpShareCard(petA, petB){
     const m = calculateMatchScore(petA, petB, scheme);
     const dispScore = calcDisplayScore(petA, petB, m.score);
     const verdict = getCpVerdict(dispScore, petA, petB);
+    currentCpShareNames = (petA.name || "宠物A") + "x" + (petB.name || "宠物B");
 
     const imgA = petA.img ? (isIndexedImg(petA.img) ? (getImageUrlSync(petA.img) || "") : petA.img) : "";
     const imgB = petB.img ? (isIndexedImg(petB.img) ? (getImageUrlSync(petB.img) || "") : petB.img) : "";
@@ -2560,7 +2575,7 @@ function showCpShareCard(petA, petB){
 
     html += '<div style="text-align:center;font-size:10px;color:#ccc;margin-top:14px;border-top:1px dashed #eee;padding-top:8px">由「绒光宠物录」生成 · 仅供娱乐参考</div>';
 
-    $("cpShareContent").innerHTML = html;
+    $("cpShareContent").innerHTML = '<div style="width:375px;max-width:100%;box-sizing:border-box;margin:0 auto;background:#fff;border-radius:14px;padding:16px;box-shadow:0 4px 12px rgba(0,0,0,.06)">' + html + '</div>';
     $("cpShareModal").classList.remove("hidden");
 }
 
@@ -2568,6 +2583,186 @@ $("cpShareCloseBtn").onclick = () => $("cpShareModal").classList.add("hidden");
 $("cpShareModal").addEventListener("click", e => { if(e.target === $("cpShareModal")) $("cpShareModal").classList.add("hidden"); });
 $("shareCloseBtn").onclick = () => $("shareModal").classList.add("hidden");
 $("shareModal").addEventListener("click", e => { if(e.target === $("shareModal")) $("shareModal").classList.add("hidden"); });
+
+/* ==================== 分享卡「保存图片」 ==================== */
+let h2cLoadingPromise = null;
+function loadHtml2CanvasLib(){
+    if(typeof window.html2canvas === "function") return Promise.resolve();
+    if(h2cLoadingPromise) return h2cLoadingPromise;
+    h2cLoadingPromise = new Promise((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js";
+        s.async = true;
+        s.onload = () => (typeof window.html2canvas === "function")
+            ? resolve()
+            : reject(new Error("组件初始化失败"));
+        s.onerror = () => reject(new Error("网络加载失败"));
+        document.head.appendChild(s);
+    });
+    h2cLoadingPromise.catch(() => { h2cLoadingPromise = null; });
+    return h2cLoadingPromise;
+}
+
+function waitForImagesIn(root){
+    const imgs = Array.from(root.querySelectorAll("img"));
+    if(!imgs.length) return Promise.resolve();
+    return Promise.all(imgs.map(img => new Promise(res => {
+        if(img.complete && img.naturalWidth > 0) return res();
+        let done = false;
+        const finish = () => { if(done) return; done = true; res(); };
+        img.addEventListener("load", finish, { once: true });
+        img.addEventListener("error", finish, { once: true });
+        setTimeout(finish, 4000);
+    })));
+}
+
+/* 截图前把 <img> 临时换成同尺寸的「背景图 div」，避免 object-fit 不生效导致拉伸 */
+function swapImagesForCapture(root){
+    const swapped = [];
+    Array.prototype.slice.call(root.querySelectorAll("img")).forEach(function(img){
+        try{
+            const cs = window.getComputedStyle(img);
+            const rect = img.getBoundingClientRect();
+            if(rect.width < 1 || rect.height < 1) return;
+            const src = img.currentSrc || img.src;
+            if(!src) return;
+
+            const div = document.createElement("div");
+            div.style.cssText = img.style.cssText || "";
+            div.style.boxSizing = "border-box";
+            div.style.display = (cs.display === "inline") ? "inline-block" : (cs.display || "block");
+            div.style.width = rect.width + "px";
+            div.style.height = rect.height + "px";
+            div.style.maxWidth = "none";
+            div.style.maxHeight = "none";
+            div.style.minWidth = "0";
+            div.style.margin = cs.margin;
+            div.style.borderRadius = cs.borderRadius;
+            div.style.border = cs.border;
+            div.style.backgroundImage = 'url("' + String(src).replace(/"/g, '\\"') + '")';
+            const fit = cs.objectFit;
+            div.style.backgroundSize = (fit === "cover") ? "cover"
+                                     : (fit === "contain" ? "contain" : "100% 100%");
+            div.style.backgroundPosition = "center center";
+            div.style.backgroundRepeat = "no-repeat";
+            div.style.backgroundClip = "padding-box";
+            div.style.backgroundColor = "transparent";
+            div.style.flexShrink = cs.flexShrink;
+            div.style.flexGrow = cs.flexGrow;
+            div.style.alignSelf = cs.alignSelf;
+
+            const oldDisplay = img.style.display;
+            img.parentNode.insertBefore(div, img);
+            img.style.display = "none";
+            swapped.push({ img: img, div: div, oldDisplay: oldDisplay });
+        }catch(e){}
+    });
+    return function restore(){
+        swapped.forEach(function(item){
+            try{ if(item.div && item.div.parentNode) item.div.parentNode.removeChild(item.div); }catch(e){}
+            try{ item.img.style.display = item.oldDisplay; }catch(e){}
+        });
+    };
+}
+
+function shareFileStamp(){
+    const d = new Date();
+    return d.getFullYear()
+        + String(d.getMonth()+1).padStart(2,"0")
+        + String(d.getDate()).padStart(2,"0")
+        + "_" + String(d.getHours()).padStart(2,"0")
+        + String(d.getMinutes()).padStart(2,"0");
+}
+function safeFileName(s){
+    const v = String(s == null ? "" : s).replace(/[\\/:*?"<>|\n\r\t]+/g, "_").replace(/\s+/g, "_").trim();
+    return v.slice(0, 40) || "分享卡";
+}
+
+let cardSaving = false;
+async function saveShareCardAsImage(contentEl, filename){
+    if(cardSaving) return;
+    const target = contentEl && (contentEl.firstElementChild || contentEl);
+    if(!target || !target.offsetWidth){
+        alert("卡片还没准备好，请稍后再试");
+        return;
+    }
+    cardSaving = true;
+
+    const overlay = document.createElement("div");
+    overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#fff;font-size:14px;text-align:center;padding:20px";
+    overlay.innerHTML = '<div style="font-size:30px">🖼️</div><div>正在生成图片…</div>';
+    document.body.appendChild(overlay);
+
+    let released = false;
+    const release = delay => {
+        if(released) return;
+        released = true;
+        setTimeout(() => {
+            cardSaving = false;
+            try{ overlay.remove(); }catch(e){}
+        }, delay || 0);
+    };
+
+    try{
+        try{
+            await loadHtml2CanvasLib();
+        }catch(e){
+            throw new Error("图片生成组件加载失败，请联网后重试（也可以直接截图分享）");
+        }
+
+        await waitForImagesIn(target);
+
+        const restoreImages = swapImagesForCapture(target);
+        let canvas;
+        try{
+            canvas = await window.html2canvas(target, {
+                scale: 3,               // 3 倍渲染：布局与屏幕一致，细节清晰
+                backgroundColor: "#ffffff",
+                useCORS: true,
+                allowTaint: false,
+                logging: false,
+                imageTimeout: 8000,
+                removeContainer: true
+            });
+        } finally {
+            try{ restoreImages(); }catch(e){}
+        }
+
+        let dataUrl;
+        try{
+            dataUrl = canvas.toDataURL("image/png");
+        }catch(e){
+            throw new Error("卡片中含有跨域图片，浏览器禁止导出，可改用截图分享");
+        }
+
+        const a = document.createElement("a");
+        a.href = dataUrl;
+        a.download = filename;
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { try{ a.remove(); }catch(e){} }, 1500);
+
+        overlay.innerHTML = '<div style="font-size:30px">✅</div>'
+            + '<div>图片已保存</div>'
+            + '<div style="font-size:12px;opacity:.85;line-height:1.7">若没有自动下载，请查看浏览器的下载记录<br>iPhone/iPad 用户可在「文件」App →「下载」中查找<br>也可以直接长按图片保存</div>';
+        release(1800);
+    }catch(err){
+        alert("保存失败：" + (err && err.message ? err.message : "未知错误"));
+        release(0);
+    }
+}
+
+$("shareSaveBtn").onclick = () => {
+    const pet = petList.find(x => x.id === currentSharePetId);
+    const nm = safeFileName(pet ? (pet.name || "宠物") : "宠物");
+    saveShareCardAsImage($("shareContent"), nm + "-分享卡-" + shareFileStamp() + ".png");
+};
+
+$("cpShareSaveBtn").onclick = () => {
+    const nm = safeFileName(currentCpShareNames || "CP");
+    saveShareCardAsImage($("cpShareContent"), nm + "-CP测评-" + shareFileStamp() + ".png");
+};
 
 /* ==================== 分享设置 ==================== */
 function openShareSettings(){
@@ -2582,7 +2777,6 @@ function openShareSettings(){
     g1.innerHTML +=
         '<label><input type="checkbox" id="ssCardName"> 名字</label>' +
         '<label><input type="checkbox" id="ssCardGender"> 性别</label>' +
-        '<label><input type="checkbox" id="ssCardCategory"> 品种大类</label>' +
         '<label><input type="checkbox" id="ssCardBreed"> 品种</label>' +
         '<label><input type="checkbox" id="ssCardAccount"> 账号</label>' +
         '<label><input type="checkbox" id="ssCardTags"> 标签</label>' +
@@ -2598,7 +2792,6 @@ function openShareSettings(){
     g2.innerHTML +=
         '<label><input type="checkbox" id="ssBigName"> 名字</label>' +
         '<label><input type="checkbox" id="ssBigGender"> 性别</label>' +
-        '<label><input type="checkbox" id="ssBigCategory"> 品种大类</label>' +
         '<label><input type="checkbox" id="ssBigBreed"> 品种</label>' +
         '<label><input type="checkbox" id="ssBigAccount"> 账号</label>' +
         '<label><input type="checkbox" id="ssBigTags"> 标签</label>' +
@@ -2611,7 +2804,6 @@ function openShareSettings(){
     $("ssCardImg").value = s.card.img || "large";
     $("ssCardName").checked = !!s.card.name;
     $("ssCardGender").checked = !!s.card.gender;
-    $("ssCardCategory").checked = !!s.card.category;
     $("ssCardBreed").checked = !!s.card.breed;
     $("ssCardAccount").checked = !!s.card.account;
     $("ssCardTags").checked = !!s.card.tags;
@@ -2621,7 +2813,6 @@ function openShareSettings(){
     $("ssCardRemain").checked = !!s.card.remainTime;
     $("ssBigName").checked = !!s.bigImg.name;
     $("ssBigGender").checked = !!s.bigImg.gender;
-    $("ssBigCategory").checked = !!s.bigImg.category;
     $("ssBigBreed").checked = !!s.bigImg.breed;
     $("ssBigAccount").checked = !!s.bigImg.account;
     $("ssBigTags").checked = !!s.bigImg.tags;
@@ -2636,7 +2827,7 @@ $("shareSettingsSave").onclick = () => {
     shareSettings.card.img = $("ssCardImg").value;
     shareSettings.card.name = $("ssCardName").checked;
     shareSettings.card.gender = $("ssCardGender").checked;
-    shareSettings.card.category = $("ssCardCategory").checked;
+    shareSettings.card.category = false;
     shareSettings.card.breed = $("ssCardBreed").checked;
     shareSettings.card.account = $("ssCardAccount").checked;
     shareSettings.card.tags = $("ssCardTags").checked;
@@ -2647,7 +2838,7 @@ $("shareSettingsSave").onclick = () => {
 
     shareSettings.bigImg.name = $("ssBigName").checked;
     shareSettings.bigImg.gender = $("ssBigGender").checked;
-    shareSettings.bigImg.category = $("ssBigCategory").checked;
+    shareSettings.bigImg.category = false;
     shareSettings.bigImg.breed = $("ssBigBreed").checked;
     shareSettings.bigImg.account = $("ssBigAccount").checked;
     shareSettings.bigImg.tags = $("ssBigTags").checked;
@@ -4293,9 +4484,7 @@ $("copyEmailBtn").onclick = async () => {
         setTimeout(() => { btn.textContent = "复制"; btn.classList.remove("copied"); }, 1500);
     }
 };
-$("openQuestionnaireBtn").onclick = () => { window.open(FEEDBACK_URL, "_blank"); };
-
-/* ==================== 宠物速配 ==================== */
+$("openQuestionnaireBtn").onclick = () => { window.open(FEEDBACK_URL, "_blank"); };/* ==================== 宠物速配 ==================== */
 function isCloseRelative(petA, petB){
     function getParents(p){ return [p.sire, p.dam].filter(Boolean); }
     function getGrandParents(p){
