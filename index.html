@@ -3130,6 +3130,15 @@ function swapImagesForCapture(root){
             div.style.cssText = img.style.cssText || "";
             div.style.boxSizing = "border-box";
             div.style.display = (cs.display === "inline") ? "inline-block" : (cs.display || "block");
+            /* 补齐 CSS 类里写的定位属性，否则绝对定位的头像会掉进文档流 */
+            div.style.position = cs.position;
+            if(cs.position === "absolute" || cs.position === "fixed"){
+                if(cs.top !== "auto")    div.style.top    = cs.top;
+                if(cs.left !== "auto")   div.style.left   = cs.left;
+                if(cs.right !== "auto")  div.style.right  = cs.right;
+                if(cs.bottom !== "auto") div.style.bottom = cs.bottom;
+                div.style.zIndex = cs.zIndex;
+            }
             div.style.width = rect.width + "px";
             div.style.height = rect.height + "px";
             div.style.maxWidth = "none";
