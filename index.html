@@ -240,7 +240,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .cp-score-big .unit{font-size:18px;font-weight:normal;color:#aaa;margin-left:4px}
 .cp-vs-row{display:flex;gap:12px;align-items:center;justify-content:center;margin:12px 0}
 .cp-vs-pet{flex:1;text-align:center;min-width:0}
-.cp-vs-pet img{width:80px;height:80px;object-fit:cover;border-radius:12px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.cp-vs-pet img{width:80px;height:80px;object-fit:cover;object-position:center center;border-radius:12px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 .cp-vs-pet .ph{width:80px;height:80px;border-radius:12px;background:#f0f2f5;margin:0 auto;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:12px}
 .cp-vs-pet .nm{font-size:13px;font-weight:bold;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cp-vs-heart{font-size:28px;color:#e85496}
@@ -248,8 +248,165 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .share-settings-group h4{margin:0 0 8px;font-size:14px;color:#3070ee}
 .share-settings-group label{display:inline-flex;align-items:center;gap:5px;font-size:13px;margin-right:14px;margin-bottom:6px;cursor:pointer;color:#444}
 .share-settings-group select{padding:4px 8px;font-size:13px}
+
+/* ==================== 分享卡（相框一体化） ==================== */
+.share-poster{
+  width:375px;max-width:100%;margin:0 auto;
+  background:var(--frame-color,#faf8f4);
+  padding:12px 12px 0 12px;
+  border-radius:20px;
+  box-shadow:0 6px 20px rgba(0,0,0,.08);
+  position:relative;
+  overflow:hidden;
+  box-sizing:border-box;
+  max-height: 92vh;
+}
+.share-poster .img-wrap{position:relative;width:100%}
+.share-poster .img-zone{
+  position:relative;width:100%;
+  border-radius:12px 12px 0 0;
+  overflow:hidden;background:#f5f5f5;line-height:0;
+  max-height: 60vh;
+}
+.share-poster .img-zone img.main{display:block;width:100%;height:auto}
+.share-poster .img-zone.empty::after{
+  content:"无图";position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  color:#ccc;font-size:13px;background:#f5f5f5;min-height:280px;line-height:normal;
+}
+.share-poster .sub-img{
+  position:absolute;z-index:6;border-radius:8px;border:2px solid #fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.18);object-fit:cover;aspect-ratio:1/1;
+  display:none;background:#f0f2f5;
+}
+.share-poster .sub-img.back{left:10px}
+.share-poster .sub-img.baby{right:10px}
+.share-poster .meetup{
+  position:absolute;left:10px;right:10px;z-index:7;
+  padding:8px 12px;border-radius:10px;
+  background:linear-gradient(135deg,#ff9a76 0%,#ff6b9d 100%);
+  color:#fff;font-weight:bold;font-size:13px;line-height:1.5;
+  box-shadow:0 3px 12px rgba(255,107,157,.35);
+  text-align:center;display:none;
+}
+.share-poster .meetup.on{display:block}
+.share-poster .meetup .t{opacity:.85;font-weight:normal;font-size:11px;margin-right:4px}
+.share-poster .info-zone{
+  position:absolute;left:-12px;right:-12px;bottom:0;z-index:5;
+  padding:12px 14px 22px 14px;
+  background:var(--frame-color,#faf8f4);
+  border-radius:0;
+  --fs:14px;
+  font-size:var(--fs);
+  line-height:1.5;color:#333;
+}
+.share-poster .info-zone .name-row{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.share-poster .info-zone .pet-name{font-weight:bold;font-size:1.4em;color:#333;line-height:1.2}
+.share-poster .info-zone .gender{font-size:1.1em;font-weight:bold;padding:0 2px}
+.share-poster .info-zone .gender.m{color:#348ede}
+.share-poster .info-zone .gender.f{color:#e85496}
+.share-poster .info-zone .breed{font-size:1em;color:#666}
+.share-poster .info-zone .account{font-size:0.85em;color:#999;margin-left:auto}
+.share-poster .time-main{text-align:center;padding:6px 0 0;border-top:1px dashed rgba(0,0,0,.08)}
+.share-poster .time-main .lbl{font-size:1em;color:#888;display:block;margin-bottom:2px}
+.share-poster .time-main .big{font-size:2em;font-weight:bold;letter-spacing:0.5px;line-height:1.2}
+.share-poster .time-main .small{font-size:1.1em;color:#888;margin-top:4px}
+.share-poster .time-main.rec .big{color:#3070ee}
+.share-poster .time-main.rec .small{color:#e85496;font-weight:bold}
+.share-poster .time-main.rem .big{color:#e85496}
+.share-poster .time-main.idle .big{color:#20b060}
+.share-poster .poster-mark{
+  position:absolute;right:12px;bottom:5px;z-index:10;
+  text-align:right;line-height:1.1;user-select:none;pointer-events:none;opacity:.5;
+}
+.share-poster .poster-mark .cn{
+  font-family:"KaiTi","STKaiti","楷体","Kaiti SC",serif;
+  font-style:italic;font-weight:bold;font-size:12px;color:#5a5a5a;
+  letter-spacing:2px;display:inline-block;transform:rotate(-3deg);position:relative;
+}
+.share-poster .poster-mark .cn::after{
+  content:"";position:absolute;left:-8px;right:2px;bottom:1px;height:1px;
+  background:linear-gradient(90deg,transparent 0%,#5a5a5a 40%,#5a5a5a 100%);
+  transform:rotate(-3deg);opacity:.7;
+}
+.share-poster .poster-mark .en{
+  font-family:"Times New Roman",serif;font-style:italic;
+  font-size:6px;color:#8a8a8a;letter-spacing:3px;margin-top:2px;display:block;padding-right:2px;
+}
+.share-poster.dark-frame .poster-mark .cn{color:#d9c69a}
+.share-poster.dark-frame .poster-mark .en{color:#a89468}
+.share-poster.dark-frame .poster-mark .cn::after{background:linear-gradient(90deg,transparent 0%,#d9c69a 40%,#d9c69a 100%)}
+
+/* 分享弹窗调整面板 */
+.share-adjust-panel{margin-top:10px;border-top:1px dashed #eee;padding-top:8px}
+.share-adjust-panel summary{cursor:pointer;font-size:13px;color:#3070ee;font-weight:bold;padding:4px 0;user-select:none}
+.share-adjust-panel .row{display:flex;align-items:center;gap:6px;margin:6px 0;font-size:12px;color:#555}
+.share-adjust-panel .row label{flex:0 0 90px;color:#555}
+.share-adjust-panel .row input[type=range]{flex:1;margin:0}
+.share-adjust-panel .row .val{flex:0 0 46px;text-align:right;color:#3070ee;font-weight:bold}
+.share-adjust-panel .row select,
+.share-adjust-panel .row input[type=text]{flex:1;font-size:12px;padding:4px 6px}
+.share-adjust-panel .row.chk-row{justify-content:flex-start}
+.share-adjust-panel .row.chk-row input[type=checkbox]{margin:0}
+.share-adjust-panel .group-title{font-size:12px;color:#3070ee;margin:10px 0 4px;font-weight:bold}
+
+/* 编辑弹窗里的背面/幼年图预览 */
+.img-preview-inline{margin-top:5px;display:none;align-items:center;gap:6px}
+.img-preview-inline.show{display:flex}
+.img-preview-inline img{max-width:80px;max-height:80px;border-radius:6px;border:1px solid #ddd;object-fit:cover;cursor:zoom-in}
+
+/* ==================== 速配顶部 Tab ==================== */
+.match-top-tabs{display:flex;gap:6px;margin-bottom:14px;border-bottom:2px solid #e3e8ef}
+.match-top-tab{background:transparent;border:none;padding:9px 20px;font-size:14px;color:#666;border-bottom:2px solid transparent;margin-bottom:-2px;font-weight:500;cursor:pointer;transition:.15s}
+.match-top-tab:hover{color:#3070ee}
+.match-top-tab.active{color:#3070ee;border-bottom-color:#3070ee;font-weight:bold}
+
+/* ==================== 双宠配对指数测算 ==================== */
+.pair-calc-grid{display:flex;gap:14px;align-items:stretch;flex-wrap:wrap}
+.pair-side{flex:1;min-width:280px;background:#fff;border:1px solid #e3e8ef;border-radius:12px;padding:14px;display:flex;flex-direction:column}
+.pair-side-label{font-size:14px;font-weight:bold;color:#3070ee;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.pair-side-label .badge{background:#3070ee;color:#fff;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:12px}
+.pair-src-tabs{display:flex;gap:4px;margin-bottom:10px}
+.pair-src-tab{flex:1;font-size:12px;padding:6px 4px;border-radius:6px;border:1px solid #cbd5e1;background:#fff;color:#666;cursor:pointer;transition:.15s}
+.pair-src-tab.active{background:#3070ee;border-color:#3070ee;color:#fff;font-weight:bold}
+.pair-src-tab:hover:not(.active){background:#f0f6ff;border-color:#a8c8f0;color:#3070ee}
+.pair-img-zone{width:100%;height:200px;border-radius:12px;overflow:hidden;background:#f5f5f5;border:2px dashed #d0dae8;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.pair-img-zone:hover{border-color:#3070ee;background:#f0f6ff}
+.pair-img-zone img{width:100%;height:100%;object-fit:contain;object-position:center center;display:block}
+.pair-img-zone .hint{color:#999;font-size:12px;text-align:center;padding:0 10px;line-height:1.6;pointer-events:none}
+.pair-img-zone.has-img{border-style:solid;border-color:#e3e8ef}
+.pair-img-zone.has-img .hint{display:none}
+.pair-info-box{border:1px solid #e3e8ef;border-radius:8px;padding:10px;margin-bottom:10px;background:#fafbfd}
+.pair-info-box .row{display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:12px;color:#555}
+.pair-info-box .row:last-child{margin-bottom:0}
+.pair-info-box .row label{flex:0 0 55px;color:#666}
+.pair-info-box .row input[type=text]{flex:1;padding:4px 6px;font-size:12px}
+.pair-info-box .row select{flex:1;padding:4px 6px;font-size:12px}
+.pair-info-box .row input[type=range]{flex:1;margin:0}
+.pair-info-box .row .val{flex:0 0 60px;text-align:right;color:#3070ee;font-weight:bold;font-size:12px}
+.pair-info-box .chk-row{display:flex;gap:12px;flex-wrap:wrap;font-size:12px}
+.pair-info-box .chk-row label{display:inline-flex;align-items:center;gap:3px;cursor:pointer;flex:none}
+.pair-info-box .chk-row input[type=checkbox]{margin:0}
+.pair-chips{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
+.pair-chip{padding:2px 8px;border-radius:12px;border:1.5px solid #ccd6e2;background:#fff;font-size:11px;cursor:pointer;user-select:none;transition:.15s;color:#666}
+.pair-chip:hover{border-color:#3070ee;color:#3070ee}
+.pair-chip.on{background:#e85496;border-color:#e85496;color:#fff;font-weight:500}
+.pair-selected-info{font-size:12px;color:#666;background:#eef6ff;border-radius:6px;padding:6px 10px;margin-bottom:10px;line-height:1.5;border:1px solid #b8d4ff}
+.pair-selected-info .nm{font-weight:bold;color:#3070ee}
+
+.pair-result{margin-top:16px;background:#fff;border-radius:12px;border:1px solid #e3e8ef;padding:16px}
+
+/* 选宠弹窗 */
+.select-pet-list{max-height:300px;overflow:auto;border:1px solid #e3e8ef;border-radius:6px;padding:6px;background:#fff}
+.select-pet-row{display:flex;align-items:center;gap:8px;padding:6px;border-bottom:1px solid #f2f5f9;cursor:pointer}
+.select-pet-row:hover{background:#f4f7fb}
+.select-pet-row img{width:36px;height:36px;border-radius:6px;object-fit:cover;background:#f0f2f5;border:1px solid #eee;flex-shrink:0}
+.select-pet-row .nm{flex:1;font-size:13px;min-width:0}
+.select-pet-row .nm .sub{font-size:11px;color:#888;margin-top:2px}
+.select-pet-row button{font-size:12px;padding:4px 12px;background:#3070ee;color:#fff;border:none;border-radius:6px;cursor:pointer}
 </style>
-</head><body>
+</head>
+<body>
 <div style="text-align:center;font-size:11px;color:#aaa;padding:4px 0;background:#fafbfd">© 2026 绒光宠物录 · 保留所有权利 · 未经许可请勿二次分发</div>
 
 <div id="compatWarn" class="compat-warn hidden">
@@ -386,97 +543,236 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 
 <!-- ===== 速配视图 ===== -->
 <div id="matchView" class="hidden">
-  <div class="match-panel">
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
-      <label style="font-size:13px">打分方案：</label>
-      <select id="matchSchemeSelect" style="min-width:180px"></select>
-      <button id="btnSaveScheme" class="primary" style="font-size:12px;padding:4px 10px">💾 保存</button>
-      <button id="btnSaveAsScheme" style="font-size:12px;padding:4px 10px">📋 另存为方案</button>
-      <button id="btnManageSchemes" style="font-size:12px;padding:4px 10px">⚙️ 管理方案</button>
-      <span id="schemeDirtyTip" style="font-size:12px;color:#e08030;margin-left:6px;display:none">⚠️ 有未保存的修改</span>
-    </div>
+  <div class="match-top-tabs">
+    <button class="match-top-tab active" data-mt="profit">💞 速配找对象</button>
+    <button class="match-top-tab" data-mt="pair">🎯 双宠配对指数测算</button>
+  </div>
 
-    <div style="margin-bottom:12px">
-      <h4>选择目标宠物（优先显示工作台，按剩余时间排序）</h4>
-      <select id="matchPetSelect" style="width:100%"></select>
-      <div id="matchPetInfo" style="margin-top:8px;font-size:13px;color:#666"></div>
-      <div style="margin-top:10px;padding:8px 10px;background:#fffdf3;border:1px solid #f0e0a0;border-radius:8px">
-        <div style="font-size:12px;color:#a06a10;margin-bottom:6px">🎨 目标宠物临时颜值（仅本次速配有效，不保存）</div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:11px;color:#999">0</span>
-          <input type="range" id="matchPetAppearance" min="0" max="100" value="50" style="flex:1" oninput="onMatchTargetAppearanceChange(this)">
-          <span style="font-size:11px;color:#999">100</span>
-        </div>
-        <div id="matchPetAppearanceLabel" style="text-align:center;font-size:13px;color:#e85496;font-weight:500;margin-top:4px">品貌端正（50）</div>
+  <!-- ===== Pane 1：速配找对象 ===== -->
+  <div id="matchPaneProfit">
+    <div class="match-panel">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+        <label style="font-size:13px">打分方案：</label>
+        <select id="matchSchemeSelect" style="min-width:180px"></select>
+        <button id="btnSaveScheme" class="primary" style="font-size:12px;padding:4px 10px">💾 保存</button>
+        <button id="btnSaveAsScheme" style="font-size:12px;padding:4px 10px">📋 另存为方案</button>
+        <button id="btnManageSchemes" style="font-size:12px;padding:4px 10px">⚙️ 管理方案</button>
+        <span id="schemeDirtyTip" style="font-size:12px;color:#e08030;margin-left:6px;display:none">⚠️ 有未保存的修改</span>
       </div>
-      <button id="matchRunBtn" class="primary" style="margin-top:8px;width:100%">开始匹配</button>
-      <button id="matchScoreBtn" style="margin-top:6px;width:100%;background:#28c76f;color:#fff;border-color:#20b060">📊 匹配度计算</button>
-      <div id="matchScoreDetail" style="margin-top:10px;font-size:13px"></div>
+
+      <div style="margin-bottom:12px">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px">
+          <h4 style="margin:0">选择目标宠物</h4>
+          <div style="display:flex;gap:4px">
+            <button type="button" class="pair-src-tab active" data-target-src="lib" style="flex:none;padding:4px 12px;font-size:12px">🐾 从我的宠物选</button>
+            <button type="button" class="pair-src-tab" data-target-src="manual" style="flex:none;padding:4px 12px;font-size:12px">✨ 亲家的临时宠物</button>
+          </div>
+        </div>
+
+        <div id="matchTargetLibBox">
+          <div id="matchSelectedTargetInfo" style="margin-bottom:8px"></div>
+          <button type="button" class="primary" style="width:100%;padding:8px" onclick="openMatchTargetPicker()">🐾 打开选宠器（工作台优先）</button>
+        </div>
+
+        <div id="matchTargetManualBox" class="hidden" style="border:1px solid #f0e0a0;background:#fffdf3;border-radius:8px;padding:10px">
+          <div style="font-size:12px;color:#a06a10;margin-bottom:6px">临时宠物（不计入宠物库）</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <div style="flex:1;min-width:120px">
+              <label style="font-size:11px;color:#666">大类</label>
+              <select id="matchTempCat" style="width:100%"><option value="">--请选择--</option></select>
+            </div>
+            <div style="flex:1;min-width:120px">
+              <label style="font-size:11px;color:#666">品种</label>
+              <select id="matchTempBreed" style="width:100%"><option value="">--请先选大类--</option></select>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+            <div style="flex:1;min-width:120px">
+              <label style="font-size:11px;color:#666">性别</label>
+              <select id="matchTempGender" style="width:100%">
+                <option value="f">母</option>
+                <option value="m">公</option>
+              </select>
+            </div>
+            <div style="flex:1;min-width:120px">
+              <label style="font-size:11px;color:#666">昵称（选填）</label>
+              <input type="text" id="matchTempName" style="width:100%" placeholder="例如：亲家的团子">
+            </div>
+          </div>
+          <div style="margin-top:6px">
+            <label style="font-size:11px;color:#666">特征（一行一个，可粘贴）</label>
+            <textarea id="matchTempFeatures" rows="2" style="width:100%;font-size:12px" placeholder="例如：美瞳、背、爱心鼻"></textarea>
+          </div>
+          <div style="margin-top:6px">
+            <label style="font-size:11px;color:#666">瑕疵（点击勾选）：</label>
+            <div class="pair-chips" id="matchTempFlaws"></div>
+          </div>
+        </div>
+
+        <div id="matchPetInfo" style="margin-top:8px;font-size:13px;color:#666"></div>
+      </div>
+
+      <details id="schemeParamsDetails" style="margin-top:16px;border-top:1px solid #eee;padding-top:12px">
+        <summary style="cursor:pointer;font-weight:bold;font-size:14px;margin-bottom:8px;color:#3070ee">📋 打分表细则（点击展开/折叠）</summary>
+        <div id="schemeParams" style="margin-top:8px"></div>
+      </details>
+
+      <div style="margin-top:16px;border-top:1px solid #eee;padding-top:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px">
+          <h4 style="margin:0">推荐结果</h4>
+          <div style="display:flex;gap:4px;font-size:12px">
+            <button id="matchRunBtn" class="mf-btn" style="font-size:12px;padding:4px 10px">🔄 重新计算</button>
+            <button id="matchSortByScore" class="mf-btn active" style="font-size:12px;padding:4px 10px">按分数排序</button>
+            <button id="matchSortByTime" class="mf-btn" style="font-size:12px;padding:4px 10px">按时间排序</button>
+          </div>
+        </div>
+        <div id="matchResults"></div>
+      </div>
     </div>
+  </div>
 
-    <details id="schemeParamsDetails" style="margin-top:16px;border-top:1px solid #eee;padding-top:12px">
-      <summary style="cursor:pointer;font-weight:bold;font-size:14px;margin-bottom:8px;color:#3070ee">📋 打分表细则（点击展开/折叠）</summary>
-      <div id="schemeParams" style="margin-top:8px"></div>
-    </details>
+  <!-- ===== Pane 2：双宠配对指数测算 ===== -->
+  <div id="matchPanePair" class="hidden">
+    <div class="match-panel">
+      <div style="margin-bottom:14px;font-size:13px;color:#666;line-height:1.7">
+        客观评估两只宠物是否门当户对、后代是否有更大几率出完美宝宝。<br>
+        性别默认按<b>异性</b>处理，若两边都填了同性则会大幅扣分；从档案里选会自动读取品种、性别、特征。
+      </div>
 
-    <div style="margin-top:16px;border-top:1px solid #eee;padding-top:12px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px">
-        <h4 style="margin:0">推荐结果</h4>
-        <div style="display:flex;gap:4px;font-size:12px">
-          <button id="matchSortByScore" class="mf-btn active" style="font-size:12px;padding:4px 10px">按分数排序</button>
-          <button id="matchSortByTime" class="mf-btn" style="font-size:12px;padding:4px 10px">按时间排序</button>
+      <div class="pair-calc-grid">
+        <!-- 宠物 A -->
+        <div class="pair-side">
+          <div class="pair-side-label"><span class="badge">A</span>宠物 A</div>
+          <div class="pair-src-tabs" data-side="A">
+            <button class="pair-src-tab active" data-src="lib">🐾 从档案选</button>
+            <button class="pair-src-tab" data-src="manual">✨ 手动输入</button>
+          </div>
+
+          <div class="pair-img-zone" id="pairImgZoneA" tabindex="0">
+            <div class="hint">点击粘贴图片<br>或点下方按钮选择</div>
+            <img id="pairImgA" style="display:none" alt="">
+          </div>
+          <div style="display:flex;gap:4px;margin-bottom:10px">
+            <input type="file" accept="image/*" id="pairFileA" style="display:none">
+            <button type="button" class="mini-btn" style="flex:1;padding:5px" onclick="document.getElementById('pairFileA').click()">📁 选择图片</button>
+            <button type="button" class="mini-btn" style="flex:0 0 auto;padding:5px 10px" onclick="clearPairImg('A')">清除</button>
+          </div>
+
+          <div id="pairLibBoxA" class="pair-info-box">
+            <div style="text-align:center;font-size:12px;color:#888;margin-bottom:6px">从档案里挑一只宠物</div>
+            <button type="button" class="primary" style="width:100%;padding:8px" onclick="openPairPicker('A')">🐾 打开选宠器</button>
+          </div>
+          <div id="pairSelectedInfoA" class="pair-selected-info hidden"></div>
+
+          <div id="pairManualBoxA" class="pair-info-box hidden">
+            <div class="row"><label>昵称</label><input type="text" id="pairNameA" placeholder="选填"></div>
+            <div class="row"><label>性别</label>
+              <select id="pairGenderA">
+                <option value="">不填（默认异性）</option>
+                <option value="m">公</option>
+                <option value="f">母</option>
+              </select>
+            </div>
+            <div class="row"><label>大类</label><select id="pairCatA" style="flex:1"></select></div>
+            <div class="row"><label>品种</label><select id="pairBreedA" style="flex:1"><option value="">--请先选大类--</option></select></div>
+          </div>
+
+          <div class="pair-info-box">
+            <div class="chk-row" style="margin-bottom:8px">
+              <label><input type="checkbox" id="pairEyeA"> 👁 美瞳</label>
+              <label><input type="checkbox" id="pairHeteroA"> 🌈 异色</label>
+            </div>
+            <div style="font-size:12px;color:#555;margin-bottom:4px">瑕疵（点击勾选）：</div>
+            <div class="pair-chips" id="pairFlawsA"></div>
+            <div class="row" style="margin-top:8px">
+              <label>🎨 颜值</label>
+              <input type="range" id="pairAppA" min="0" max="100" value="50" oninput="onPairAppChange('A', this)">
+              <span class="val" id="pairAppLabelA">品貌端正 50</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 宠物 B -->
+        <div class="pair-side">
+          <div class="pair-side-label"><span class="badge" style="background:#e85496">B</span>宠物 B</div>
+          <div class="pair-src-tabs" data-side="B">
+            <button class="pair-src-tab active" data-src="lib">🐾 从档案选</button>
+            <button class="pair-src-tab" data-src="manual">✨ 手动输入</button>
+          </div>
+
+          <div class="pair-img-zone" id="pairImgZoneB" tabindex="0">
+            <div class="hint">点击粘贴图片<br>或点下方按钮选择</div>
+            <img id="pairImgB" style="display:none" alt="">
+          </div>
+          <div style="display:flex;gap:4px;margin-bottom:10px">
+            <input type="file" accept="image/*" id="pairFileB" style="display:none">
+            <button type="button" class="mini-btn" style="flex:1;padding:5px" onclick="document.getElementById('pairFileB').click()">📁 选择图片</button>
+            <button type="button" class="mini-btn" style="flex:0 0 auto;padding:5px 10px" onclick="clearPairImg('B')">清除</button>
+          </div>
+
+          <div id="pairLibBoxB" class="pair-info-box">
+            <div style="text-align:center;font-size:12px;color:#888;margin-bottom:6px">从档案里挑一只宠物</div>
+            <button type="button" class="primary" style="width:100%;padding:8px" onclick="openPairPicker('B')">🐾 打开选宠器</button>
+          </div>
+          <div id="pairSelectedInfoB" class="pair-selected-info hidden"></div>
+
+          <div id="pairManualBoxB" class="pair-info-box hidden">
+            <div class="row"><label>昵称</label><input type="text" id="pairNameB" placeholder="选填"></div>
+            <div class="row"><label>性别</label>
+              <select id="pairGenderB">
+                <option value="">不填（默认异性）</option>
+                <option value="m">公</option>
+                <option value="f">母</option>
+              </select>
+            </div>
+            <div class="row"><label>大类</label><select id="pairCatB" style="flex:1"></select></div>
+            <div class="row"><label>品种</label><select id="pairBreedB" style="flex:1"><option value="">--请先选大类--</option></select></div>
+          </div>
+
+          <div class="pair-info-box">
+            <div class="chk-row" style="margin-bottom:8px">
+              <label><input type="checkbox" id="pairEyeB"> 👁 美瞳</label>
+              <label><input type="checkbox" id="pairHeteroB"> 🌈 异色</label>
+            </div>
+            <div style="font-size:12px;color:#555;margin-bottom:4px">瑕疵（点击勾选）：</div>
+            <div class="pair-chips" id="pairFlawsB"></div>
+            <div class="row" style="margin-top:8px">
+              <label>🎨 颜值</label>
+              <input type="range" id="pairAppB" min="0" max="100" value="50" oninput="onPairAppChange('B', this)">
+              <span class="val" id="pairAppLabelB">品貌端正 50</span>
+            </div>
+          </div>
         </div>
       </div>
-      <div id="matchResults"></div>
+
+      <div style="text-align:center;margin-top:16px">
+        <button class="primary" id="pairCalcBtn" style="padding:12px 44px;font-size:15px;font-weight:bold;border-radius:24px">🎯 计算配对指数</button>
+      </div>
+
+      <div id="pairResult" class="pair-result hidden"></div>
     </div>
   </div>
 </div>
 
-<!-- 匹配度计算弹窗 -->
-<div class="modal hidden" id="scoreCalcModal"><div class="modal-box" style="max-width:560px">
+<!-- 选宠弹窗 -->
+<div class="modal hidden" id="petPickerModal"><div class="modal-box" style="max-width:560px">
   <div class="modal-header">
-    <h3>匹配度计算</h3>
+    <h3 id="petPickerTitle">选择宠物</h3>
     <div class="modal-header-btns">
-      <button id="closeScoreCalc">关闭</button>
+      <button id="closePetPicker">关闭</button>
     </div>
   </div>
-  <div style="display:flex;gap:8px;margin-bottom:12px">
-    <button id="scoreCalcExisting" class="primary" style="flex:1;padding:8px">🐾 现有宠物</button>
-    <button id="scoreCalcTemp" style="flex:1;padding:8px">✨ 新增临时宠物档案</button>
+  <div class="form-row"><label>账号筛选</label>
+    <select id="ppAcc" style="width:100%"><option value="">全部账号</option></select>
   </div>
-  <div id="scoreCalcBody"></div>
-</div></div>
-
-<!-- 临时宠物表单弹窗 -->
-<div class="modal hidden" id="tempPetModal"><div class="modal-box" style="max-width:520px">
-  <div class="modal-header">
-    <h3>新增临时宠物档案</h3>
-    <div class="modal-header-btns">
-      <button class="primary" id="tempPetCalc">计算匹配度</button>
-      <button id="tempPetCancel">取消</button>
-    </div>
+  <div class="form-row"><label>品种筛选</label>
+    <select id="ppBreed" style="width:100%"><option value="">全部品种</option></select>
   </div>
-  <div class="form-row">
-    <label>宠物图片（选填，可上传或粘贴）</label>
-    <input type="file" accept="image/*" id="tempPetImg">
-    <div class="paste-zone" id="tempPetPasteZone" tabindex="0">📋 点击此处后按 Ctrl+V 粘贴图片</div>
-    <div id="tempPetPreviewWrap" style="margin-top:5px;display:none;align-items:center;gap:6px">
-      <img id="tempPetPreview" style="max-width:100px;max-height:100px;border-radius:6px;border:1px solid #ddd">
-      <button type="button" id="tempPetClearImg" style="padding:3px 6px;font-size:12px">清除</button>
-    </div>
+  <div class="form-row"><label>昵称搜索</label>
+    <input type="text" id="ppKw" style="width:100%" placeholder="输入昵称关键词">
   </div>
-  <div class="form-row"><label>品种（选填）</label>
-    <select id="tempPetBreed" style="width:100%"></select>
-  </div>
-  <div class="form-row"><label>特征（可点击下方快速选择，或手动输入，一行一个）</label>
-    <textarea id="tempPetFeatures" rows="2" style="width:100%"></textarea>
-    <div class="feat-quick-area" id="tempPetFeatQuick"></div>
-  </div>
-  <div class="form-row"><label>标签（选填，一行一个）</label>
-    <textarea id="tempPetTags" rows="2" style="width:100%"></textarea>
-  </div>
-  <div class="form-row"><label>昵称（选填）</label>
-    <input type="text" id="tempPetName" style="width:100%" placeholder="不填则显示为「临时宠物」">
+  <div class="form-row"><label>选择宠物</label>
+    <div class="select-pet-list" id="ppList"></div>
   </div>
 </div></div>
 
@@ -497,7 +793,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 </div></div>
 
 <!-- 分享卡片弹窗 -->
-<div class="modal hidden" id="shareModal"><div class="modal-box" style="max-width:420px;background:linear-gradient(135deg,#fef8fa 0%,#f0f4ff 100%)">
+<div class="modal hidden" id="shareModal"><div class="modal-box" style="max-width:520px;background:linear-gradient(135deg,#fef8fa 0%,#f0f4ff 100%)">
   <div class="modal-header" style="background:transparent;border-bottom:none">
     <h3 style="color:#a06080">🐾 宠物分享卡</h3>
     <div class="modal-header-btns">
@@ -506,11 +802,81 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
     </div>
   </div>
   <div id="shareContent" style="padding:8px"></div>
+  <div style="margin-top:12px;padding:10px 12px;background:#fff;border-radius:10px;border:1px solid #f0e0a0">
+    <div style="font-size:12px;color:#a06a10;margin-bottom:6px;font-weight:500">💌 约亲信息（显示在卡片上，会保存到该宠物）</div>
+    <div style="display:flex;gap:6px">
+      <input type="text" id="shareMeetupInput" placeholder="例如：想找一只红瞳英短配，可等" style="flex:1;font-size:13px">
+      <button class="primary" id="shareMeetupSaveBtn" style="font-size:12px;padding:6px 12px;white-space:nowrap">保存</button>
+      <button id="shareMeetupClearBtn" style="font-size:12px;padding:6px 12px;white-space:nowrap">清除</button>
+    </div>
+  </div>
+  <details class="share-adjust-panel">
+    <summary>🎨 分享卡微调（仅本次预览，不保存）</summary>
+    <div class="group-title">相框</div>
+    <div class="row">
+      <label>相框颜色</label>
+      <select id="adjFrameColor">
+        <option value="#faf8f4">米白</option>
+        <option value="#ffffff">纯白</option>
+        <option value="#f6f1e8">奶咖</option>
+        <option value="#edf3f8">淡蓝</option>
+        <option value="#f7ecf0">淡粉</option>
+        <option value="#eff5ec">淡绿</option>
+        <option value="#1f1f1f">深黑</option>
+      </select>
+    </div>
+    <div class="row">
+      <label>字号缩放</label>
+      <input type="range" id="adjFontScale" min="80" max="140" value="100">
+      <span class="val" id="adjFontScaleVal">100%</span>
+    </div>
+    <div class="row">
+      <label>信息区高度</label>
+      <input type="range" id="adjInfoHeight" min="80" max="320" value="120">
+      <span class="val" id="adjInfoHeightVal">120px</span>
+    </div>
+    <div class="group-title">背面图（左下）</div>
+    <div class="row chk-row">
+      <input type="checkbox" id="adjBackShow" checked>
+      <label style="flex:none">显示背面图</label>
+    </div>
+    <div class="row">
+      <label>尺寸</label>
+      <input type="range" id="adjBackSize" min="15" max="40" value="28">
+      <span class="val" id="adjBackSizeVal">28%</span>
+    </div>
+    <div class="row">
+      <label>垂直位置</label>
+      <input type="range" id="adjBackTop" min="0" max="100" value="50">
+      <span class="val" id="adjBackTopVal">50%</span>
+    </div>
+    <div class="group-title">幼年图（右下）</div>
+    <div class="row chk-row">
+      <input type="checkbox" id="adjBabyShow" checked>
+      <label style="flex:none">显示幼年图</label>
+    </div>
+    <div class="row">
+      <label>尺寸</label>
+      <input type="range" id="adjBabySize" min="15" max="40" value="28">
+      <span class="val" id="adjBabySizeVal">28%</span>
+    </div>
+    <div class="row">
+      <label>垂直位置</label>
+      <input type="range" id="adjBabyTop" min="0" max="100" value="50">
+      <span class="val" id="adjBabyTopVal">50%</span>
+    </div>
+    <div class="group-title">约亲信息位置</div>
+    <div class="row">
+      <label>离顶部</label>
+      <input type="range" id="adjMeetupTop" min="0" max="90" value="22">
+      <span class="val" id="adjMeetupTopVal">22%</span>
+    </div>
+  </details>
   <div style="text-align:center;font-size:11px;color:#aaa;margin-top:8px">点「保存图片」可直接存到本地，也可截图分享 💌</div>
 </div></div>
 
 <!-- CP 趣味分享弹窗 -->
-<div class="modal hidden" id="cpShareModal"><div class="modal-box" style="max-width:420px;background:linear-gradient(135deg,#ffeef5 0%,#f0f4ff 100%)">
+<div class="modal hidden" id="cpShareModal"><div class="modal-box" style="max-width:520px;background:linear-gradient(135deg,#ffeef5 0%,#f0f4ff 100%)">
   <div class="modal-header" style="background:transparent;border-bottom:none">
     <h3 style="color:#a06080">💞 CP 趣味分享</h3>
     <div class="modal-header-btns">
@@ -523,7 +889,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 </div></div>
 
 <!-- 分享设置弹窗 -->
-<div class="modal hidden" id="shareSettingsModal"><div class="modal-box" style="max-width:620px">
+<div class="modal hidden" id="shareSettingsModal"><div class="modal-box" style="max-width:560px">
   <div class="modal-header">
     <h3>分享设置</h3>
     <div class="modal-header-btns">
@@ -531,7 +897,43 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
       <button id="shareSettingsCancel">取消</button>
     </div>
   </div>
-  <div id="shareSettingsBody"></div>
+  <div id="shareSettingsBody">
+    <div class="share-settings-group">
+      <h4>✨ 相框与字号</h4>
+      <div style="font-size:12px;color:#888;margin-bottom:8px">这里设置的是默认值，打开分享卡时仍可临时微调。</div>
+      <div style="margin-bottom:8px">
+        <label style="display:inline-flex;align-items:center;gap:5px;font-size:13px">
+          相框默认颜色：
+          <select id="ssFrameColor" style="padding:4px 8px;font-size:13px">
+            <option value="#faf8f4">米白</option>
+            <option value="#ffffff">纯白</option>
+            <option value="#f6f1e8">奶咖</option>
+            <option value="#edf3f8">淡蓝</option>
+            <option value="#f7ecf0">淡粉</option>
+            <option value="#eff5ec">淡绿</option>
+            <option value="#1f1f1f">深黑</option>
+          </select>
+        </label>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px">
+        <span>默认字号缩放：</span>
+        <input type="range" id="ssFontScale" min="80" max="140" value="100" style="flex:1">
+        <span id="ssFontScaleVal" style="color:#3070ee;font-weight:bold;min-width:46px;text-align:right">100%</span>
+      </div>
+    </div>
+    <div class="share-settings-group">
+      <h4>🖼️ 大图预览（点击宠物图片时显示）</h4>
+      <label><input type="checkbox" id="ssBigName"> 名字</label>
+      <label><input type="checkbox" id="ssBigGender"> 性别</label>
+      <label><input type="checkbox" id="ssBigBreed"> 品种</label>
+      <label><input type="checkbox" id="ssBigAccount"> 账号</label>
+      <label><input type="checkbox" id="ssBigTags"> 标签</label>
+      <label><input type="checkbox" id="ssBigFeatures"> 特征</label>
+      <label><input type="checkbox" id="ssBigNote"> 备注</label>
+      <label><input type="checkbox" id="ssBigRecover"> 预计恢复时间</label>
+      <label><input type="checkbox" id="ssBigRemain"> 剩余时间</label>
+    </div>
+  </div>
 </div></div>
 
 <div class="batch-bar hidden" id="batchBar">
@@ -633,39 +1035,27 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <button id="batchAddCancel">取消</button>
 </div>
 </div>
-<div style="font-size:13px;color:#555;line-height:1.7;margin-bottom:10px">
-  <b>两种模式任选一种，一行一只宠物：</b>
-</div>
-<div class="form-row">
-<label class="chk-label"><input type="radio" name="batchMode" value="simple" checked> 简单模式（一行只填昵称，其他字段用默认值）</label>
-</div>
-<div class="form-row">
-<label class="chk-label"><input type="radio" name="batchMode" value="detail"> 详细模式（固定 5 段，逗号分隔）</label>
-</div>
+<div style="font-size:13px;color:#555;line-height:1.7;margin-bottom:10px"><b>两种模式任选一种，一行一只宠物：</b></div>
+<div class="form-row"><label class="chk-label"><input type="radio" name="batchMode" value="simple" checked> 简单模式（一行只填昵称，其他字段用默认值）</label></div>
+<div class="form-row"><label class="chk-label"><input type="radio" name="batchMode" value="detail"> 详细模式（固定 5 段，逗号分隔）</label></div>
 <div id="batchHintSimple" class="hint-block">
   <span class="title">简单模式示例（一行一个昵称即可）：</span>
-  <code>小白</code><br>
-  <code>小黄</code><br>
-  <code>小灰</code><br>
+  <code>小白</code><br><code>小黄</code><br><code>小灰</code><br>
   <br>默认值：性别公、账号取第一个、品种大类取第一个、时长 0 小时（空闲）。<br>创建完成后可在表格视图里快速修改。
 </div>
 <div id="batchHintDetail" class="hint-block hidden">
   <span class="title">详细模式：固定 5 段，逗号分隔</span>
   <code>昵称, 性别, 账号, 品种大类/品种, 小时数</code>
-  <br>
-  <br><b>多账号用户示例：</b><br>
+  <br><br><b>多账号用户示例：</b><br>
   <code>小白, 母, 账号A, 猫猫/英短金渐层, 144</code><br>
   <code>小黄, 公, 账号A, 猫猫/英短金渐层, 4</code><br>
   <code>小灰, 母, 账号B, 狐狸/沙之狐, 72</code>
-  <br>
-  <br><b>单账号用户示例（账号段直接填那个账号名）：</b><br>
+  <br><br><b>单账号用户示例（账号段直接填那个账号名）：</b><br>
   <code>小白, 母, 我的账号, 猫猫/英短金渐层, 144</code><br>
   <code>小黄, 公, 我的账号, 猫猫/英短金渐层, 4</code>
-  <br>
-  <br><span class="warn-text">⚠️ 5 段都要写，逗号不能省。</span>如果某个字段想留空，<b>逗号也要保留</b>，例如：<br>
+  <br><br><span class="warn-text">⚠️ 5 段都要写，逗号不能省。</span>如果某个字段想留空，<b>逗号也要保留</b>，例如：<br>
   <code>小白, 母, , 猫猫/英短金渐层, 144</code>（账号留空，但保留两个逗号）
-  <br>
-  <br>时长支持 <code>144</code> / <code>144小时</code> / <code>144h</code> 三种写法。
+  <br><br>时长支持 <code>144</code> / <code>144小时</code> / <code>144h</code> 三种写法。
 </div>
 <textarea id="batchAddText" rows="12" placeholder="一行一只宠物..." style="width:100%;font-family:Consolas,Monaco,monospace;font-size:13px;line-height:1.6"></textarea>
 <div style="font-size:12px;color:#888;margin-top:6px">提示：可以先在电脑上用 Excel/记事本整理好，再粘贴进来。</div>
@@ -691,11 +1081,8 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <div id="exportRecentDaysWrap" class="hidden" style="margin-top:8px;display:flex;align-items:center;gap:8px">
   <span style="font-size:13px;color:#555">最近</span>
   <select id="exportRecentDays" style="width:auto">
-    <option value="1">1 天</option>
-    <option value="3" selected>3 天</option>
-    <option value="7">7 天</option>
-    <option value="14">14 天</option>
-    <option value="30">30 天</option>
+    <option value="1">1 天</option><option value="3" selected>3 天</option>
+    <option value="7">7 天</option><option value="14">14 天</option><option value="30">30 天</option>
   </select>
   <span style="font-size:13px;color:#555">内改动过的宠物</span>
 </div>
@@ -708,11 +1095,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 </select>
 </div>
 <div style="font-size:12px;color:#888;background:#f8f9fb;padding:10px;border-radius:6px;margin-top:8px;line-height:1.7">
-  <b>建议：</b><br>
-  · 首次迁移到新设备：选"全部 + 含图片"<br>
-  · 日常增量备份：选"最近改动过的 + 不含图片"<br>
-  · 两台设备间同步：导出最近改动 + 不含图片，然后到另一台设备用"智能合并"导入<br>
-  <br><span style="color:#a06080">iPhone/iPad 用户：导出后请在「文件」App →「下载」文件夹里查找。</span>
+  <b>建议：</b><br>· 首次迁移到新设备：选"全部 + 含图片"<br>· 日常增量备份：选"最近改动过的 + 不含图片"<br>· 两台设备间同步：导出最近改动 + 不含图片，然后到另一台设备用"智能合并"导入<br><br><span style="color:#a06080">iPhone/iPad 用户：导出后请在「文件」App →「下载」文件夹里查找。</span>
 </div>
 </div></div>
 
@@ -734,10 +1117,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 </div>
 <div style="font-size:12px;color:#888;background:#f8f9fb;padding:10px;border-radius:6px;margin-top:8px;line-height:1.7">
   <b>智能合并规则（按内容比较，不看时间）：</b><br>
-  · 备份里 id 不存在：新增<br>
-  · 备份里 id 存在，内容不同：用备份覆盖（备份没图时保留本地图）<br>
-  · 备份里 id 存在，内容完全相同：跳过<br>
-  · 现有但不在备份里的宠物：保留
+  · 备份里 id 不存在：新增<br>· 备份里 id 存在，内容不同：用备份覆盖（备份没图时保留本地图）<br>· 备份里 id 存在，内容完全相同：跳过<br>· 现有但不在备份里的宠物：保留
 </div>
 </div></div>
 
@@ -757,6 +1137,26 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <input type="text" id="petImgUrl" placeholder="🔗 在此粘贴图片链接，或点下方按钮上传">
 <input type="file" accept="image/*" id="uploadImg" style="margin-top:4px">
 <div id="formImgPreviewWrap"><img id="formImgPreview" alt="预览"><button type="button" id="btnClearImg" style="padding:3px 6px;font-size:12px">清除</button></div>
+</div>
+
+<div class="form-row img-input-box" style="background:#f5f9ff;border-color:#a8c8f0">
+<label>🔄 背面图（选填，分享时显示在左下角）</label>
+<input type="file" accept="image/*" id="uploadImgBack">
+<div class="paste-zone" id="backPasteZone" tabindex="0">📋 点击此处后按 Ctrl+V 粘贴图片</div>
+<div class="img-preview-inline" id="backPreviewWrap">
+  <img id="backPreview" alt="背面图预览">
+  <button type="button" id="btnClearImgBack" style="padding:3px 6px;font-size:12px">清除</button>
+</div>
+</div>
+
+<div class="form-row img-input-box" style="background:#fff5f9;border-color:#f0a8c8">
+<label>🐣 幼年图（选填，分享时显示在右下角）</label>
+<input type="file" accept="image/*" id="uploadImgBaby">
+<div class="paste-zone" id="babyPasteZone" tabindex="0">📋 点击此处后按 Ctrl+V 粘贴图片</div>
+<div class="img-preview-inline" id="babyPreviewWrap">
+  <img id="babyPreview" alt="幼年图预览">
+  <button type="button" id="btnClearImgBaby" style="padding:3px 6px;font-size:12px">清除</button>
+</div>
 </div>
 
 <div class="form-row">
@@ -883,12 +1283,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <button class="paw-btn" id="pawBtn" title="更多">🐾</button>
 
 <div class="modal hidden" id="tipModal"><div class="modal-box" style="max-width:400px">
-<div class="modal-header">
-<h3>投喂小咪 🐱</h3>
-<div class="modal-header-btns">
-<button id="closeTipModal">关闭</button>
-</div>
-</div>
+<div class="modal-header"><h3>投喂小咪 🐱</h3><div class="modal-header-btns"><button id="closeTipModal">关闭</button></div></div>
 <div style="text-align:center;color:#a06080;font-size:13px;margin:4px 0 12px">(≧∇≦)ﾉ 谢谢你愿意投喂小咪</div>
 <div class="tip-tabs">
   <button class="tip-tab active" data-tab="wechat">微信</button>
@@ -902,10 +1297,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
   <div class="tip-amt" data-amt="custom" style="grid-column:span 2"><span class="emoji">✨</span>自定义金额</div>
 </div>
 <div class="tip-qr-panel hidden" id="tipQrPanel">
-  <div class="tip-qr-header">
-    <span id="tipQrTitle">扫码投喂</span>
-    <button class="tip-qr-close" id="tipQrClose" title="收起">×</button>
-  </div>
+  <div class="tip-qr-header"><span id="tipQrTitle">扫码投喂</span><button class="tip-qr-close" id="tipQrClose" title="收起">×</button></div>
   <img id="tipQrImg" src="" alt="收款码" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
   <div style="display:none;color:#999;font-size:12px;padding:30px 10px;text-align:center">图片未找到，请把收款码图片放到 HTML 同目录</div>
 </div>
@@ -913,12 +1305,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 </div></div>
 
 <div class="modal hidden" id="feedbackModal"><div class="modal-box" style="max-width:440px">
-<div class="modal-header">
-<h3>反馈建议</h3>
-<div class="modal-header-btns">
-<button id="closeFeedbackModal">关闭</button>
-</div>
-</div>
+<div class="modal-header"><h3>反馈建议</h3><div class="modal-header-btns"><button id="closeFeedbackModal">关闭</button></div></div>
 <div style="font-size:13px;color:#666;margin-top:6px;line-height:1.7">遇到问题或有想法，随时告诉我。你的每一条反馈我都会看。</div>
 <div class="feedback-row">
   <label>📧 邮箱</label>
@@ -935,12 +1322,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 </div></div>
 
 <div class="modal hidden" id="aboutModal"><div class="modal-box" style="max-width:480px">
-<div class="modal-header">
-<h3>关于绒光宠物录</h3>
-<div class="modal-header-btns">
-<button id="closeAboutModal">关闭</button>
-</div>
-</div>
+<div class="modal-header"><h3>关于绒光宠物录</h3><div class="modal-header-btns"><button id="closeAboutModal">关闭</button></div></div>
 <div style="font-size:13px;color:#444;line-height:1.9">
   <p>🐾 绒光宠物录 · 一个用于管理宠物档案和繁育计时的小工具。</p>
   <p>💾 <b>你的数据只保存在本机浏览器里</b>，不会上传到任何服务器。请定期导出备份，换设备时用导入恢复。</p>
@@ -987,10 +1369,12 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 })();
 
 /* ==================== 常量 ==================== */
-const STORAGE_KEY = "petTimerTS_v15";
+const STORAGE_KEY = "petTimerTS_v16";
 const IMG_DB = "petTimerImages", IMG_STORE = "images";
 const DEFAULT_FEATURE_COLOR = "#7eb6ff";
 const CAT_COMMON = "_common";
+const SHARE_WATERMARK_CN = "绒光宠物录";
+const SHARE_WATERMARK_EN = "PET TIMER";
 
 const PAYMENT_QR = {
   wechat: { "default": "./wechat-default.png","1.00": "./wechat-1.png","3.00": "./wechat-3.png","6.66": "./wechat-6.66.png","9.90": "./wechat-9.9.png" },
@@ -1024,6 +1408,8 @@ let breedMap = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
 let featureMap = {};
 let editId = null;
 let pendingImgBlob = null, pendingImgCleared = false;
+let pendingImgBackBlob = null, pendingImgBackCleared = false;
+let pendingImgBabyBlob = null, pendingImgBabyCleared = false;
 let pendingCp1Blob = null, pendingCp1Cleared = false;
 let pendingCp2Blob = null, pendingCp2Cleared = false;
 let editCp1ImgValue = "", editCp2ImgValue = "";
@@ -1052,23 +1438,39 @@ let mainAccount = "";
 /* 速配方案 */
 let matchSchemes = [];
 let currentSchemeId = "";
-let currentMatchPetId = "";
 let schemeDirty = false;
-let tempPetImgBlob = null;
-let matchSortMode = "score"; // "score" | "time"
+let matchSortMode = "score";
 
-/* 临时颜值（仅当次速配会话有效，不保存） */
-let tempAppearance = {};
-function getPetAppearance(petId){
-    if(tempAppearance[petId] !== undefined) return tempAppearance[petId];
-    return 50;
-}
+/* 速配找对象：目标宠物来源模式（lib=我的宠物，manual=亲家的临时宠物） */
+let matchTargetSrcTab = "lib";
+/* 当前选中的目标宠物 id（从库选时） */
+let currentMatchTargetPetId = "";
+/* 临时目标宠物（不保存） */
+let tempTargetPet = null;
 
-/* 分享卡展示设置（大类和特征不显示，cat 已被移除） */
+/* 分享卡：预览时临时状态（不保存） */
+let sharePreviewState = null;
+
+/* 分享设置：全局默认值 */
 let shareSettings = {
-    card: { img: "large", name: true, gender: true, category: false, breed: true, account: true, tags: true, recoverTime: true, remainTime: true, note: false, features: false },
-    bigImg: { name: true, gender: true, category: false, breed: true, account: true, tags: true, features: true, note: true, recoverTime: true, remainTime: true }
+    frameColor: "#faf8f4",
+    fontScale: 100,
+    bigImg: { name:true, gender:true, breed:true, account:true, tags:true, features:true, note:true, recoverTime:true, remainTime:true }
 };
+
+/* 双宠配对指数测算状态 */
+let pairState = {
+    A: { srcTab: "lib", petId: null, imgBlob: null, imgUrl: null,
+         name:"", gender:"", category:"", breed:"",
+         eye:false, hetero:false, flaws:new Set(), appearance:50, pet:null },
+    B: { srcTab: "lib", petId: null, imgBlob: null, imgUrl: null,
+         name:"", gender:"", category:"", breed:"",
+         eye:false, hetero:false, flaws:new Set(), appearance:50, pet:null }
+};
+let pairPickerSide = null;
+
+/* 速配找对象：临时宠物的瑕疵 */
+let tempTargetFlaws = new Set();
 
 const filterState = {
     status: new Set(), gender: new Set(), category: new Set(),
@@ -1082,7 +1484,6 @@ const genId = () => Date.now().toString(36) + Math.random().toString(36).slice(2
 const hmToMs = (h,m) => (h*60+m)*60*1000;
 const msToHMS = ms => { const t = Math.floor(Math.max(0,ms)/1000);
     return Math.floor(t/3600)+"时"+Math.floor((t%3600)/60)+"分"+(t%60)+"秒"; };
-/* 剩余时间到天/时/分，用于分享卡 */
 const msToHM = ms => {
     const t = Math.floor(Math.max(0,ms)/1000);
     const d = Math.floor(t/86400);
@@ -1102,18 +1503,12 @@ const touchPet = (p,ts) => { if(p) p.utime = ts || Date.now(); };
 function appearanceLabel(v){
     v = Number(v) || 0;
     if(v < 15) return "惨不忍睹";
-    if(v < 35) return "泯然众人";
+    if(v < 35) return "相貌平平";
     if(v < 55) return "品貌端正";
     if(v < 70) return "赏心悦目";
     if(v < 85) return "气质不凡";
     if(v < 95) return "惊为天人";
     return "绝代风华";
-}
-function updateAppearanceLabel(){
-    const el = $("petAppearance");
-    if(!el) return;
-    const v = el.value;
-    $("appearanceLabel").textContent = appearanceLabel(v) + "（" + v + "）";
 }
 
 function hexToRgba(hex, alpha){
@@ -1209,6 +1604,15 @@ function getVisibleFeatureNames(){
     filterState.category.forEach(cat => { if(featureMap[cat]) Object.keys(featureMap[cat]).forEach(n => set.add(n)); });
     return Array.from(set);
 }
+/* 获取"通用 + 指定大类"的瑕疵特征列表 */
+function getFlawFeaturesForCategory(cat){
+    const set = new Set();
+    Object.keys(featureMap[CAT_COMMON] || {}).forEach(n => { if(isFlawFeature(n)) set.add(n); });
+    if(cat && featureMap[cat]){
+        Object.keys(featureMap[cat]).forEach(n => { if(isFlawFeature(n)) set.add(n); });
+    }
+    return Array.from(set).sort();
+}
 function countPetsByFeature(name){
     let n = 0;
     petList.forEach(p => { if((p.features||[]).indexOf(name) >= 0) n++; });
@@ -1270,7 +1674,7 @@ function parsePairTime(v){
 
 /* ==================== 导入内容比较 ==================== */
 function petDiffers(a, b){
-    const simple = ['name','gender','account','category','breed','timerMode','totalMs','pausedAt','isRunning','startTs','runStartRemain','locked','note','img','sire','dam','recoveredAt'];
+    const simple = ['name','gender','account','category','breed','timerMode','totalMs','pausedAt','isRunning','startTs','runStartRemain','locked','note','img','imgBack','imgBaby','meetup','sire','dam','recoveredAt'];
     for(let i = 0; i < simple.length; i++){
         if((a[simple[i]] || "") !== (b[simple[i]] || "")) return true;
     }
@@ -1286,6 +1690,7 @@ function petDiffers(a, b){
     if((ac2.pairTime||"") !== (bc2.pairTime||"")) return true;
     return false;
 }
+
 /* ==================== IndexedDB ==================== */
 let imgDBPromise = null;
 function openImgDB(){
@@ -1348,6 +1753,8 @@ function isImgReferencedByOthers(imgId, excludePetId){
     return petList.some(p => {
         if(p.id === excludePetId) return false;
         if(p.img === imgId) return true;
+        if(p.imgBack === imgId) return true;
+        if(p.imgBaby === imgId) return true;
         if(p.cp1 && p.cp1.img === imgId) return true;
         if(p.cp2 && p.cp2.img === imgId) return true;
         return false;
@@ -1373,7 +1780,7 @@ function safeSave(){
     }catch(e){
         console.warn("写入失败", e);
         try{
-            const slim = {pets:petList.map(p => Object.assign({}, p, {img:""})), accounts:accountOptions, breedMap, featureMap, flawScores:flawScores, mainAccount:mainAccount, matchSchemes:matchSchemes, currentSchemeId:currentSchemeId, shareSettings:shareSettings};
+            const slim = {pets:petList.map(p => Object.assign({}, p, {img:"", imgBack:"", imgBaby:""})), accounts:accountOptions, breedMap, featureMap, flawScores:flawScores, mainAccount:mainAccount, matchSchemes:matchSchemes, currentSchemeId:currentSchemeId, shareSettings:shareSettings};
             localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
             alert("⚠️ 本地存储已满！已紧急丢弃图片字段。请立即导出备份。"); return false;
         }catch(e2){ alert("⚠️ 本地存储写不进去！请立即导出备份。"); return false; }
@@ -1405,7 +1812,11 @@ function normalizePet(p){
     }
     return {
         id: p.id || genId(), ctime: created, utime: p.utime || created,
-        img: p.img || "", name: p.name || "未命名", gender: p.gender || "m",
+        img: p.img || "",
+        imgBack: p.imgBack || "",
+        imgBaby: p.imgBaby || "",
+        meetup: p.meetup || "",
+        name: p.name || "未命名", gender: p.gender || "m",
         account: p.account || "", category: p.category || "", breed: p.breed || "",
         tags: Array.isArray(p.tags) ? p.tags : [],
         features: featArr,
@@ -1434,8 +1845,13 @@ function loadFromLocal(){
         matchSchemes = Array.isArray(obj.matchSchemes) ? obj.matchSchemes : [];
         currentSchemeId = obj.currentSchemeId || "";
         if(obj.shareSettings){
-            if(obj.shareSettings.card) Object.assign(shareSettings.card, obj.shareSettings.card);
-            if(obj.shareSettings.bigImg) Object.assign(shareSettings.bigImg, obj.shareSettings.bigImg);
+            const ss = obj.shareSettings;
+            if(ss.frameColor) shareSettings.frameColor = ss.frameColor;
+            if(typeof ss.fontScale === "number") shareSettings.fontScale = ss.fontScale;
+            if(ss.bigImg && typeof ss.bigImg === "object"){
+                const keys = ["name","gender","breed","account","tags","features","note","recoverTime","remainTime"];
+                keys.forEach(k => { if(typeof ss.bigImg[k] === "boolean") shareSettings.bigImg[k] = ss.bigImg[k]; });
+            }
         }
         if(obj.breedMap && typeof obj.breedMap === "object"){
             breedMap = obj.breedMap;
@@ -1487,7 +1903,9 @@ function pauseTimer(p, now){
 function resetTimer(p, now){
     now = now || Date.now();
     p.isRunning = false; p.startTs = null; p.runStartRemain = null;
-    p.pausedAt = p.totalMs || 0; p.locked = false; p.recoveredAt = 0; touchPet(p, now);
+    p.pausedAt = p.totalMs || 0; p.locked = false;
+    p.recoveredAt = (p.totalMs > 0) ? 0 : now;
+    touchPet(p, now);
 }
 function deliverBaby(p, now){
     now = now || Date.now();
@@ -1503,16 +1921,22 @@ function checkAutoLock(now){
     petList.forEach(p => {
         if(p.isRunning && !p.locked && p.timerMode !== "breedFemale"){
             if(getRemain(p, now) <= 0){
+                const base = p.runStartRemain != null ? p.runStartRemain : (p.totalMs || 0);
+                const expectedEnd = (p.startTs || now) + base;
                 p.isRunning = false;
                 p.pausedAt = 0;
                 p.runStartRemain = null;
-                p.recoveredAt = now;
+                p.recoveredAt = expectedEnd;
                 changed = true;
             }
         }
         if(p.timerMode === "breedFemale" && p.isRunning && !p.locked){
             if(getRemain(p, now) <= FEMALE_LOCK_MS){
-                p.pausedAt = FEMALE_LOCK_MS; p.isRunning = false; p.locked = true; p.runStartRemain = null;
+                const base = p.runStartRemain != null ? p.runStartRemain : (p.totalMs || 0);
+                const expectedEnd = (p.startTs || now) + base;
+                p.pausedAt = FEMALE_LOCK_MS;
+                p.isRunning = false; p.locked = true; p.runStartRemain = null;
+                p.recoveredAt = expectedEnd;
                 touchPet(p, now); changed = true;
                 alerts.push("【"+(p.name||"未命名")+"】到达接生节点！");
             }
@@ -1538,9 +1962,7 @@ function calcWaitTime(p, now){
     const h = Math.floor((diff % 86400000) / 3600000);
     const m = Math.floor((diff % 3600000) / 60000);
     return (d > 0 ? d + "天" : "") + h + "时" + m + "分";
-}
-
-/* ==================== 卡片 ==================== */
+}/* ==================== 卡片 ==================== */
 function buildCard(p, now, showIdle){
     const div = document.createElement("div");
     div.className = "pet-card" + (p.locked ? " locked" : "") + (p.inBench ? " bench-starred" : "") + (cardLargeImg ? " large-img" : "");
@@ -1854,7 +2276,7 @@ function getFilteredList(now){
             const hay = [p.name, p.category, p.breed,
                 (p.tags||[]).join(","), (p.features||[]).join(","),
                 (p.cp1 && p.cp1.name || ""), (p.cp2 && p.cp2.name || ""),
-                p.sire || "", p.dam || "", p.note || ""].join(" ").toLowerCase();
+                p.sire || "", p.dam || "", p.note || "", p.meetup || ""].join(" ").toLowerCase();
             return kws.every(kw => hay.indexOf(kw) >= 0);
         });
     }
@@ -2051,6 +2473,7 @@ document.querySelectorAll(".mf-btn").forEach(btn => {
     if(btn.id === "btnClearFilter") return;
     if(btn.id === "matchSortByScore") return;
     if(btn.id === "matchSortByTime") return;
+    if(btn.id === "matchRunBtn") return;
     btn.onclick = e => {
         e.stopPropagation();
         const t = btn.dataset.type;
@@ -2413,128 +2836,203 @@ document.addEventListener("keydown", e => {
     }
 });
 
-/* ==================== 分享卡片 ==================== */
+/* ==================== 单只宠物分享卡 ==================== */
 let currentSharePetId = "";
-let currentCpShareNames = "";
 
 function showShareCard(petId){
     const pet = petList.find(x => x.id === petId);
     if(!pet) return;
     currentSharePetId = petId;
-    renderShareCardHtml(pet, $("shareContent"), shareSettings.card);
+    sharePreviewState = {
+        frameColor: shareSettings.frameColor,
+        fontScale: shareSettings.fontScale,
+        infoHeight: 130,
+        backShow: !!pet.imgBack,
+        backSize: 28,
+        backTop: 50,
+        babyShow: !!pet.imgBaby,
+        babySize: 28,
+        babyTop: 50,
+        meetupTop: 22
+    };
+    $("shareMeetupInput").value = pet.meetup || "";
+    $("adjFrameColor").value = sharePreviewState.frameColor;
+    $("adjFontScale").value = sharePreviewState.fontScale;
+    $("adjFontScaleVal").textContent = sharePreviewState.fontScale + "%";
+    $("adjInfoHeight").value = sharePreviewState.infoHeight;
+    $("adjInfoHeightVal").textContent = sharePreviewState.infoHeight + "px";
+    $("adjBackShow").checked = sharePreviewState.backShow;
+    $("adjBackSize").value = sharePreviewState.backSize;
+    $("adjBackSizeVal").textContent = sharePreviewState.backSize + "%";
+    $("adjBackTop").value = sharePreviewState.backTop;
+    $("adjBackTopVal").textContent = sharePreviewState.backTop + "%";
+    $("adjBabyShow").checked = sharePreviewState.babyShow;
+    $("adjBabySize").value = sharePreviewState.babySize;
+    $("adjBabySizeVal").textContent = sharePreviewState.babySize + "%";
+    $("adjBabyTop").value = sharePreviewState.babyTop;
+    $("adjBabyTopVal").textContent = sharePreviewState.babyTop + "%";
+    $("adjMeetupTop").value = sharePreviewState.meetupTop;
+    $("adjMeetupTopVal").textContent = sharePreviewState.meetupTop + "%";
+
+    renderShareCard(pet, $("shareContent"));
     $("shareModal").classList.remove("hidden");
 }
 
-/* 昵称 / 品种 / 账号 同排显示 */
-function renderShareCardInfoBlock(pet, cfg){
-    const parts = [];
-    if(cfg.name){
-        const gTag = cfg.gender ? (pet.gender === "m" ? " ♂" : " ♀") : "";
-        const genderColor = pet.gender === "m" ? "#348ede" : "#e85496";
-        parts.push('<span style="font-weight:bold;font-size:19px;color:#333;line-height:1.2">'+esc(pet.name||"未命名")+'<span style="color:'+genderColor+'">'+gTag+'</span></span>');
-    }
-    if(cfg.breed){
-        parts.push('<span style="font-size:13px;color:#666">'+esc(pet.breed||"-")+'</span>');
-    }
-    if(cfg.account){
-        parts.push('<span style="font-size:12px;color:#999">'+esc(pet.account||"-")+'</span>');
-    }
-    if(!parts.length) return '';
-    return '<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px">' + parts.join('') + '</div>';
-}
-
-function renderShareCardHtml(pet, wrap, cfg){
-    const now = Date.now();
+/* 分享卡时间显示：待接生按托管处理，只显示剩余时间 */
+function getShareTimeDisplay(pet, now){
     const rem = getRemain(pet, now);
     const recover = getRecoverTime(pet, now);
     const isIdle = !pet.isRunning && !pet.locked && rem <= 0;
 
-    const imgUrl = pet.img ? (isIndexedImg(pet.img) ? (getImageUrlSync(pet.img) || "") : pet.img) : "";
-    const hasInfo = cfg.name || cfg.gender || cfg.breed || cfg.account;
-
-    let html = '<div style="width:375px;max-width:100%;box-sizing:border-box;background:#fff;border-radius:14px;padding:14px;box-shadow:0 4px 12px rgba(0,0,0,.06);margin:0 auto">';
-
-    if(cfg.img === "large"){
-        if(imgUrl){
-            html += '<img src="'+imgUrl+'" style="display:block;width:100%;height:auto;border-radius:12px;border:2px solid #f5e8ee;margin-bottom:10px">';
-        } else {
-            html += '<div style="width:100%;height:200px;border-radius:12px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;color:#ccc;margin-bottom:10px">无图</div>';
-        }
-        if(hasInfo){
-            html += renderShareCardInfoBlock(pet, cfg);
-        }
-    } else if(cfg.img === "small"){
-        html += '<div style="display:flex;gap:12px;margin-bottom:10px;align-items:flex-start">';
-        html += imgUrl
-            ? '<img src="'+imgUrl+'" style="width:100px;height:100px;object-fit:cover;border-radius:10px;border:2px solid #f5e8ee;flex-shrink:0">'
-            : '<div style="width:100px;height:100px;border-radius:10px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;color:#ccc;flex-shrink:0">无图</div>';
-        if(hasInfo){
-            html += '<div style="flex:1;min-width:0">' + renderShareCardInfoBlock(pet, cfg) + '</div>';
-        }
-        html += '</div>';
-    } else {
-        if(hasInfo){
-            html += renderShareCardInfoBlock(pet, cfg);
-        }
+    if(isIdle){
+        return { cls: "idle", lbl: "🟢 状态", big: "已空闲", small: "", smallShow: false };
     }
-
-    if(cfg.recoverTime && recover){
-        html += '<div style="background:linear-gradient(135deg,#e8f4ff 0%,#f0e8ff 100%);border-radius:10px;padding:10px;margin:8px 0;text-align:center">' +
-            '<div style="font-size:12px;color:#888;margin-bottom:4px">⏰ 预计恢复时间</div>' +
-            '<div style="font-size:20px;font-weight:bold;color:#3070ee;letter-spacing:0.5px">'+fmtDT(recover)+'</div>' +
-        '</div>';
+    if(pet.isRunning && !pet.locked){
+        return { cls: "rec", lbl: "⏰ 预计恢复", big: recover ? fmtDT(recover) : "-", small: "剩余 " + msToHM(rem), smallShow: true };
     }
+    /* 托管中 / 待接生 */
+    return { cls: "rem", lbl: "⏱️ 剩余时间", big: msToHM(rem), small: "", smallShow: false };
+}
 
-    if(cfg.remainTime){
-        let timeLine = "";
-        if(isIdle){
-            const idleMs = pet.recoveredAt ? (now - pet.recoveredAt) : 0;
-            timeLine = '<div style="color:#20b060;font-size:15px;font-weight:bold;margin:6px 0;text-align:center">🟢 已空闲 ' + (idleMs ? msToHM(idleMs) : "未知时长") + '</div>';
-        } else if(recover){
-            timeLine = '<div style="color:#e85496;font-size:15px;font-weight:bold;margin:6px 0;text-align:center">⏱️ 剩余 ' + msToHM(rem) + '</div>';
-        } else if(pet.locked){
-            timeLine = '<div style="color:#c82424;font-size:15px;font-weight:bold;margin:6px 0;text-align:center">🔒 待接生</div>';
-        } else {
-            timeLine = '<div style="color:#888;font-size:15px;font-weight:bold;margin:6px 0;text-align:center">⏸️ 托管中 · 剩余 ' + msToHM(rem) + '</div>';
-        }
-        html += timeLine;
+function renderShareCard(pet, wrap){
+    const now = Date.now();
+    const st = sharePreviewState || {
+        frameColor: shareSettings.frameColor,
+        fontScale: shareSettings.fontScale,
+        infoHeight: 130,
+        backShow: !!pet.imgBack, backSize: 28, backTop: 50,
+        babyShow: !!pet.imgBaby, babySize: 28, babyTop: 50,
+        meetupTop: 22
+    };
+
+    const isDark = st.frameColor === "#1f1f1f";
+    const posterCls = "share-poster" + (isDark ? " dark-frame" : "");
+
+    const gText = pet.gender === "m" ? "公" : "母";
+    const gCls = pet.gender === "m" ? "m" : "f";
+
+    const timeDisp = getShareTimeDisplay(pet, now);
+    const meetupText = (pet.meetup || "").trim();
+
+    let html = '';
+    html += '<div class="' + posterCls + '" style="--frame-color:'+esc(st.frameColor)+'">';
+    html += '  <div class="img-wrap">';
+    html += '    <div class="img-zone' + (pet.img ? '' : ' empty') + '">';
+    if(pet.img){
+        html += '      <img class="main" data-imgid="'+esc(pet.img)+'" alt="">';
     }
+    html += '    </div>';
 
-    /* 特征在标签前 */
-    if(cfg.features && (pet.features||[]).length){
-        html += '<div style="margin-top:8px"><div style="font-size:11px;color:#999;margin-bottom:4px">特征</div>' +
-            (pet.features||[]).map(f => featureChip(f)).join("") +
-        '</div>';
+    if(pet.imgBack){
+        html += '    <img class="sub-img back" data-imgid="'+esc(pet.imgBack)+'" style="width:'+st.backSize+'%;top:'+st.backTop+'%;display:'+(st.backShow?'block':'none')+'" alt="">';
     }
-
-    if(cfg.tags && (pet.tags||[]).length){
-        html += '<div style="margin-top:8px"><div style="font-size:11px;color:#999;margin-bottom:4px">标签</div>' +
-            (pet.tags||[]).map(t => '<span style="background:#f0e8f5;color:#9b59b6;padding:2px 10px;border-radius:10px;font-size:12px;margin-right:4px;display:inline-block;margin-bottom:4px">'+esc(t)+'</span>').join("") +
-        '</div>';
+    if(pet.imgBaby){
+        html += '    <img class="sub-img baby" data-imgid="'+esc(pet.imgBaby)+'" style="width:'+st.babySize+'%;top:'+st.babyTop+'%;display:'+(st.babyShow?'block':'none')+'" alt="">';
     }
-
-    if(cfg.note && pet.note){
-        html += '<div style="margin-top:8px;font-size:12px;color:#666;background:#f8f9fb;padding:8px;border-radius:6px">备注：'+esc(pet.note)+'</div>';
+    if(meetupText){
+        html += '    <div class="meetup on" style="top:'+st.meetupTop+'%"><span class="t">💌 约亲：</span>'+esc(meetupText)+'</div>';
     }
-
-    html += '<div style="text-align:center;font-size:10px;color:#ccc;margin-top:12px;border-top:1px dashed #eee;padding-top:6px">由「绒光宠物录」生成 · 仅供约亲分享</div>';
+    html += '    <div class="info-zone" style="height:'+st.infoHeight+'px;--fs:'+(14*st.fontScale/100)+'px">';
+    html += '      <div class="name-row">';
+    html += '        <span class="pet-name">'+esc(pet.name||"未命名")+'</span>';
+    html += '        <span class="gender '+gCls+'">'+gText+'</span>';
+    if(pet.breed) html += '        <span class="breed">'+esc(pet.breed)+'</span>';
+    if(pet.account) html += '        <span class="account">账号：'+esc(pet.account)+'</span>';
+    html += '      </div>';
+    html += '      <div class="time-main '+timeDisp.cls+'">';
+    html += '        <span class="lbl">'+timeDisp.lbl+'</span>';
+    html += '        <div class="big">'+timeDisp.big+'</div>';
+    if(timeDisp.smallShow){
+        html += '        <div class="small">'+timeDisp.small+'</div>';
+    }
+    html += '      </div>';
+    html += '    </div>';
+    html += '  </div>';
+    html += '  <div class="poster-mark">';
+    html += '    <span class="cn">'+esc(SHARE_WATERMARK_CN)+'</span>';
+    html += '    <span class="en">'+esc(SHARE_WATERMARK_EN)+'</span>';
+    html += '  </div>';
     html += '</div>';
 
     wrap.innerHTML = html;
+    fillImgElements(wrap);
 }
 
-function showCpShareCard(petA, petB){
-    const scheme = getCurrentScheme();
-    const m = calculateMatchScore(petA, petB, scheme);
-    const dispScore = calcDisplayScore(petA, petB, m.score);
-    const verdict = getCpVerdict(dispScore, petA, petB);
-    currentCpShareNames = (petA.name || "宠物A") + "x" + (petB.name || "宠物B");
+$("shareMeetupSaveBtn").onclick = () => {
+    const pet = petList.find(x => x.id === currentSharePetId);
+    if(!pet) return;
+    const v = $("shareMeetupInput").value.trim();
+    takeSnapshot("编辑约亲信息「" + (pet.name||"未命名") + "」");
+    pet.meetup = v;
+    touchPet(pet);
+    saveLocal();
+    renderShareCard(pet, $("shareContent"));
+};
+$("shareMeetupClearBtn").onclick = () => {
+    const pet = petList.find(x => x.id === currentSharePetId);
+    if(!pet) return;
+    if(!pet.meetup){ $("shareMeetupInput").value = ""; return; }
+    if(!confirm("确定清除约亲信息？")) return;
+    takeSnapshot("清除约亲信息「" + (pet.name||"未命名") + "」");
+    pet.meetup = "";
+    touchPet(pet);
+    saveLocal();
+    $("shareMeetupInput").value = "";
+    renderShareCard(pet, $("shareContent"));
+};
 
-    const imgA = petA.img ? (isIndexedImg(petA.img) ? (getImageUrlSync(petA.img) || "") : petA.img) : "";
-    const imgB = petB.img ? (isIndexedImg(petB.img) ? (getImageUrlSync(petB.img) || "") : petB.img) : "";
+function reRenderShare(){
+    const pet = petList.find(x => x.id === currentSharePetId);
+    if(pet) renderShareCard(pet, $("shareContent"));
+}
+$("adjFrameColor").onchange = e => { sharePreviewState.frameColor = e.target.value; reRenderShare(); };
+$("adjFontScale").oninput = e => {
+    sharePreviewState.fontScale = +e.target.value;
+    $("adjFontScaleVal").textContent = sharePreviewState.fontScale + "%";
+    reRenderShare();
+};
+$("adjInfoHeight").oninput = e => {
+    sharePreviewState.infoHeight = +e.target.value;
+    $("adjInfoHeightVal").textContent = sharePreviewState.infoHeight + "px";
+    reRenderShare();
+};
+$("adjBackShow").onchange = e => { sharePreviewState.backShow = e.target.checked; reRenderShare(); };
+$("adjBackSize").oninput = e => {
+    sharePreviewState.backSize = +e.target.value;
+    $("adjBackSizeVal").textContent = sharePreviewState.backSize + "%";
+    reRenderShare();
+};
+$("adjBackTop").oninput = e => {
+    sharePreviewState.backTop = +e.target.value;
+    $("adjBackTopVal").textContent = sharePreviewState.backTop + "%";
+    reRenderShare();
+};
+$("adjBabyShow").onchange = e => { sharePreviewState.babyShow = e.target.checked; reRenderShare(); };
+$("adjBabySize").oninput = e => {
+    sharePreviewState.babySize = +e.target.value;
+    $("adjBabySizeVal").textContent = sharePreviewState.babySize + "%";
+    reRenderShare();
+};
+$("adjBabyTop").oninput = e => {
+    sharePreviewState.babyTop = +e.target.value;
+    $("adjBabyTopVal").textContent = sharePreviewState.babyTop + "%";
+    reRenderShare();
+};
+$("adjMeetupTop").oninput = e => {
+    sharePreviewState.meetupTop = +e.target.value;
+    $("adjMeetupTopVal").textContent = sharePreviewState.meetupTop + "%";
+    reRenderShare();
+};
+
+/* ==================== 双宠配对分享卡 ==================== */
+let currentPairShareNames = "";
+
+function showPairShareCard(data){
+    const A = data.A, B = data.B;
+    const verdict = data.verdict;
+    currentPairShareNames = (A.name || "宠物A") + "x" + (B.name || "宠物B");
 
     let html = '';
-
     html += '<div class="cp-verdict-box">' +
         '<div class="cp-verdict-emoji">'+verdict.emoji+'</div>' +
         '<div class="cp-verdict-text" style="color:'+verdict.color+'">'+verdict.text+'</div>' +
@@ -2543,32 +3041,34 @@ function showCpShareCard(petA, petB){
 
     html += '<div class="cp-vs-row">' +
         '<div class="cp-vs-pet">' +
-            (imgA ? '<img src="'+imgA+'">' : '<div class="ph">无图</div>') +
-            '<div class="nm">'+esc(petA.name||"未命名")+'</div>' +
-            '<div style="font-size:11px;color:#888">'+esc(petA.breed||"-")+'</div>' +
+            (A.imgUrl ? '<img src="'+A.imgUrl+'">' : '<div class="ph">无图</div>') +
+            '<div class="nm">'+esc(A.name||"宠物A")+'</div>' +
+            '<div style="font-size:11px;color:#888">'+esc(A.breed||"-")+'</div>' +
         '</div>' +
         '<div class="cp-vs-heart">💞</div>' +
         '<div class="cp-vs-pet">' +
-            (imgB ? '<img src="'+imgB+'">' : '<div class="ph">无图</div>') +
-            '<div class="nm">'+esc(petB.name||"未命名")+'</div>' +
-            '<div style="font-size:11px;color:#888">'+esc(petB.breed||"-")+'</div>' +
+            (B.imgUrl ? '<img src="'+B.imgUrl+'">' : '<div class="ph">无图</div>') +
+            '<div class="nm">'+esc(B.name||"宠物B")+'</div>' +
+            '<div style="font-size:11px;color:#888">'+esc(B.breed||"-")+'</div>' +
         '</div>' +
     '</div>';
 
-    html += '<div class="cp-score-big" style="color:'+verdict.color+'">' +
-        dispScore + '<span class="unit">分</span>' +
-    '</div>';
-    html += '<div style="text-align:center;font-size:12px;color:#aaa;margin-bottom:8px">匹配度评分</div>';
+    if(data.isSameSex){
+        html += '<div style="text-align:center;font-size:15px;font-weight:bold;color:#c82424;margin:8px 0">🚫 同性无法繁育</div>';
+    } else {
+        html += '<div class="cp-score-big" style="color:'+verdict.color+'">' + data.score + '<span class="unit">分</span></div>';
+        html += '<div style="text-align:center;font-size:12px;color:#aaa;margin-bottom:8px">配对指数</div>';
+    }
 
-    if(m.plusItems.length || m.minusItems.length){
+    if(data.plusItems.length || data.minusItems.length){
         html += '<div style="background:#fafbfd;border-radius:10px;padding:10px;font-size:12px;margin-top:8px">';
-        if(m.plusItems.length){
+        if(data.plusItems.length){
             html += '<div style="color:#20b060;font-weight:bold;margin-bottom:4px">✅ 优势</div>';
-            m.plusItems.slice(0, 5).forEach(x => { html += '<div style="color:#20b060;font-size:11px">· '+esc(x.label)+' +'+x.weight+'</div>'; });
+            data.plusItems.slice(0, 6).forEach(x => { html += '<div style="color:#20b060;font-size:11px">· '+esc(x.label)+'</div>'; });
         }
-        if(m.minusItems.length){
+        if(data.minusItems.length){
             html += '<div style="color:#c82424;font-weight:bold;margin:6px 0 4px">❌ 顾虑</div>';
-            m.minusItems.slice(0, 5).forEach(x => { html += '<div style="color:#c82424;font-size:11px">· '+esc(x.label)+' -'+x.weight+'</div>'; });
+            data.minusItems.slice(0, 6).forEach(x => { html += '<div style="color:#c82424;font-size:11px">· '+esc(x.label)+'</div>'; });
         }
         html += '</div>';
     }
@@ -2584,7 +3084,7 @@ $("cpShareModal").addEventListener("click", e => { if(e.target === $("cpShareMod
 $("shareCloseBtn").onclick = () => $("shareModal").classList.add("hidden");
 $("shareModal").addEventListener("click", e => { if(e.target === $("shareModal")) $("shareModal").classList.add("hidden"); });
 
-/* ==================== 分享卡「保存图片」 ==================== */
+/* ==================== 保存图片 ==================== */
 let h2cLoadingPromise = null;
 function loadHtml2CanvasLib(){
     if(typeof window.html2canvas === "function") return Promise.resolve();
@@ -2616,7 +3116,6 @@ function waitForImagesIn(root){
     })));
 }
 
-/* 截图前把 <img> 临时换成同尺寸的「背景图 div」，避免 object-fit 不生效导致拉伸 */
 function swapImagesForCapture(root){
     const swapped = [];
     Array.prototype.slice.call(root.querySelectorAll("img")).forEach(function(img){
@@ -2643,7 +3142,8 @@ function swapImagesForCapture(root){
             const fit = cs.objectFit;
             div.style.backgroundSize = (fit === "cover") ? "cover"
                                      : (fit === "contain" ? "contain" : "100% 100%");
-            div.style.backgroundPosition = "center center";
+            const pos = cs.objectPosition || "center center";
+            div.style.backgroundPosition = pos;
             div.style.backgroundRepeat = "no-repeat";
             div.style.backgroundClip = "padding-box";
             div.style.backgroundColor = "transparent";
@@ -2716,7 +3216,7 @@ async function saveShareCardAsImage(contentEl, filename){
         let canvas;
         try{
             canvas = await window.html2canvas(target, {
-                scale: 3,               // 3 倍渲染：布局与屏幕一致，细节清晰
+                scale: 3,
                 backgroundColor: "#ffffff",
                 useCORS: true,
                 allowTaint: false,
@@ -2760,85 +3260,38 @@ $("shareSaveBtn").onclick = () => {
 };
 
 $("cpShareSaveBtn").onclick = () => {
-    const nm = safeFileName(currentCpShareNames || "CP");
-    saveShareCardAsImage($("cpShareContent"), nm + "-CP测评-" + shareFileStamp() + ".png");
+    const nm = safeFileName(currentPairShareNames || "CP");
+    saveShareCardAsImage($("cpShareContent"), nm + "-配对指数-" + shareFileStamp() + ".png");
 };
 
 /* ==================== 分享设置 ==================== */
 function openShareSettings(){
-    const body = $("shareSettingsBody");
-    const s = shareSettings;
-    body.innerHTML = '';
+    $("ssFrameColor").value = shareSettings.frameColor || "#faf8f4";
+    $("ssFontScale").value = shareSettings.fontScale || 100;
+    $("ssFontScaleVal").textContent = (shareSettings.fontScale || 100) + "%";
 
-    const g1 = document.createElement("div");
-    g1.className = "share-settings-group";
-    g1.innerHTML = '<h4>📇 宠物卡片分享（点卡片右上角分享图标）</h4>';
-    g1.innerHTML += '<div style="margin-bottom:6px"><label>图片：<select id="ssCardImg"><option value="large">大图（完整大图）</option><option value="small">小图（卡片视图头像）</option><option value="none">不显示</option></select></label></div>';
-    g1.innerHTML +=
-        '<label><input type="checkbox" id="ssCardName"> 名字</label>' +
-        '<label><input type="checkbox" id="ssCardGender"> 性别</label>' +
-        '<label><input type="checkbox" id="ssCardBreed"> 品种</label>' +
-        '<label><input type="checkbox" id="ssCardAccount"> 账号</label>' +
-        '<label><input type="checkbox" id="ssCardTags"> 标签</label>' +
-        '<label><input type="checkbox" id="ssCardFeatures"> 特征</label>' +
-        '<label><input type="checkbox" id="ssCardNote"> 备注</label>' +
-        '<label><input type="checkbox" id="ssCardRecover"> 预计恢复时间</label>' +
-        '<label><input type="checkbox" id="ssCardRemain"> 剩余时间</label>';
-    body.appendChild(g1);
-
-    const g2 = document.createElement("div");
-    g2.className = "share-settings-group";
-    g2.innerHTML = '<h4>🖼️ 大图预览（点击宠物图片时显示）</h4>';
-    g2.innerHTML +=
-        '<label><input type="checkbox" id="ssBigName"> 名字</label>' +
-        '<label><input type="checkbox" id="ssBigGender"> 性别</label>' +
-        '<label><input type="checkbox" id="ssBigBreed"> 品种</label>' +
-        '<label><input type="checkbox" id="ssBigAccount"> 账号</label>' +
-        '<label><input type="checkbox" id="ssBigTags"> 标签</label>' +
-        '<label><input type="checkbox" id="ssBigFeatures"> 特征</label>' +
-        '<label><input type="checkbox" id="ssBigNote"> 备注</label>' +
-        '<label><input type="checkbox" id="ssBigRecover"> 预计恢复时间</label>' +
-        '<label><input type="checkbox" id="ssBigRemain"> 剩余时间</label>';
-    body.appendChild(g2);
-
-    $("ssCardImg").value = s.card.img || "large";
-    $("ssCardName").checked = !!s.card.name;
-    $("ssCardGender").checked = !!s.card.gender;
-    $("ssCardBreed").checked = !!s.card.breed;
-    $("ssCardAccount").checked = !!s.card.account;
-    $("ssCardTags").checked = !!s.card.tags;
-    $("ssCardFeatures").checked = !!s.card.features;
-    $("ssCardNote").checked = !!s.card.note;
-    $("ssCardRecover").checked = !!s.card.recoverTime;
-    $("ssCardRemain").checked = !!s.card.remainTime;
-    $("ssBigName").checked = !!s.bigImg.name;
-    $("ssBigGender").checked = !!s.bigImg.gender;
-    $("ssBigBreed").checked = !!s.bigImg.breed;
-    $("ssBigAccount").checked = !!s.bigImg.account;
-    $("ssBigTags").checked = !!s.bigImg.tags;
-    $("ssBigFeatures").checked = !!s.bigImg.features;
-    $("ssBigNote").checked = !!s.bigImg.note;
-    $("ssBigRecover").checked = !!s.bigImg.recoverTime;
-    $("ssBigRemain").checked = !!s.bigImg.remainTime;
+    const b = shareSettings.bigImg;
+    $("ssBigName").checked = !!b.name;
+    $("ssBigGender").checked = !!b.gender;
+    $("ssBigBreed").checked = !!b.breed;
+    $("ssBigAccount").checked = !!b.account;
+    $("ssBigTags").checked = !!b.tags;
+    $("ssBigFeatures").checked = !!b.features;
+    $("ssBigNote").checked = !!b.note;
+    $("ssBigRecover").checked = !!b.recoverTime;
+    $("ssBigRemain").checked = !!b.remainTime;
 
     $("shareSettingsModal").classList.remove("hidden");
 }
+$("ssFontScale").oninput = function(){
+    $("ssFontScaleVal").textContent = this.value + "%";
+};
 $("shareSettingsSave").onclick = () => {
-    shareSettings.card.img = $("ssCardImg").value;
-    shareSettings.card.name = $("ssCardName").checked;
-    shareSettings.card.gender = $("ssCardGender").checked;
-    shareSettings.card.category = false;
-    shareSettings.card.breed = $("ssCardBreed").checked;
-    shareSettings.card.account = $("ssCardAccount").checked;
-    shareSettings.card.tags = $("ssCardTags").checked;
-    shareSettings.card.features = $("ssCardFeatures").checked;
-    shareSettings.card.note = $("ssCardNote").checked;
-    shareSettings.card.recoverTime = $("ssCardRecover").checked;
-    shareSettings.card.remainTime = $("ssCardRemain").checked;
+    shareSettings.frameColor = $("ssFrameColor").value;
+    shareSettings.fontScale = Number($("ssFontScale").value) || 100;
 
     shareSettings.bigImg.name = $("ssBigName").checked;
     shareSettings.bigImg.gender = $("ssBigGender").checked;
-    shareSettings.bigImg.category = false;
     shareSettings.bigImg.breed = $("ssBigBreed").checked;
     shareSettings.bigImg.account = $("ssBigAccount").checked;
     shareSettings.bigImg.tags = $("ssBigTags").checked;
@@ -2853,12 +3306,11 @@ $("shareSettingsSave").onclick = () => {
 };
 $("shareSettingsCancel").onclick = () => $("shareSettingsModal").classList.add("hidden");
 $("shareSettingsModal").addEventListener("click", e => { if(e.target === $("shareSettingsModal")) $("shareSettingsModal").classList.add("hidden"); });
-
 function deletePet(id){
     const p = petList.find(x => x.id === id);
     if(!p) return;
     takeSnapshot("删除宠物「" + (p.name||"未命名") + "」");
-    const imgsToCheck = [p.img, p.cp1 && p.cp1.img, p.cp2 && p.cp2.img].filter(Boolean);
+    const imgsToCheck = [p.img, p.imgBack, p.imgBaby, p.cp1 && p.cp1.img, p.cp2 && p.cp2.img].filter(Boolean);
     petList = petList.filter(x => x.id !== id);
     selectedIds.delete(id);
     benchSelectedIds.delete(id);
@@ -2923,6 +3375,8 @@ $("batchDelete").onclick = () => {
         const p = petList.find(x => x.id === id);
         if(p){
             if(p.img) imgsToCheck.push(p.img);
+            if(p.imgBack) imgsToCheck.push(p.imgBack);
+            if(p.imgBaby) imgsToCheck.push(p.imgBaby);
             if(p.cp1 && p.cp1.img) imgsToCheck.push(p.cp1.img);
             if(p.cp2 && p.cp2.img) imgsToCheck.push(p.cp2.img);
         }
@@ -2973,7 +3427,8 @@ document.querySelectorAll("[data-bench]").forEach(btn => {
             if(!p) return;
             if(mode === "4h"){ p.totalMs = hmToMs(4, 0); p.timerMode = "normal"; }
             else if(mode === "144h-normal"){ p.totalMs = hmToMs(144, 0); p.timerMode = "normal"; }
-            else if(mode === "144h-female"){ p.totalMs = hmToMs(144, 0); p.timerMode = "breedFemale"; }
+            else if(mode === "144h-female"){ p.totalMs = hmToMs(144, 0); p.timerMode = "breeder"; }
+            if(mode === "144h-female") p.timerMode = "breedFemale";
             p.pausedAt = p.totalMs;
             p.isRunning = false;
             p.startTs = null;
@@ -3561,6 +4016,55 @@ function updateCpPreview(prefix){
     } else { img.src = ""; wrap.classList.remove("show"); updatePasteZoneState(prefix + "PasteZone", false); }
 }
 
+function updateBackPreview(){
+    const wrap = $("backPreviewWrap");
+    const img = $("backPreview");
+    if(pendingImgBackBlob){
+        img.src = URL.createObjectURL(pendingImgBackBlob);
+        wrap.classList.add("show");
+        updatePasteZoneState("backPasteZone", true);
+        return;
+    }
+    if(pendingImgBackCleared){
+        img.src = ""; wrap.classList.remove("show"); updatePasteZoneState("backPasteZone", false); return;
+    }
+    const pet = editId ? petList.find(x => x.id === editId) : null;
+    const v = pet ? pet.imgBack : "";
+    if(v){
+        if(isIndexedImg(v)){
+            const c = getImageUrlSync(v);
+            if(c){ img.src = c; wrap.classList.add("show"); updatePasteZoneState("backPasteZone", true); }
+            else getImageUrl(v).then(u => { if(u && editId !== null){ img.src = u; wrap.classList.add("show"); updatePasteZoneState("backPasteZone", true); } });
+        } else {
+            img.src = v; wrap.classList.add("show"); updatePasteZoneState("backPasteZone", true);
+        }
+    } else { img.src = ""; wrap.classList.remove("show"); updatePasteZoneState("backPasteZone", false); }
+}
+function updateBabyPreview(){
+    const wrap = $("babyPreviewWrap");
+    const img = $("babyPreview");
+    if(pendingImgBabyBlob){
+        img.src = URL.createObjectURL(pendingImgBabyBlob);
+        wrap.classList.add("show");
+        updatePasteZoneState("babyPasteZone", true);
+        return;
+    }
+    if(pendingImgBabyCleared){
+        img.src = ""; wrap.classList.remove("show"); updatePasteZoneState("babyPasteZone", false); return;
+    }
+    const pet = editId ? petList.find(x => x.id === editId) : null;
+    const v = pet ? pet.imgBaby : "";
+    if(v){
+        if(isIndexedImg(v)){
+            const c = getImageUrlSync(v);
+            if(c){ img.src = c; wrap.classList.add("show"); updatePasteZoneState("babyPasteZone", true); }
+            else getImageUrl(v).then(u => { if(u && editId !== null){ img.src = u; wrap.classList.add("show"); updatePasteZoneState("babyPasteZone", true); } });
+        } else {
+            img.src = v; wrap.classList.add("show"); updatePasteZoneState("babyPasteZone", true);
+        }
+    } else { img.src = ""; wrap.classList.remove("show"); updatePasteZoneState("babyPasteZone", false); }
+}
+
 function setTimeHint(p){
     const h = $("timeStatusHint");
     if(!p){ h.textContent = "新增档案：填入总时长，保存后即为初始剩余时间。"; return; }
@@ -3583,6 +4087,8 @@ $("btnCancel").onclick = closeEdit;
 function openEdit(pid){
     editId = pid;
     pendingImgBlob = null; pendingImgCleared = false;
+    pendingImgBackBlob = null; pendingImgBackCleared = false;
+    pendingImgBabyBlob = null; pendingImgBabyCleared = false;
     pendingCp1Blob = null; pendingCp1Cleared = false;
     pendingCp2Blob = null; pendingCp2Cleared = false;
     editCp1ImgValue = ""; editCp2ImgValue = "";
@@ -3606,6 +4112,10 @@ function openEdit(pid){
     showPreview("cp2PreviewWrap","cp2Preview", "");
     updatePasteZoneState("cp1PasteZone", false);
     updatePasteZoneState("cp2PasteZone", false);
+    updatePasteZoneState("backPasteZone", false);
+    updatePasteZoneState("babyPasteZone", false);
+    updateBackPreview();
+    updateBabyPreview();
     renderAccountPicker(); renderCategoryPicker(); renderBreedSel("", "");
     renderFeatureQuickPick();
     setTimeHint(null);
@@ -3649,6 +4159,8 @@ function openEdit(pid){
         }
         updateCpPreview("cp1");
         updateCpPreview("cp2");
+        updateBackPreview();
+        updateBabyPreview();
     }
 }
 function updatePasteZoneState(zoneId, hasImg){
@@ -3661,6 +4173,8 @@ function closeEdit(){
     $("editModal").classList.add("hidden");
     editId = null;
     pendingImgBlob = null; pendingImgCleared = false;
+    pendingImgBackBlob = null; pendingImgBackCleared = false;
+    pendingImgBabyBlob = null; pendingImgBabyCleared = false;
     pendingCp1Blob = null; pendingCp1Cleared = false;
     pendingCp2Blob = null; pendingCp2Cleared = false;
     editCp1ImgValue = ""; editCp2ImgValue = "";
@@ -3671,6 +4185,8 @@ function closeEdit(){
 $("formImgPreview").addEventListener("click", function(){ if(this.src) openBigPreview(this.src); });
 $("cp1Preview").addEventListener("click", function(){ if(this.src) openBigPreview(this.src); });
 $("cp2Preview").addEventListener("click", function(){ if(this.src) openBigPreview(this.src); });
+$("backPreview").addEventListener("click", function(){ if(this.src) openBigPreview(this.src); });
+$("babyPreview").addEventListener("click", function(){ if(this.src) openBigPreview(this.src); });
 
 ["tHour","tMinute"].forEach(id => {
     $(id).addEventListener("input", () => {
@@ -3706,6 +4222,50 @@ $("petImgUrl").addEventListener("input", function(){
     const v = this.value.trim();
     if(v){ if(pendingImgBlob) pendingImgBlob = null; pendingImgCleared = false; showPreview("formImgPreviewWrap","formImgPreview", v); }
 });
+
+$("uploadImgBack").onchange = e => {
+    const f = e.target.files[0]; if(!f) return;
+    compressToBlob(f, 2000, 0.9).then(blob => {
+        pendingImgBackBlob = blob; pendingImgBackCleared = false;
+        updateBackPreview();
+    }).catch(err => alert("背面图处理失败："+err.message));
+    e.target.value = "";
+};
+$("backPasteZone").addEventListener("paste", e => {
+    for(const it of e.clipboardData.items){
+        if(it.type.indexOf("image/") === 0){
+            const f = it.getAsFile(); e.preventDefault();
+            compressToBlob(f, 2000, 0.9).then(blob => {
+                pendingImgBackBlob = blob; pendingImgBackCleared = false;
+                updateBackPreview();
+            }).catch(err => alert("背面图处理失败："+err.message));
+            break;
+        }
+    }
+});
+$("btnClearImgBack").onclick = () => { pendingImgBackBlob = null; pendingImgBackCleared = true; updateBackPreview(); };
+
+$("uploadImgBaby").onchange = e => {
+    const f = e.target.files[0]; if(!f) return;
+    compressToBlob(f, 2000, 0.9).then(blob => {
+        pendingImgBabyBlob = blob; pendingImgBabyCleared = false;
+        updateBabyPreview();
+    }).catch(err => alert("幼年图处理失败："+err.message));
+    e.target.value = "";
+};
+$("babyPasteZone").addEventListener("paste", e => {
+    for(const it of e.clipboardData.items){
+        if(it.type.indexOf("image/") === 0){
+            const f = it.getAsFile(); e.preventDefault();
+            compressToBlob(f, 2000, 0.9).then(blob => {
+                pendingImgBabyBlob = blob; pendingImgBabyCleared = false;
+                updateBabyPreview();
+            }).catch(err => alert("幼年图处理失败："+err.message));
+            break;
+        }
+    }
+});
+$("btnClearImgBaby").onclick = () => { pendingImgBabyBlob = null; pendingImgBabyCleared = true; updateBabyPreview(); };
 
 $("cp1File").onchange = e => {
     const f = e.target.files[0]; if(!f) return;
@@ -3783,6 +4343,8 @@ $("btnSave").onclick = async () => {
 
     const oldPet = editId ? petList.find(x => x.id === editId) : null;
     let finalImg = "";
+    let finalImgBack = "";
+    let finalImgBaby = "";
     let delImgs = [];
     try{
         if(pendingImgBlob){
@@ -3796,6 +4358,24 @@ $("btnSave").onclick = async () => {
             finalImg = imgUrlInput;
             if(oldPet && isIndexedImg(oldPet.img) && oldPet.img !== imgUrlInput) delImgs.push(oldPet.img);
         } else finalImg = oldPet ? (oldPet.img || "") : "";
+
+        if(pendingImgBackBlob){
+            finalImgBack = "img_" + genId();
+            if(oldPet && isIndexedImg(oldPet.imgBack)) delImgs.push(oldPet.imgBack);
+            await saveImage(finalImgBack, pendingImgBackBlob);
+        } else if(pendingImgBackCleared){
+            finalImgBack = "";
+            if(oldPet && isIndexedImg(oldPet.imgBack)) delImgs.push(oldPet.imgBack);
+        } else finalImgBack = oldPet ? (oldPet.imgBack || "") : "";
+
+        if(pendingImgBabyBlob){
+            finalImgBaby = "img_" + genId();
+            if(oldPet && isIndexedImg(oldPet.imgBaby)) delImgs.push(oldPet.imgBaby);
+            await saveImage(finalImgBaby, pendingImgBabyBlob);
+        } else if(pendingImgBabyCleared){
+            finalImgBaby = "";
+            if(oldPet && isIndexedImg(oldPet.imgBaby)) delImgs.push(oldPet.imgBaby);
+        } else finalImgBaby = oldPet ? (oldPet.imgBaby || "") : "";
 
         let finalCp1Img;
         if(pendingCp1Blob){
@@ -3832,7 +4412,8 @@ $("btnSave").onclick = async () => {
             const idx = petList.findIndex(x => x.id === editId);
             if(idx > -1){
                 const updated = Object.assign({}, petList[idx], {
-                    img: finalImg, account: accountVal, category: categoryVal, breed: breedVal,
+                    img: finalImg, imgBack: finalImgBack, imgBaby: finalImgBaby,
+                    account: accountVal, category: categoryVal, breed: breedVal,
                     name: nameVal, gender: genderVal, tags: tagsArr, features: featArr,
                     cp1: cp1, cp2: cp2, timerMode: tMode, note: noteVal, utime: now,
                     sire: sireVal, dam: damVal
@@ -3849,7 +4430,9 @@ $("btnSave").onclick = async () => {
         } else {
             petList.push({
                 id: genId(), ctime: now, utime: now,
-                img: finalImg, account: accountVal, category: categoryVal, breed: breedVal,
+                img: finalImg, imgBack: finalImgBack, imgBaby: finalImgBaby,
+                meetup: "",
+                account: accountVal, category: categoryVal, breed: breedVal,
                 name: nameVal, gender: genderVal, tags: tagsArr, features: featArr,
                 cp1: cp1, cp2: cp2, timerMode: tMode,
                 totalMs: totalMs, pausedAt: totalMs, isRunning: false, startTs: null,
@@ -3895,7 +4478,8 @@ $("batchAddApply").onclick = () => {
             if(!name) return;
             petList.push({
                 id: genId(), ctime: now, utime: now,
-                img: "", account: defaultAcc, category: defaultCat, breed: defaultBreed,
+                img: "", imgBack: "", imgBaby: "", meetup: "",
+                account: defaultAcc, category: defaultCat, breed: defaultBreed,
                 name: name, gender: "m", tags: [], features: [],
                 cp1: { name:"", img:"", pairTime:"" }, cp2: { name:"", img:"", pairTime:"" },
                 timerMode: "normal", totalMs: 0, pausedAt: 0, isRunning: false, startTs: null,
@@ -3926,7 +4510,8 @@ $("batchAddApply").onclick = () => {
             const totalMs = hmToMs(hours, 0);
             petList.push({
                 id: genId(), ctime: now, utime: now,
-                img: "", account: acc, category: category, breed: breed,
+                img: "", imgBack: "", imgBaby: "", meetup: "",
+                account: acc, category: category, breed: breed,
                 name: name, gender: gender, tags: [], features: [],
                 cp1: { name:"", img:"", pairTime:"" }, cp2: { name:"", img:"", pairTime:"" },
                 timerMode: "normal", totalMs: totalMs, pausedAt: totalMs,
@@ -3994,6 +4579,8 @@ $("exportApply").onclick = async () => {
             const ids = new Set();
             pets.forEach(p => {
                 if(isIndexedImg(p.img)) ids.add(p.img);
+                if(isIndexedImg(p.imgBack)) ids.add(p.imgBack);
+                if(isIndexedImg(p.imgBaby)) ids.add(p.imgBaby);
                 if(p.cp1 && isIndexedImg(p.cp1.img)) ids.add(p.cp1.img);
                 if(p.cp2 && isIndexedImg(p.cp2.img)) ids.add(p.cp2.img);
             });
@@ -4076,6 +4663,8 @@ $("importApply").onclick = function(){
             const base64List = [];
             migrated.forEach(function(p){
                 if(isBase64Img(p.img)) base64List.push({ p: p, field: "img" });
+                if(isBase64Img(p.imgBack)) base64List.push({ p: p, field: "imgBack" });
+                if(isBase64Img(p.imgBaby)) base64List.push({ p: p, field: "imgBaby" });
                 if(p.cp1 && isBase64Img(p.cp1.img)) base64List.push({ p: p, field: "cp1.img" });
                 if(p.cp2 && isBase64Img(p.cp2.img)) base64List.push({ p: p, field: "cp2.img" });
             });
@@ -4143,6 +4732,8 @@ $("importApply").onclick = function(){
                         if(idx < 0) return;
                         const merged = Object.assign({}, item.mp);
                         if(!merged.img && item.exist.img) merged.img = item.exist.img;
+                        if(!merged.imgBack && item.exist.imgBack) merged.imgBack = item.exist.imgBack;
+                        if(!merged.imgBaby && item.exist.imgBaby) merged.imgBaby = item.exist.imgBaby;
                         if(merged.cp1 && !merged.cp1.img && item.exist.cp1 && item.exist.cp1.img) merged.cp1.img = item.exist.cp1.img;
                         if(merged.cp2 && !merged.cp2.img && item.exist.cp2 && item.exist.cp2.img) merged.cp2.img = item.exist.cp2.img;
                         petList[idx] = merged;
@@ -4159,8 +4750,13 @@ $("importApply").onclick = function(){
                     matchSchemes = Array.isArray(obj.matchSchemes) ? obj.matchSchemes : [];
                     currentSchemeId = obj.currentSchemeId || "";
                     if(obj.shareSettings){
-                        if(obj.shareSettings.card) Object.assign(shareSettings.card, obj.shareSettings.card);
-                        if(obj.shareSettings.bigImg) Object.assign(shareSettings.bigImg, obj.shareSettings.bigImg);
+                        const ss = obj.shareSettings;
+                        if(ss.frameColor) shareSettings.frameColor = ss.frameColor;
+                        if(typeof ss.fontScale === "number") shareSettings.fontScale = ss.fontScale;
+                        if(ss.bigImg && typeof ss.bigImg === "object"){
+                            const keys = ["name","gender","breed","account","tags","features","note","recoverTime","remainTime"];
+                            keys.forEach(k => { if(typeof ss.bigImg[k] === "boolean") shareSettings.bigImg[k] = ss.bigImg[k]; });
+                        }
                     }
                     if(obj.featureMap && typeof obj.featureMap === "object"){
                         const keys = Object.keys(obj.featureMap);
@@ -4484,7 +5080,20 @@ $("copyEmailBtn").onclick = async () => {
         setTimeout(() => { btn.textContent = "复制"; btn.classList.remove("copied"); }, 1500);
     }
 };
-$("openQuestionnaireBtn").onclick = () => { window.open(FEEDBACK_URL, "_blank"); };/* ==================== 宠物速配 ==================== */
+$("openQuestionnaireBtn").onclick = () => { window.open(FEEDBACK_URL, "_blank"); };
+
+/* ==================== 速配视图：顶部 Tab 切换 ==================== */
+document.querySelectorAll(".match-top-tab").forEach(tab => {
+    tab.onclick = () => {
+        document.querySelectorAll(".match-top-tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        const which = tab.dataset.mt;
+        $("matchPaneProfit").classList.toggle("hidden", which !== "profit");
+        $("matchPanePair").classList.toggle("hidden", which !== "pair");
+    };
+});
+
+/* ==================== 主速配（速配找对象） ==================== */
 function isCloseRelative(petA, petB){
     function getParents(p){ return [p.sire, p.dam].filter(Boolean); }
     function getGrandParents(p){
@@ -4507,19 +5116,20 @@ function isCloseRelative(petA, petB){
     }
     return false;
 }
-
 function isDogConflict(petA, petB){
     if(petA.category !== "狗狗" || petB.category !== "狗狗") return false;
     const dogBreeds = ["金毛", "萨摩耶"];
     if(petA.breed !== petB.breed && dogBreeds.includes(petA.breed) && dogBreeds.includes(petB.breed)) return true;
     return false;
 }
-
 function canMatch(petA, petB, scheme){
+    if(!petA || !petB) return false;
     if(petA.gender === petB.gender) return false;
-    if(isCloseRelative(petA, petB)) return false;
     if(petA.category !== petB.category) return false;
     if(isDogConflict(petA, petB)) return false;
+    if(!petA.isTemp && !petB.isTemp){
+        if(isCloseRelative(petA, petB)) return false;
+    }
     if(scheme){
         if(Array.isArray(scheme.accounts) && scheme.accounts.length > 0){
             if(scheme.accounts[0] === "__NONE__") return false;
@@ -4534,7 +5144,7 @@ function canMatch(petA, petB, scheme){
     }
     return true;
 }
-
+/* 找对象评分：目标视角，看 petB（候选）能给 petA（目标）带来什么收益 */
 function calculateMatchScore(petA, petB, scheme){
     let score = 0;
     const plusItems = [];
@@ -4542,11 +5152,15 @@ function calculateMatchScore(petA, petB, scheme){
 
     if(petA.gender === petB.gender){
         score -= 999;
-        minusItems.push({ label: "⚠️ 同性", weight: 999 });
+        minusItems.push({ label: "同性，无法繁育", weight: 999 });
     }
-    if(isCloseRelative(petA, petB)){
+    if(!petA.isTemp && !petB.isTemp && isCloseRelative(petA, petB)){
         score -= 999;
-        minusItems.push({ label: "⚠️ 近亲", weight: 999 });
+        minusItems.push({ label: "近亲（三代内）", weight: 999 });
+    }
+    if(isDogConflict(petA, petB)){
+        score -= 999;
+        minusItems.push({ label: "金毛与萨摩耶不能通婚", weight: 999 });
     }
 
     const bFeats = petB.features || [];
@@ -4599,35 +5213,20 @@ function calculateMatchScore(petA, petB, scheme){
 
     return { score: score, plusItems: plusItems, minusItems: minusItems };
 }
-
-function calcDisplayScore(petA, petB, score){
-    const aApp = getPetAppearance(petA.id);
-    const bApp = getPetAppearance(petB.id);
-    const avgApp = (aApp + bApp) / 2;
-    const appBonus = (avgApp - 50) * 0.25;
-
-    let display = 65 + score * 0.4 + appBonus;
-
-    const aFlaws = (petA.features || []).filter(f => isFlawFeature(f));
-    const bFlaws = (petB.features || []).filter(f => isFlawFeature(f));
-    if(aFlaws.length === 0 && bFlaws.length === 0) display += 15;
-
-    return Math.max(0, Math.min(100, Math.round(display)));
+function scoreToDisplay(rawScore){
+    /* 把原始分数映射到 0-100 分 */
+    let d = 60 + rawScore * 0.4;
+    return Math.max(0, Math.min(100, Math.round(d)));
 }
-
-function getCpVerdict(displayScore, petA, petB){
-    const aFlaws = (petA.features || []).filter(f => isFlawFeature(f));
-    const bFlaws = (petB.features || []).filter(f => isFlawFeature(f));
-    const bothPerfect = aFlaws.length === 0 && bFlaws.length === 0;
-
-    if(displayScore >= 95) return { text: "天作之合", emoji: "💖", color: "#e85496", tip: bothPerfect ? "双方皆无瑕，恰似天造地设的一对" : "匹配度极高，令人羡慕的一对" };
-    if(displayScore >= 85) return { text: "天生一对", emoji: "💕", color: "#e85496", tip: "相当契合，值得深交" };
-    if(displayScore >= 75) return { text: "佳偶天成", emoji: "🌸", color: "#9b59b6", tip: "条件相当，堪称良配" };
-    if(displayScore >= 65) return { text: "珠联璧合", emoji: "✨", color: "#3070ee", tip: "搭配不俗，值得一试" };
-    if(displayScore >= 55) return { text: "门当户对", emoji: "👍", color: "#4080ff", tip: "中规中矩的一对" };
-    if(displayScore >= 45) return { text: "尚可一试", emoji: "🤔", color: "#888", tip: "有亮点也有不足" };
-    if(displayScore >= 30) return { text: "需要磨合", emoji: "😅", color: "#e08030", tip: "差异较大，需慎重考虑" };
-    return { text: "缘分尚浅", emoji: "😐", color: "#c82424", tip: "不太建议配对的组合" };
+function getMatchVerdict(displayScore){
+    if(displayScore >= 95) return { text: "极品佳偶", emoji: "💖", color: "#e85496" };
+    if(displayScore >= 85) return { text: "非常合适", emoji: "💕", color: "#e85496" };
+    if(displayScore >= 75) return { text: "相当般配", emoji: "🌸", color: "#9b59b6" };
+    if(displayScore >= 65) return { text: "值得一看", emoji: "✨", color: "#3070ee" };
+    if(displayScore >= 55) return { text: "可以考虑", emoji: "👍", color: "#4080ff" };
+    if(displayScore >= 45) return { text: "有点勉强", emoji: "🤔", color: "#888" };
+    if(displayScore >= 30) return { text: "收益不高", emoji: "😅", color: "#e08030" };
+    return { text: "不太推荐", emoji: "😐", color: "#c82424" };
 }
 
 function initDefaultScheme(){
@@ -4673,14 +5272,12 @@ function renderSchemeSelect(){
     });
     sel.value = currentSchemeId;
 }
-
 function saveCurrentScheme(){
     schemeDirty = false;
     updateSchemeDirtyTip();
     saveLocal();
     alert("✓ 已保存方案【" + getCurrentScheme().name + "】");
 }
-
 function getVirtualCategories(){
     const result = [];
     Object.keys(breedMap).forEach(cat => {
@@ -4695,7 +5292,6 @@ function getVirtualCategories(){
     });
     return result;
 }
-
 function syncCategories(scheme){
     const catSet = new Set();
     Object.keys(breedMap).forEach(cat => {
@@ -4706,7 +5302,6 @@ function syncCategories(scheme){
     });
     scheme.categories = Array.from(catSet);
 }
-
 function getFeaturesForScheme(scheme){
     const set = new Set();
     Object.keys(featureMap[CAT_COMMON] || {}).forEach(n => set.add(n));
@@ -4719,7 +5314,6 @@ function getFeaturesForScheme(scheme){
     }
     return Array.from(set);
 }
-
 function renderSchemeParams(){
     const wrap = $("schemeParams");
     if(!wrap) return;
@@ -4812,9 +5406,9 @@ function renderSchemeParams(){
     leftCol.style.cssText = "flex:1;min-width:300px";
     const rightCol = document.createElement("div");
     rightCol.style.cssText = "flex:1;min-width:300px";
-    renderSchemeFeatureList(leftCol, "加分项（特征）", scheme.plusFeatures, scheme, "plus");
+    renderSchemeFeatureList(leftCol, "加分项（候选宠物带这些特征 = 加分）", scheme.plusFeatures, scheme, "plus");
     renderSchemeTagInput(leftCol, "加分项（标签，每行一个，可写「标签名=权重」）", scheme.plusTags, "plus");
-    renderSchemeFeatureList(rightCol, "减分项（特征）", scheme.minusFeatures, scheme, "minus");
+    renderSchemeFeatureList(rightCol, "减分项（候选宠物带这些特征 = 减分）", scheme.minusFeatures, scheme, "minus");
     renderSchemeTagInput(rightCol, "减分项（标签，每行一个，可写「标签名=权重」）", scheme.minusTags, "minus");
     twoCol.appendChild(leftCol);
     twoCol.appendChild(rightCol);
@@ -5195,35 +5789,79 @@ function updateSchemeDirtyTip(){
     el.style.display = schemeDirty ? "inline" : "none";
 }
 
+/* 目标宠物：从库或手动临时 */
+function getMatchTargetPet(){
+    if(matchTargetSrcTab === "lib"){
+        return petList.find(p => p.id === currentMatchTargetPetId) || null;
+    }
+    return tempTargetPet;
+}
+function buildTempTargetPet(){
+    const cat = $("matchTempCat").value;
+    if(!cat) return null;
+    const breed = $("matchTempBreed").value;
+    const gender = $("matchTempGender").value || "f";
+    const name = $("matchTempName").value.trim() || "亲家的宠物";
+    const feats = $("matchTempFeatures").value.split(/[\n,，;；]+/).map(s => s.trim()).filter(Boolean);
+    /* 合并勾选的瑕疵 */
+    if(tempTargetFlaws && tempTargetFlaws.size > 0){
+        tempTargetFlaws.forEach(f => { if(feats.indexOf(f) < 0) feats.push(f); });
+    }
+    return {
+        id: "temp_target_" + genId(),
+        name, gender,
+        category: cat, breed,
+        features: feats,
+        tags: [],
+        isTemp: true,
+        inBench: false,
+        img: ""
+    };
+}
+function switchMatchTargetSrc(src){
+    matchTargetSrcTab = src;
+    document.querySelectorAll("[data-target-src]").forEach(t => {
+        t.classList.toggle("active", t.dataset.targetSrc === src);
+    });
+    $("matchTargetLibBox").classList.toggle("hidden", src !== "lib");
+    $("matchTargetManualBox").classList.toggle("hidden", src !== "manual");
+    if(src === "manual"){
+        renderMatchTempFlawChips();
+        tempTargetPet = buildTempTargetPet();
+    } else {
+        tempTargetPet = null;
+        renderMatchSelectedTargetInfo();
+    }
+    refreshMatchResults();
+}
+
 function renderMatchResults(petA, scheme){
     const now = Date.now();
     const results = [];
-    petList.forEach(petB => {
-        if(petB.id === petA.id) return;
-        if(!canMatch(petA, petB, scheme)) return;
-        const m = calculateMatchScore(petA, petB, scheme);
-        const rem = getRemain(petB, now);
-        const recover = getRecoverTime(petB, now);
-        const isIdle = !petB.isRunning && !petB.locked && rem <= 0;
-        results.push({ pet: petB, score: m.score, plusItems: m.plusItems, minusItems: m.minusItems, rem, recover, isIdle });
-    });
-
-    if(matchSortMode === "score"){
-        results.sort((a, b) => {
-            const da = calcDisplayScore(petA, a.pet, a.score);
-            const db = calcDisplayScore(petA, b.pet, b.score);
-            return db - da;
+    if(petA){
+        petList.forEach(petB => {
+            if(!petA.isTemp && petB.id === petA.id) return;
+            if(!canMatch(petA, petB, scheme)) return;
+            const m = calculateMatchScore(petA, petB, scheme);
+            const dispScore = scoreToDisplay(m.score);
+            const verdict = getMatchVerdict(dispScore);
+            const rem = getRemain(petB, now);
+            const recover = getRecoverTime(petB, now);
+            const isIdle = !petB.isRunning && !petB.locked && rem <= 0;
+            results.push({ pet: petB, rawScore: m.score, dispScore, verdict, plusItems: m.plusItems, minusItems: m.minusItems, rem, recover, isIdle });
         });
-    } else {
+    }
+
+    if(matchSortMode === "time"){
         results.sort((a, b) => {
             if(a.rem !== b.rem) return a.rem - b.rem;
             if(a.isIdle && b.isIdle){
-                const ia = a.pet.recoveredAt || 0;
-                const ib = b.pet.recoveredAt || 0;
-                return ia - ib;
+                return (a.pet.recoveredAt || 0) - (b.pet.recoveredAt || 0);
             }
             return 0;
         });
+    } else {
+        results.sort((a, b) => b.dispScore - a.dispScore);
     }
 
     const scoreBtn = $("matchSortByScore");
@@ -5234,6 +5872,10 @@ function renderMatchResults(petA, scheme){
     }
 
     const wrap = $("matchResults");
+    if(!petA){
+        wrap.innerHTML = '<div style="color:#999;padding:20px;text-align:center">请先选择目标宠物</div>';
+        return;
+    }
     if(results.length === 0){
         wrap.innerHTML = '<div style="color:#999;padding:20px;text-align:center">暂无符合条件的宠物</div>';
         return;
@@ -5255,152 +5897,180 @@ function renderMatchResults(petA, scheme){
             timeHtml = '<span style="font-size:11px;color:#888;margin-left:6px">⏸暂停 ' + msToHMS(r.rem) + '</span>';
         }
 
-        const plusHtml = r.plusItems.length ? r.plusItems.map(x => '<div style="color:#20b060;font-size:11px">✅ ' + esc(x.label) + ' +' + x.weight + '</div>').join("") : "";
-        const minusHtml = r.minusItems.length ? r.minusItems.map(x => '<div style="color:#c82424;font-size:11px">❌ ' + esc(x.label) + ' -' + x.weight + '</div>').join("") : "";
-        const dispScore = calcDisplayScore(petA, p, r.score);
-        const verdict = getCpVerdict(dispScore, petA, p);
-        const scoreColor = verdict.color;
-        const candApp = getPetAppearance(p.id);
-        const candAppLabel = appearanceLabel(candApp);
+        const plusHtml = r.plusItems.length ? r.plusItems.slice(0, 4).map(x => '<span style="display:inline-block;background:#e8f8ee;color:#20b060;border-radius:8px;padding:1px 8px;font-size:11px;margin:2px 4px 2px 0">✅ ' + esc(x.label) + '</span>').join("") : "";
+        const minusHtml = r.minusItems.length ? r.minusItems.slice(0, 4).map(x => '<span style="display:inline-block;background:#ffeeee;color:#c82424;border-radius:8px;padding:1px 8px;font-size:11px;margin:2px 4px 2px 0">❌ ' + esc(x.label) + '</span>').join("") : "";
 
         return '<div class="match-result-item" data-result-id="'+p.id+'" style="display:flex;gap:8px;align-items:flex-start">'
             + imgHtml
             + '<div style="flex:1;min-width:0">'
-            + '<div><button class="star-btn'+(p.inBench?' on':'')+'" data-match-star="'+p.id+'" style="position:static;font-size:16px;padding:0 4px;color:'+(p.inBench?'#f0b840':'#ddd')+'" title="'+(p.inBench?'移出工作台':'加入工作台')+'">'+(p.inBench?'★':'☆')+'</button> <span class="name">' + esc(p.name) + '</span> ' + gTag
-            + ' <span class="score" data-score-for="'+p.id+'" style="color:'+scoreColor+';font-size:15px">' + dispScore + ' 分 ' + verdict.emoji + ' ' + verdict.text + '</span>'
+            + '<div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">'
+            + '<button class="star-btn'+(p.inBench?' on':'')+'" data-match-star="'+p.id+'" style="position:static;font-size:16px;padding:0 4px;color:'+(p.inBench?'#f0b840':'#ddd')+'" title="'+(p.inBench?'移出工作台':'加入工作台')+'">'+(p.inBench?'★':'☆')+'</button>'
+            + '<span class="name">' + esc(p.name) + '</span> ' + gTag
+            + '<span class="score" style="color:'+r.verdict.color+';font-size:15px;font-weight:bold">' + r.dispScore + ' 分 ' + r.verdict.emoji + ' ' + r.verdict.text + '</span>'
             + timeHtml
-            + ' <button class="mini-btn" data-match-edit="'+p.id+'" title="编辑档案">✏编辑</button>'
-            + ' <button class="mini-btn" data-match-share="'+p.id+'" title="分享趣味CP">📤分享</button></div>'
-            + '<div style="font-size:12px;color:#666;margin-top:2px">' + esc(p.breed||"-") + '｜' + esc(p.account||"-") + '</div>'
-            + '<div style="margin-top:6px;display:flex;align-items:center;gap:6px;font-size:11px;color:#888">'
-            +   '<span>🎨</span>'
-            +   '<input type="range" data-appa-for="'+p.id+'" min="0" max="100" value="'+candApp+'" style="flex:1;height:4px" oninput="onMatchCandidateAppearanceChange(this)">'
-            +   '<span data-appa-label="'+p.id+'" style="min-width:64px;text-align:right;color:#e85496">'+candAppLabel+'</span>'
+            + '<button class="mini-btn" data-match-edit="'+p.id+'" title="编辑档案">✏编辑</button>'
+            + '<button class="mini-btn" data-match-share="'+p.id+'" title="分享这只宠物">📤分享</button>'
             + '</div>'
-            + (plusHtml || minusHtml ? '<div style="margin-top:4px;border-top:1px dashed #eee;padding-top:3px">' + plusHtml + minusHtml + '</div>' : '')
+            + '<div style="font-size:12px;color:#666;margin-top:2px">' + esc(p.breed||"-") + '｜' + esc(p.account||"-") + '</div>'
+            + (plusHtml || minusHtml ? '<div style="margin-top:4px">' + plusHtml + minusHtml + '</div>' : '')
             + '</div></div>';
     }).join("");
     fillImgElements(wrap);
 }
 
-function onMatchTargetAppearanceChange(slider){
-    const petA = petList.find(p => p.id === $("matchPetSelect").value);
-    if(!petA) return;
-    tempAppearance[petA.id] = Number(slider.value);
-    const label = appearanceLabel(slider.value);
-    $("matchPetAppearanceLabel").textContent = label + "（" + slider.value + "）";
-    const scheme = getCurrentScheme();
-    petList.forEach(petB => {
-        if(petB.id === petA.id) return;
-        if(!canMatch(petA, petB, scheme)) return;
-        const scoreEl = document.querySelector('[data-score-for="' + petB.id + '"]');
-        if(!scoreEl) return;
-        const m = calculateMatchScore(petA, petB, scheme);
-        const disp = calcDisplayScore(petA, petB, m.score);
-        const v = getCpVerdict(disp, petA, petB);
-        scoreEl.style.color = v.color;
-        scoreEl.textContent = disp + " 分 " + v.emoji + " " + v.text;
-    });
-}
-
-function onMatchCandidateAppearanceChange(slider){
-    const candId = slider.dataset.appaFor;
-    if(!candId) return;
-    tempAppearance[candId] = Number(slider.value);
-    const labelEl = document.querySelector('[data-appa-label="' + candId + '"]');
-    if(labelEl) labelEl.textContent = appearanceLabel(slider.value);
-
-    const petA = petList.find(p => p.id === $("matchPetSelect").value);
-    const petB = petList.find(p => p.id === candId);
-    if(!petA || !petB) return;
-    const scoreEl = document.querySelector('[data-score-for="' + candId + '"]');
-    if(!scoreEl) return;
-    const scheme = getCurrentScheme();
-    const m = calculateMatchScore(petA, petB, scheme);
-    const disp = calcDisplayScore(petA, petB, m.score);
-    const v = getCpVerdict(disp, petA, petB);
-    scoreEl.style.color = v.color;
-    scoreEl.textContent = disp + " 分 " + v.emoji + " " + v.text;
-}
-
-function runMatch(){
-    const selectedId = $("matchPetSelect").value;
-    const petA = petList.find(p => p.id === selectedId);
-    if(!petA){ alert("请先选择宠物"); return; }
+function refreshMatchResults(){
+    const petA = getMatchTargetPet();
     const scheme = getCurrentScheme();
     renderMatchResults(petA, scheme);
+
+    /* 更新目标宠物信息区 */
+    const infoEl = $("matchPetInfo");
+    if(petA){
+        const gText = petA.gender === "m" ? "公" : "母";
+        const gColor = petA.gender === "m" ? "#348ede" : "#e85496";
+        infoEl.innerHTML =
+            '<div style="display:flex;gap:12px;align-items:flex-start">'
+            + '<div data-match-preview="'+petA.id+'" title="点击查看大图" '
+            +   'style="flex-shrink:0;width:76px;height:76px;border-radius:10px;overflow:hidden;border:1px solid #e3e8ef;background:#f0f2f5;cursor:pointer;position:relative">'
+            +   (petA.img
+                ? '<img data-imgid="'+esc(petA.img)+'" style="width:100%;height:100%;object-fit:cover;display:block" alt="">'
+                : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:11px">' + (petA.isTemp ? "临时" : "无图") + '</div>')
+            + '</div>'
+            + '<div style="flex:1;min-width:0">'
+            +   '<div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:4px">'
+            +     '<b style="font-size:15px">'+esc(petA.name)+'</b>'
+            +     '<span style="font-size:13px;font-weight:bold;color:'+gColor+'">'+gText+'</span>'
+            +     '<span style="font-size:12px;color:#888">'+esc(petA.category||"-")+' / '+esc(petA.breed||"-")+'</span>'
+            +     (petA.isTemp ? '<span style="font-size:11px;color:#a06a10;background:#fff8e6;padding:1px 6px;border-radius:8px">✨ 临时</span>' : '')
+            +     (!petA.isTemp ? '<button class="mini-btn" data-match-edit="'+petA.id+'" style="margin-left:auto" title="编辑档案">✏ 编辑</button>' : '')
+            +   '</div>'
+            +   '<div style="font-size:12px;color:#666;line-height:1.6">'
+            +     '<div><span style="color:#999">特征：</span>' + ((petA.features||[]).map(f => featureChip(f)).join("") || "-") + '</div>'
+            +     (!petA.isTemp ? '<div><span style="color:#999">标签：</span>' + ((petA.tags||[]).map(t => '<span class="tag">' + esc(t) + '</span>').join("") || "-") + '</div>' : '')
+            +   '</div>'
+            + '</div>'
+            + '</div>';
+        fillImgElements(infoEl);
+    } else {
+        infoEl.innerHTML = '<div style="color:#999;font-size:12px;padding:6px">请选择或填写目标宠物信息</div>';
+    }
 }
+
+/* 渲染速配找对象里"从我的宠物选"的已选宠物卡片 */
+function renderMatchSelectedTargetInfo(){
+    const el = $("matchSelectedTargetInfo");
+    if(!el) return;
+    const pet = petList.find(p => p.id === currentMatchTargetPetId);
+    if(!pet){
+        el.innerHTML = '<div style="padding:10px;font-size:12px;color:#999;text-align:center;border:1px dashed #ccd6e2;border-radius:8px">尚未选择目标宠物，点下方按钮打开选宠器</div>';
+        return;
+    }
+    const gText = pet.gender === "m" ? "公" : "母";
+    const gColor = pet.gender === "m" ? "#348ede" : "#e85496";
+    const rem = getRemain(pet, Date.now());
+    const isIdle = !pet.isRunning && !pet.locked && rem <= 0;
+    const remText = isIdle ? "空闲" : msToHMS(rem);
+    el.innerHTML =
+        '<div style="display:flex;gap:10px;align-items:center;padding:10px;border:1px solid #e3e8ef;border-radius:8px;background:#fafbfd">'
+        + '<div style="flex-shrink:0;width:56px;height:56px;border-radius:8px;overflow:hidden;border:1px solid #eee;background:#f0f2f5">'
+        +   (pet.img
+            ? '<img data-imgid="'+esc(pet.img)+'" style="width:100%;height:100%;object-fit:cover;display:block" alt="">'
+            : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:10px">无图</div>')
+        + '</div>'
+        + '<div style="flex:1;min-width:0">'
+        +   '<div style="font-weight:bold;font-size:14px">'+esc(pet.name)+' <span style="color:'+gColor+'">'+gText+'</span></div>'
+        +   '<div style="font-size:12px;color:#666;margin-top:2px">'+esc(pet.breed||"-")+'｜'+esc(pet.account||"-")+'</div>'
+        +   '<div style="font-size:11px;color:#888;margin-top:2px">剩余 '+remText+'</div>'
+        + '</div>'
+        + '<button type="button" class="mini-btn" style="flex-shrink:0" onclick="clearMatchTarget()">清除</button>'
+        + '</div>';
+    fillImgElements(el);
+}
+window.renderMatchSelectedTargetInfo = renderMatchSelectedTargetInfo;
+
+function clearMatchTarget(){
+    currentMatchTargetPetId = "";
+    renderMatchSelectedTargetInfo();
+    refreshMatchResults();
+}
+window.clearMatchTarget = clearMatchTarget;
 
 function initMatchSelect(){
-    const sel = $("matchPetSelect");
-    if(!sel) return;
-    const curVal = sel.value;
-    sel.innerHTML = '<option value="">--请选择--</option>';
-
-    const now = Date.now();
-    function cmpRemain(a, b){
-        const ra = getRemain(a, now);
-        const rb = getRemain(b, now);
-        if(ra !== rb) return ra - rb;
-        return (a.recoveredAt || 0) - (b.recoveredAt || 0);
-    }
-
-    const benchPets = petList.filter(p => p.inBench).sort(cmpRemain);
-    const otherPets = petList.filter(p => !p.inBench).sort(cmpRemain);
-
-    function addGroup(label, pets){
-        if(pets.length === 0) return;
-        const optGroup = document.createElement("optgroup");
-        optGroup.label = label;
-        pets.forEach(p => {
-            const o = document.createElement("option");
-            o.value = p.id;
-            const rem = getRemain(p, now);
-            const isIdle = !p.isRunning && !p.locked && rem <= 0;
-            const remText = isIdle ? "空闲" : msToHMS(rem);
-            o.textContent = p.name + "（" + (p.account||"-") + " / " + (p.breed||"-") + " · " + remText + "）";
-            optGroup.appendChild(o);
-        });
-        sel.appendChild(optGroup);
-    }
-
-    addGroup("⭐ 工作台", benchPets);
-    addGroup("其他宠物", otherPets);
-
-    if(curVal) sel.value = curVal;
-    const petA = petList.find(p => p.id === sel.value);
-    $("matchPetInfo").innerHTML = petA
-        ? '已选：<b>' + esc(petA.name) + '</b> ' + (petA.gender === "m" ? "公" : "母")
-          + '<br>特征：' + ((petA.features||[]).map(f => featureChip(f)).join("") || "-")
-          + '<br>标签：' + ((petA.tags||[]).map(t => '<span class="tag">' + esc(t) + '</span>').join("") || "-")
-        : "";
+    /* 速配找对象目标选择已改为选宠器弹窗，这里只负责渲染 */
+    renderMatchSelectedTargetInfo();
     renderSchemeSelect();
     renderSchemeParams();
-
-    if(petA){
-        const curApp = getPetAppearance(petA.id);
-        const slider = $("matchPetAppearance");
-        if(slider){
-            slider.value = curApp;
-            $("matchPetAppearanceLabel").textContent = appearanceLabel(curApp) + "（" + curApp + "）";
-        }
-        const scheme = getCurrentScheme();
-        renderMatchResults(petA, scheme);
-    }
+    refreshMatchResults();
 }
 
-$("matchPetSelect").onchange = initMatchSelect;
-$("matchRunBtn").onclick = runMatch;
+/* 初始化临时目标宠物的大类/品种下拉 */
+function initMatchTempSelects(){
+    const catSel = $("matchTempCat");
+    if(!catSel) return;
+    catSel.innerHTML = '<option value="">--请选择--</option>';
+    Object.keys(breedMap).forEach(c => {
+        const o = document.createElement("option"); o.value = c; o.textContent = c;
+        catSel.appendChild(o);
+    });
+    catSel.onchange = function(){
+        const cat = this.value;
+        const breedSel = $("matchTempBreed");
+        breedSel.innerHTML = '<option value="">--请先选大类--</option>';
+        if(cat){
+            (breedMap[cat] || []).forEach(b => {
+                const o = document.createElement("option"); o.value = b; o.textContent = b;
+                breedSel.appendChild(o);
+            });
+        }
+        /* 更换大类时，清掉当前已勾选但不属于新大类的瑕疵 */
+        const validFlaws = new Set(getFlawFeaturesForCategory(cat));
+        Array.from(tempTargetFlaws).forEach(f => { if(!validFlaws.has(f)) tempTargetFlaws.delete(f); });
+        renderMatchTempFlawChips();
+        tempTargetPet = buildTempTargetPet();
+        refreshMatchResults();
+    };
+    $("matchTempBreed").onchange = function(){
+        tempTargetPet = buildTempTargetPet();
+        refreshMatchResults();
+    };
+    $("matchTempGender").onchange = function(){
+        tempTargetPet = buildTempTargetPet();
+        refreshMatchResults();
+    };
+    $("matchTempName").oninput = function(){
+        tempTargetPet = buildTempTargetPet();
+        refreshMatchResults();
+    };
+    $("matchTempFeatures").oninput = function(){
+        tempTargetPet = buildTempTargetPet();
+        refreshMatchResults();
+    };
+}
+
+/* 绑定速配找对象的 UI */
+document.querySelectorAll("[data-target-src]").forEach(btn => {
+    btn.onclick = () => switchMatchTargetSrc(btn.dataset.targetSrc);
+});
+
+/* 速配找对象目标选择已改为选宠器弹窗，不再有下拉框 */
+$("matchRunBtn").onclick = refreshMatchResults;
 $("matchSortByScore").onclick = () => {
     matchSortMode = "score";
-    const petA = petList.find(p => p.id === $("matchPetSelect").value);
-    if(petA) renderMatchResults(petA, getCurrentScheme());
+    refreshMatchResults();
 };
 $("matchSortByTime").onclick = () => {
     matchSortMode = "time";
-    const petA = petList.find(p => p.id === $("matchPetSelect").value);
-    if(petA) renderMatchResults(petA, getCurrentScheme());
+    refreshMatchResults();
 };
+
+function openMatchTargetPicker(){
+    openPetPicker(function(p){
+        currentMatchTargetPetId = p.id;
+        renderMatchSelectedTargetInfo();
+        refreshMatchResults();
+    }, "选择目标宠物（工作台优先）");
+}
+window.openMatchTargetPicker = openMatchTargetPicker;
 
 $("matchSchemeSelect").onchange = function(){
     if(schemeDirty){
@@ -5413,12 +6083,10 @@ $("matchSchemeSelect").onchange = function(){
     schemeDirty = false;
     updateSchemeDirtyTip();
     renderSchemeParams();
-    const petA = petList.find(p => p.id === $("matchPetSelect").value);
-    if(petA) renderMatchResults(petA, getCurrentScheme());
+    refreshMatchResults();
 };
 
 $("btnSaveScheme").onclick = saveCurrentScheme;
-
 $("btnSaveAsScheme").onclick = () => {
     const name = prompt("请输入新方案名称：", "方案 " + (matchSchemes.length + 1));
     if(!name || !name.trim()) return;
@@ -5465,9 +6133,7 @@ $("schemeListWrap").addEventListener("click", e => {
             const tmp = matchSchemes[i - 1];
             matchSchemes[i - 1] = matchSchemes[i];
             matchSchemes[i] = tmp;
-            saveLocal();
-            renderSchemeSelect();
-            renderSchemeManage();
+            saveLocal(); renderSchemeSelect(); renderSchemeManage();
         }
         return;
     }
@@ -5478,9 +6144,7 @@ $("schemeListWrap").addEventListener("click", e => {
             const tmp = matchSchemes[i + 1];
             matchSchemes[i + 1] = matchSchemes[i];
             matchSchemes[i] = tmp;
-            saveLocal();
-            renderSchemeSelect();
-            renderSchemeManage();
+            saveLocal(); renderSchemeSelect(); renderSchemeManage();
         }
         return;
     }
@@ -5488,12 +6152,8 @@ $("schemeListWrap").addEventListener("click", e => {
     if(setBtn){
         currentSchemeId = setBtn.dataset.schemeSet;
         schemeDirty = false;
-        saveLocal();
-        renderSchemeSelect();
-        renderSchemeParams();
-        renderSchemeManage();
-        const petA = petList.find(p => p.id === $("matchPetSelect").value);
-        if(petA) renderMatchResults(petA, getCurrentScheme());
+        saveLocal(); renderSchemeSelect(); renderSchemeParams(); renderSchemeManage();
+        refreshMatchResults();
         return;
     }
     const renameBtn = e.target.closest("[data-scheme-rename]");
@@ -5502,9 +6162,7 @@ $("schemeListWrap").addEventListener("click", e => {
         const nv = prompt("新名称：", matchSchemes[i].name);
         if(nv && nv.trim()){
             matchSchemes[i].name = nv.trim();
-            saveLocal();
-            renderSchemeSelect();
-            renderSchemeManage();
+            saveLocal(); renderSchemeSelect(); renderSchemeManage();
         }
         return;
     }
@@ -5516,17 +6174,11 @@ $("schemeListWrap").addEventListener("click", e => {
         const wasCur = matchSchemes[i].id === currentSchemeId;
         matchSchemes.splice(i, 1);
         if(wasCur) currentSchemeId = matchSchemes[0].id;
-        saveLocal();
-        renderSchemeSelect();
-        renderSchemeParams();
-        renderSchemeManage();
+        saveLocal(); renderSchemeSelect(); renderSchemeParams(); renderSchemeManage();
         return;
     }
 });
-$("btnManageSchemes").onclick = () => {
-    renderSchemeManage();
-    $("schemeManageModal").classList.remove("hidden");
-};
+$("btnManageSchemes").onclick = () => { renderSchemeManage(); $("schemeManageModal").classList.remove("hidden"); };
 $("closeSchemeManage").onclick = () => $("schemeManageModal").classList.add("hidden");
 $("addSchemeBtn").onclick = () => {
     const name = $("newSchemeName").value.trim();
@@ -5535,237 +6187,10 @@ $("addSchemeBtn").onclick = () => {
     s.name = name;
     matchSchemes.push(s);
     $("newSchemeName").value = "";
-    saveLocal();
-    renderSchemeSelect();
-    renderSchemeManage();
+    saveLocal(); renderSchemeSelect(); renderSchemeManage();
 };
 
-/* ==================== 匹配度计算 ==================== */
-$("matchScoreBtn").onclick = () => {
-    $("scoreCalcBody").innerHTML = '<div style="color:#999;padding:16px;text-align:center">请选择计算方式</div>';
-    $("scoreCalcModal").classList.remove("hidden");
-};
-$("closeScoreCalc").onclick = () => $("scoreCalcModal").classList.add("hidden");
-
-$("scoreCalcExisting").onclick = () => {
-    const body = $("scoreCalcBody");
-    const mainPet = petList.find(p => p.id === $("matchPetSelect").value);
-    const defaultCat = mainPet ? mainPet.category : "";
-    const defaultBreed = mainPet ? mainPet.breed : "";
-
-    body.innerHTML = ''
-        + '<div class="form-row"><label>账号筛选</label><select id="scAcc" style="width:100%"><option value="">全部账号</option></select></div>'
-        + '<div class="form-row"><label>品种筛选</label><select id="scBreed" style="width:100%"><option value="">全部品种</option></select></div>'
-        + '<div class="form-row"><label>昵称搜索</label><input type="text" id="scKw" style="width:100%" placeholder="输入昵称关键词"></div>'
-        + '<div class="form-row"><label>选择宠物</label><div id="scList" style="max-height:240px;overflow:auto;border:1px solid #e3e8ef;border-radius:6px;padding:6px"></div></div>';
-
-    const accSel = $("scAcc");
-    accountOptions.forEach(a => {
-        const o = document.createElement("option"); o.value = a; o.textContent = a; accSel.appendChild(o);
-    });
-
-    const breedSel = $("scBreed");
-    (breedMap[defaultCat] || []).forEach(b => {
-        const o = document.createElement("option"); o.value = b; o.textContent = b; breedSel.appendChild(o);
-    });
-    breedSel.value = defaultBreed;
-
-    function refreshList(){
-        const acc = accSel.value;
-        const bd = breedSel.value;
-        const kw = $("scKw").value.trim().toLowerCase();
-        const list = petList.filter(p => {
-            if(p.id === (mainPet && mainPet.id)) return false;
-            if(acc && p.account !== acc) return false;
-            if(bd && p.breed !== bd) return false;
-            if(kw && p.name.toLowerCase().indexOf(kw) < 0) return false;
-            return true;
-        });
-        const listEl = $("scList");
-        if(list.length === 0){
-            listEl.innerHTML = '<div style="color:#999;font-size:12px;padding:8px">无匹配宠物</div>';
-            return;
-        }
-        listEl.innerHTML = "";
-        list.forEach(p => {
-            const row = document.createElement("div");
-            row.style.cssText = "display:flex;align-items:center;gap:8px;padding:6px;border-bottom:1px solid #f2f5f9;cursor:pointer";
-            row.innerHTML = '<span style="flex:1;font-size:13px">' + esc(p.name) + ' <span style="color:#888;font-size:11px">' + esc(p.breed||"-") + '｜' + esc(p.account||"-") + '</span></span>'
-                + '<button class="mini-btn" style="padding:2px 10px">选择</button>';
-            row.querySelector("button").onclick = () => {
-                if(!mainPet){ alert("请先返回速配界面选择目标宠物"); return; }
-                const scheme = getCurrentScheme();
-                const m = calculateMatchScore(mainPet, p, scheme);
-                $("scoreCalcModal").classList.add("hidden");
-                showScoreDetail(mainPet, p, m);
-            };
-            listEl.appendChild(row);
-        });
-    }
-    accSel.onchange = refreshList;
-    breedSel.onchange = refreshList;
-    $("scKw").oninput = refreshList;
-    refreshList();
-};
-
-$("scoreCalcTemp").onclick = () => {
-    const mainPet = petList.find(p => p.id === $("matchPetSelect").value);
-    if(!mainPet){ alert("请先在速配界面选择目标宠物"); return; }
-    const defaultCat = mainPet.category;
-    const defaultBreed = mainPet.breed;
-
-    const breedSel = $("tempPetBreed");
-    breedSel.innerHTML = '<option value="">--请选择--</option>';
-    (breedMap[defaultCat] || []).forEach(b => {
-        const o = document.createElement("option"); o.value = b; o.textContent = b;
-        if(b === defaultBreed) o.selected = true;
-        breedSel.appendChild(o);
-    });
-    tempPetImgBlob = null;
-    $("tempPetFeatures").value = "";
-    $("tempPetTags").value = "";
-    $("tempPetName").value = "";
-    $("tempPetPreviewWrap").style.display = "none";
-    $("scoreCalcModal").classList.add("hidden");
-    $("tempPetModal").classList.remove("hidden");
-    renderTempPetFeatureQuick();
-};
-
-function renderTempPetFeatureQuick(){
-    const wrap = $("tempPetFeatQuick");
-    if(!wrap) return;
-    wrap.innerHTML = "";
-    const mainPet = petList.find(p => p.id === $("matchPetSelect").value);
-    const cat = mainPet ? mainPet.category : "";
-    const cur = $("tempPetFeatures").value.split("\n").map(s => s.trim()).filter(Boolean);
-    const curSet = new Set(cur);
-
-    function makeGroup(title, names){
-        if(!names || names.length === 0) return;
-        const g = document.createElement("div");
-        g.className = "feat-quick-group";
-        g.innerHTML = '<div class="feat-quick-title">' + title + '</div>';
-        const chips = document.createElement("div");
-        chips.className = "feat-quick-chips";
-        names.forEach(name => {
-            const color = getFeatureColor(name);
-            const chip = document.createElement("div");
-            chip.className = "feat-quick-chip" + (curSet.has(name) ? " on" : "");
-            chip.textContent = name;
-            if(curSet.has(name)){ chip.style.background = color; chip.style.borderColor = color; }
-            else { chip.style.color = color; chip.style.borderColor = hexToRgba(color, 0.4); }
-            chip.onclick = () => {
-                const arr = $("tempPetFeatures").value.split("\n").map(s => s.trim()).filter(Boolean);
-                const i = arr.indexOf(name);
-                if(i >= 0) arr.splice(i, 1); else arr.push(name);
-                $("tempPetFeatures").value = arr.join("\n");
-                renderTempPetFeatureQuick();
-            };
-            chips.appendChild(chip);
-        });
-        g.appendChild(chips);
-        wrap.appendChild(g);
-    }
-
-    makeGroup("共有特征（所有品种大类通用）", Object.keys(featureMap[CAT_COMMON] || {}));
-    if(cat && featureMap[cat]) makeGroup(esc(cat) + " 专属特征", Object.keys(featureMap[cat]));
-
-    if(!wrap.innerHTML){
-        wrap.innerHTML = '<div class="chip-empty">暂无可选特征</div>';
-    }
-}
-$("tempPetFeatures").addEventListener("input", renderTempPetFeatureQuick);
-
-$("tempPetCancel").onclick = () => $("tempPetModal").classList.add("hidden");
-
-$("tempPetImg").onchange = e => {
-    const f = e.target.files[0]; if(!f) return;
-    compressToBlob(f, 2000, 0.9).then(blob => {
-        tempPetImgBlob = blob;
-        $("tempPetPreview").src = URL.createObjectURL(blob);
-        $("tempPetPreviewWrap").style.display = "flex";
-    }).catch(err => alert("图片处理失败：" + err.message));
-    e.target.value = "";
-};
-$("tempPetPasteZone").addEventListener("paste", e => {
-    for(const it of e.clipboardData.items){
-        if(it.type.indexOf("image/") === 0){
-            const f = it.getAsFile(); e.preventDefault();
-            compressToBlob(f, 2000, 0.9).then(blob => {
-                tempPetImgBlob = blob;
-                $("tempPetPreview").src = URL.createObjectURL(blob);
-                $("tempPetPreviewWrap").style.display = "flex";
-            }).catch(err => alert("图片处理失败：" + err.message));
-            break;
-        }
-    }
-});
-$("tempPetClearImg").onclick = () => {
-    tempPetImgBlob = null;
-    $("tempPetPreview").src = "";
-    $("tempPetPreviewWrap").style.display = "none";
-};
-
-$("tempPetCalc").onclick = () => {
-    const mainPet = petList.find(p => p.id === $("matchPetSelect").value);
-    if(!mainPet){ alert("请先选择目标宠物"); return; }
-    const scheme = getCurrentScheme();
-
-    const tempPet = {
-        id: "temp_" + genId(),
-        name: $("tempPetName").value.trim() || "临时宠物",
-        gender: mainPet.gender === "m" ? "f" : "m",
-        category: mainPet.category,
-        breed: $("tempPetBreed").value || "",
-        features: $("tempPetFeatures").value.split("\n").map(s => s.trim()).filter(Boolean),
-        tags: $("tempPetTags").value.split("\n").map(s => s.trim()).filter(Boolean),
-        account: ""
-    };
-
-    const m = calculateMatchScore(mainPet, tempPet, scheme);
-    $("tempPetModal").classList.add("hidden");
-    showScoreDetail(mainPet, tempPet, m, tempPetImgBlob);
-};
-
-function showScoreDetail(petA, petB, result, tempBlob){
-    const wrap = $("matchScoreDetail");
-    const imgA = petA.img
-        ? (isIndexedImg(petA.img) ? (getImageUrlSync(petA.img) || "") : petA.img)
-        : "";
-    const imgB = petB.img
-        ? (isIndexedImg(petB.img) ? (getImageUrlSync(petB.img) || "") : petB.img)
-        : (tempBlob ? URL.createObjectURL(tempBlob) : "");
-
-    const dispScore = calcDisplayScore(petA, petB, result.score);
-    const verdict = getCpVerdict(dispScore, petA, petB);
-
-    const plusHtml = result.plusItems.length ? result.plusItems.map(x => '<div style="color:#20b060;font-size:12px">✅ ' + esc(x.label) + ' +' + x.weight + '</div>').join("") : '<div style="color:#999;font-size:12px">无</div>';
-    const minusHtml = result.minusItems.length ? result.minusItems.map(x => '<div style="color:#c82424;font-size:12px">❌ ' + esc(x.label) + ' -' + x.weight + '</div>').join("") : '<div style="color:#999;font-size:12px">无</div>';
-
-    wrap.innerHTML = ''
-        + '<div style="border:1px solid #e3e8ef;border-radius:10px;padding:12px;background:#fff">'
-        + '<div style="display:flex;gap:10px;align-items:center;justify-content:center;margin-bottom:10px">'
-        + '<div style="text-align:center;flex:1">'
-        + (imgA ? '<img src="'+imgA+'" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #eee">' : '<div style="width:64px;height:64px;border-radius:8px;background:#f0f2f5;margin:0 auto"></div>')
-        + '<div style="font-size:12px;margin-top:4px">'+esc(petA.name)+'</div>'
-        + '</div>'
-        + '<div style="font-size:22px;color:#888">💗</div>'
-        + '<div style="text-align:center;flex:1">'
-        + (imgB ? '<img src="'+imgB+'" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #eee">' : '<div style="width:64px;height:64px;border-radius:8px;background:#f0f2f5;margin:0 auto"></div>')
-        + '<div style="font-size:12px;margin-top:4px">'+esc(petB.name)+'</div>'
-        + '</div>'
-        + '</div>'
-        + '<div style="text-align:center;font-size:13px;color:'+verdict.color+';font-weight:bold;margin-bottom:6px">'+verdict.emoji+' '+verdict.text+'</div>'
-        + '<div style="text-align:center;font-size:22px;font-weight:bold;color:'+verdict.color+';margin-bottom:10px">总分 '+dispScore+' 分</div>'
-        + '<div style="display:flex;gap:12px;font-size:12px">'
-        + '<div style="flex:1"><div style="font-weight:bold;color:#20b060;margin-bottom:4px">加分项</div>'+plusHtml+'</div>'
-        + '<div style="flex:1"><div style="font-weight:bold;color:#c82424;margin-bottom:4px">减分项</div>'+minusHtml+'</div>'
-        + '</div>'
-        + '</div>';
-    wrap.scrollIntoView({behavior:"smooth", block:"center"});
-}
-
-/* 编辑按钮 / 星号收藏 / 分享按钮 / 缩略图预览（推荐列表内） */
+/* 编辑/星号/缩略图（推荐列表内） */
 document.addEventListener("click", e => {
     const matchStarBtn = e.target.closest("[data-match-star]");
     if(matchStarBtn){
@@ -5779,7 +6204,6 @@ document.addEventListener("click", e => {
             matchStarBtn.textContent = pet.inBench ? '★' : '☆';
             matchStarBtn.classList.toggle('on', pet.inBench);
             matchStarBtn.style.color = pet.inBench ? '#f0b840' : '#ddd';
-            matchStarBtn.title = pet.inBench ? '移出工作台' : '加入工作台';
             updateBenchCount();
         }
         return;
@@ -5791,13 +6215,22 @@ document.addEventListener("click", e => {
         if(id) openEdit(id);
         return;
     }
+    const previewBtn = e.target.closest("[data-match-preview]");
+    if(previewBtn){
+        e.stopPropagation();
+        const id = previewBtn.dataset.matchPreview;
+        const pet = petList.find(x => x.id === id);
+        if(pet && pet.img){
+            if(isIndexedImg(pet.img)) getImageUrl(pet.img).then(u => u && openBigPreview(u, pet));
+            else openBigPreview(pet.img, pet);
+        }
+        return;
+    }
     const shareBtn = e.target.closest("[data-match-share]");
     if(shareBtn){
         e.stopPropagation();
         const id = shareBtn.dataset.matchShare;
-        const petA = petList.find(p => p.id === $("matchPetSelect").value);
-        const petB = petList.find(p => p.id === id);
-        if(petA && petB) showCpShareCard(petA, petB);
+        if(id) showShareCard(id);
         return;
     }
     const matchThumb = e.target.closest(".match-thumb");
@@ -5813,6 +6246,499 @@ document.addEventListener("click", e => {
         return;
     }
 });
+
+/* ==================== 双宠配对指数测算 ==================== */
+function initPairCategorySelects(){
+    ["A", "B"].forEach(side => {
+        const catSel = $("pairCat" + side);
+        if(!catSel) return;
+        catSel.innerHTML = '<option value="">--请选择--</option>';
+        Object.keys(breedMap).forEach(c => {
+            const o = document.createElement("option"); o.value = c; o.textContent = c;
+            catSel.appendChild(o);
+        });
+        catSel.onchange = function(){
+            const cat = this.value;
+            const breedSel = $("pairBreed" + side);
+            breedSel.innerHTML = '<option value="">--请先选大类--</option>';
+            if(cat){
+                (breedMap[cat] || []).forEach(b => {
+                    const o = document.createElement("option"); o.value = b; o.textContent = b;
+                    breedSel.appendChild(o);
+                });
+            }
+            pairState[side].category = cat;
+            pairState[side].breed = "";
+            /* 更新瑕疵 chips（通用 + 大类） */
+            renderPairFlawChips(side);
+        };
+        const breedSel = $("pairBreed" + side);
+        breedSel.onchange = function(){ pairState[side].breed = this.value; };
+        const nameIn = $("pairName" + side);
+        if(nameIn) nameIn.oninput = function(){ pairState[side].name = this.value.trim(); };
+        const genderSel = $("pairGender" + side);
+        if(genderSel) genderSel.onchange = function(){ pairState[side].gender = this.value; };
+    });
+}
+
+function renderPairFlawChips(side){
+    const wrap = $("pairFlaws" + side);
+    if(!wrap) return;
+    wrap.innerHTML = "";
+    /* 通用瑕疵 + 当前大类瑕疵 */
+    const all = getFlawFeaturesForCategory(pairState[side].category);
+    if(all.length === 0){
+        wrap.innerHTML = '<span style="color:#999;font-size:11px">暂无标记为瑕疵的特征，去「管理特征」勾选吧</span>';
+        return;
+    }
+    all.forEach(name => {
+        const chip = document.createElement("span");
+        chip.className = "pair-chip" + (pairState[side].flaws.has(name) ? " on" : "");
+        chip.textContent = name;
+        chip.onclick = () => {
+            if(pairState[side].flaws.has(name)) pairState[side].flaws.delete(name);
+            else pairState[side].flaws.add(name);
+            renderPairFlawChips(side);
+        };
+        wrap.appendChild(chip);
+    });
+}
+
+/* 速配找对象：临时宠物的瑕疵 chips */
+function renderMatchTempFlawChips(){
+    const wrap = $("matchTempFlaws");
+    if(!wrap) return;
+    wrap.innerHTML = "";
+    const cat = $("matchTempCat").value;
+    const all = getFlawFeaturesForCategory(cat);
+    if(all.length === 0){
+        wrap.innerHTML = '<span style="color:#999;font-size:11px">暂无标记为瑕疵的特征</span>';
+        return;
+    }
+    all.forEach(name => {
+        const chip = document.createElement("span");
+        chip.className = "pair-chip" + (tempTargetFlaws.has(name) ? " on" : "");
+        chip.textContent = name;
+        chip.onclick = () => {
+            if(tempTargetFlaws.has(name)) tempTargetFlaws.delete(name);
+            else tempTargetFlaws.add(name);
+            renderMatchTempFlawChips();
+            tempTargetPet = buildTempTargetPet();
+            refreshMatchResults();
+        };
+        wrap.appendChild(chip);
+    });
+}
+window.renderMatchTempFlawChips = renderMatchTempFlawChips;
+
+function onPairAppChange(side, slider){
+    pairState[side].appearance = Number(slider.value);
+    $("pairAppLabel" + side).textContent = appearanceLabel(slider.value) + " " + slider.value;
+}
+window.onPairAppChange = onPairAppChange;
+
+function switchPairSrcTab(side, src){
+    pairState[side].srcTab = src;
+    document.querySelectorAll('.pair-src-tabs[data-side="'+side+'"] .pair-src-tab').forEach(t => {
+        t.classList.toggle("active", t.dataset.src === src);
+    });
+    $("pairLibBox" + side).classList.toggle("hidden", src !== "lib");
+    $("pairManualBox" + side).classList.toggle("hidden", src !== "manual");
+    if(src === "manual"){
+        clearPairSelected(side, true);
+        pairState[side].name = $("pairName" + side).value.trim();
+        pairState[side].gender = $("pairGender" + side).value;
+        pairState[side].category = $("pairCat" + side).value;
+        pairState[side].breed = $("pairBreed" + side).value;
+        pairState[side].pet = null;
+        renderPairFlawChips(side);
+    }
+}
+
+function clearPairSelected(side, keepImg){
+    pairState[side].pet = null;
+    pairState[side].petId = null;
+    $("pairSelectedInfo" + side).classList.add("hidden");
+    $("pairSelectedInfo" + side).innerHTML = "";
+    if(!keepImg){
+        $("pairName" + side).value = "";
+        $("pairGender" + side).value = "";
+        $("pairCat" + side).value = "";
+        $("pairBreed" + side).innerHTML = '<option value="">--请先选大类--</option>';
+        pairState[side].name = "";
+        pairState[side].gender = "";
+        pairState[side].category = "";
+        pairState[side].breed = "";
+        renderPairFlawChips(side);
+    }
+}
+
+function selectPairPet(side, pet){
+    pairState[side].pet = pet;
+    pairState[side].petId = pet.id;
+
+    const feats = pet.features || [];
+    pairState[side].eye = feats.indexOf("美瞳") >= 0;
+    pairState[side].hetero = feats.some(f => f.indexOf("异色") >= 0);
+    pairState[side].flaws = new Set(feats.filter(f => isFlawFeature(f)));
+    pairState[side].category = pet.category || "";
+    pairState[side].breed = pet.breed || "";
+    pairState[side].name = pet.name || "";
+    pairState[side].gender = pet.gender || "";
+
+    $("pairEye" + side).checked = pairState[side].eye;
+    $("pairHetero" + side).checked = pairState[side].hetero;
+    renderPairFlawChips(side);
+
+    const gText = pet.gender === "m" ? "公" : "母";
+    const gColor = pet.gender === "m" ? "#348ede" : "#e85496";
+    const infoEl = $("pairSelectedInfo" + side);
+    infoEl.classList.remove("hidden");
+    infoEl.innerHTML = '已选：<span class="nm">'+esc(pet.name)+'</span> '
+        + '<span style="color:'+gColor+';font-weight:bold">'+gText+'</span> '
+        + '<span style="color:#888">' + esc(pet.category||"-") + ' / ' + esc(pet.breed||"-") + '</span>'
+        + ' <button type="button" class="mini-btn" style="margin-left:6px" onclick="clearPairSelected(\''+side+'\')">清除选择</button>';
+
+    if(pet.img){
+        if(isIndexedImg(pet.img)){
+            getImageUrl(pet.img).then(u => { if(u) setPairImg(side, u); });
+        } else {
+            setPairImg(side, pet.img);
+        }
+    } else {
+        clearPairImg(side);
+    }
+}
+
+function setPairImg(side, url){
+    const zone = $("pairImgZone" + side);
+    const img = $("pairImg" + side);
+    img.src = url;
+    img.style.display = "block";
+    zone.classList.add("has-img");
+}
+function clearPairImg(side){
+    const zone = $("pairImgZone" + side);
+    const img = $("pairImg" + side);
+    img.src = "";
+    img.style.display = "none";
+    zone.classList.remove("has-img");
+    pairState[side].imgBlob = null;
+    pairState[side].imgUrl = null;
+}
+window.clearPairImg = clearPairImg;
+window.clearPairSelected = clearPairSelected;
+
+["A", "B"].forEach(side => {
+    $("pairFile" + side).onchange = e => {
+        const f = e.target.files[0]; if(!f) return;
+        compressToBlob(f, 2000, 0.9).then(blob => {
+            pairState[side].imgBlob = blob;
+            pairState[side].imgUrl = URL.createObjectURL(blob);
+            setPairImg(side, pairState[side].imgUrl);
+        }).catch(err => alert("图片处理失败：" + err.message));
+        e.target.value = "";
+    };
+    const zone = $("pairImgZone" + side);
+    zone.addEventListener("paste", e => {
+        for(const it of e.clipboardData.items){
+            if(it.type.indexOf("image/") === 0){
+                const f = it.getAsFile(); e.preventDefault();
+                compressToBlob(f, 2000, 0.9).then(blob => {
+                    pairState[side].imgBlob = blob;
+                    pairState[side].imgUrl = URL.createObjectURL(blob);
+                    setPairImg(side, pairState[side].imgUrl);
+                }).catch(err => alert("图片处理失败：" + err.message));
+                break;
+            }
+        }
+    });
+});
+
+document.querySelectorAll(".pair-src-tabs").forEach(wrap => {
+    const side = wrap.dataset.side;
+    wrap.querySelectorAll(".pair-src-tab").forEach(tab => {
+        tab.onclick = () => switchPairSrcTab(side, tab.dataset.src);
+    });
+});
+
+["A", "B"].forEach(side => {
+    $("pairEye" + side).onchange = function(){ pairState[side].eye = this.checked; };
+    $("pairHetero" + side).onchange = function(){ pairState[side].hetero = this.checked; };
+});
+
+/* 选宠器 */
+let petPickerCallback = null;
+function openPetPicker(callback, title){
+    petPickerCallback = callback;
+    $("petPickerTitle").textContent = title || "选择宠物";
+    const accSel = $("ppAcc");
+    accSel.innerHTML = '<option value="">全部账号</option>';
+    accountOptions.forEach(a => {
+        const o = document.createElement("option"); o.value = a; o.textContent = a; accSel.appendChild(o);
+    });
+    const breedSel = $("ppBreed");
+    breedSel.innerHTML = '<option value="">全部品种</option>';
+    const set = new Set();
+    Object.keys(breedMap).forEach(cat => (breedMap[cat]||[]).forEach(b => set.add(b)));
+    Array.from(set).sort().forEach(b => {
+        const o = document.createElement("option"); o.value = b; o.textContent = b; breedSel.appendChild(o);
+    });
+    $("ppKw").value = "";
+    refreshPetPickerList();
+    $("petPickerModal").classList.remove("hidden");
+}
+window.openPetPicker = openPetPicker;
+
+function openPairPicker(side){
+    openPetPicker(function(p){
+        selectPairPet(side, p);
+    }, "选择宠物 " + side);
+}
+window.openPairPicker = openPairPicker;
+
+function refreshPetPickerList(){
+    const acc = $("ppAcc").value;
+    const bd = $("ppBreed").value;
+    const kw = $("ppKw").value.trim().toLowerCase();
+    let list = petList.filter(p => {
+        if(acc && p.account !== acc) return false;
+        if(bd && p.breed !== bd) return false;
+        if(kw && (p.name||"").toLowerCase().indexOf(kw) < 0) return false;
+        return true;
+    });
+    /* 排序：先工作台，然后按剩余时间 */
+    const now = Date.now();
+    function cmpRemain(a, b){
+        const ra = getRemain(a, now);
+        const rb = getRemain(b, now);
+        if(ra !== rb) return ra - rb;
+        return (a.recoveredAt || 0) - (b.recoveredAt || 0);
+    }
+    const benchPets = list.filter(p => p.inBench).sort(cmpRemain);
+    const otherPets = list.filter(p => !p.inBench).sort(cmpRemain);
+    list = benchPets.concat(otherPets);
+
+    const wrap = $("ppList");
+    if(list.length === 0){
+        wrap.innerHTML = '<div style="color:#999;font-size:12px;padding:8px;text-align:center">无匹配宠物</div>';
+        return;
+    }
+    wrap.innerHTML = "";
+    list.slice(0, 200).forEach(p => {
+        const row = document.createElement("div");
+        row.className = "select-pet-row";
+        const gText = p.gender === "m" ? "公" : "母";
+        const imgHtml = p.img ? '<img data-imgid="'+esc(p.img)+'" alt="">' : '<img alt="" style="background:#f0f2f5">';
+        const benchTag = p.inBench ? ' <span style="background:#fff8e6;color:#a06a10;padding:1px 6px;border-radius:8px;font-size:10px">⭐工作台</span>' : '';
+        row.innerHTML = imgHtml
+            + '<div class="nm">'+esc(p.name||"未命名")+' <span style="color:'+(p.gender==="m"?"#348ede":"#e85496")+'">'+gText+'</span>'+benchTag
+            + '<div class="sub">'+esc(p.category||"-")+' / '+esc(p.breed||"-")+' ｜ '+esc(p.account||"-")+'</div></div>'
+            + '<button type="button">选择</button>';
+        row.querySelector("button").onclick = () => {
+            if(petPickerCallback) petPickerCallback(p);
+            $("petPickerModal").classList.add("hidden");
+        };
+        wrap.appendChild(row);
+    });
+    fillImgElements(wrap);
+}
+$("ppAcc").onchange = refreshPetPickerList;
+$("ppBreed").onchange = refreshPetPickerList;
+$("ppKw").oninput = refreshPetPickerList;
+$("closePetPicker").onclick = () => $("petPickerModal").classList.add("hidden");
+$("petPickerModal").addEventListener("click", e => { if(e.target === $("petPickerModal")) $("petPickerModal").classList.add("hidden"); });
+
+/* ==================== 配对指数评分 ==================== */
+function pairVerdict(score, isSameSex){
+    if(isSameSex) return { text: "同性无缘", emoji: "🚫", color: "#c82424", tip: "同性无法繁育" };
+    if(score >= 95) return { text: "天作之合", emoji: "💖", color: "#e85496", tip: "后代大概率出极品" };
+    if(score >= 80) return { text: "天生一对", emoji: "💕", color: "#e85496", tip: "相当般配的一对" };
+    if(score >= 65) return { text: "佳偶天成", emoji: "🌸", color: "#9b59b6", tip: "条件相当，后代可期" };
+    if(score >= 50) return { text: "门当户对", emoji: "✨", color: "#3070ee", tip: "中规中矩的搭配" };
+    if(score >= 35) return { text: "尚可一试", emoji: "👍", color: "#4080ff", tip: "有亮点也有风险" };
+    if(score >= 20) return { text: "需要磨合", emoji: "🤔", color: "#888", tip: "差异较大，需慎重考虑" };
+    return { text: "缘分尚浅", emoji: "😐", color: "#c82424", tip: "不太建议配对" };
+}
+
+function calculatePairScore(A, B){
+    let score = 55;
+    const plus = [];
+    const minus = [];
+
+    const aG = A.gender || "", bG = B.gender || "";
+    let isSameSex = false;
+    if(aG && bG && aG === bG){
+        isSameSex = true;
+        score -= 200;
+        minus.push({ label: "双方同性，无法繁育" });
+    }
+
+    if(A.pet && B.pet && isCloseRelative(A.pet, B.pet)){
+        score -= 150;
+        minus.push({ label: "三代内有血缘关系（近亲）" });
+    }
+
+    /* 美瞳 */
+    if(A.eye && B.eye){ score += 12; plus.push({ label: "双方都带美瞳，后代大概率继承" }); }
+    else if(A.eye || B.eye){ score += 5; plus.push({ label: "单方带美瞳，后代有机会继承" }); }
+
+    /* 异色 */
+    if(A.hetero && B.hetero){ score += 8; plus.push({ label: "双方都带异色瞳，稀有度拉满" }); }
+    else if(A.hetero || B.hetero){ score += 3; plus.push({ label: "单方带异色瞳，有一定几率遗传" }); }
+
+    /* 颜值 */
+    const avgApp = (A.appearance + B.appearance) / 2;
+    const appBonus = Math.round((avgApp - 50) * 0.4);
+    if(appBonus > 0){ score += appBonus; plus.push({ label: "双方颜值均值不错（" + Math.round(avgApp) + "）" }); }
+    else if(appBonus < 0){ score += appBonus; minus.push({ label: "双方颜值均值偏低（" + Math.round(avgApp) + "）" }); }
+    if(Math.abs(A.appearance - B.appearance) < 20){
+        score += 4;
+        plus.push({ label: "颜值协调，后代底子稳定" });
+    }
+
+    /* 瑕疵 */
+    const aFlaws = Array.from(A.flaws);
+    const bFlaws = Array.from(B.flaws);
+    const shared = aFlaws.filter(f => bFlaws.indexOf(f) >= 0);
+    const aOnly = aFlaws.filter(f => bFlaws.indexOf(f) < 0);
+    const bOnly = bFlaws.filter(f => aFlaws.indexOf(f) < 0);
+    const uniqueCount = aOnly.length + bOnly.length;
+    const sharedCount = shared.length;
+
+    if(aFlaws.length === 0 && bFlaws.length === 0){
+        score += 10;
+        plus.push({ label: "双方都无瑕疵，底子干净" });
+    } else {
+        if(sharedCount > 0){
+            const penalty = -14 * sharedCount;
+            score += penalty;
+            minus.push({ label: "双方都有【" + shared.join("、") + "】，后代大概率保留" });
+        }
+        if(uniqueCount > 0){
+            const penalty = -4 * uniqueCount;
+            score += penalty;
+            const names = aOnly.concat(bOnly).slice(0, 3).join("、");
+            minus.push({ label: "存在单方瑕疵（" + names + "）" });
+        }
+    }
+
+    /* 品种 */
+    const aCat = A.category, aBreed = A.breed;
+    const bCat = B.category, bBreed = B.breed;
+    if(aCat && bCat){
+        if(aCat !== bCat){
+            score -= 70;
+            minus.push({ label: "跨大类（" + aCat + " × " + bCat + "），不能繁育" });
+        } else if(aCat === "狗狗" && ((aBreed === "金毛" && bBreed === "萨摩耶") || (aBreed === "萨摩耶" && bBreed === "金毛"))){
+            score -= 45;
+            minus.push({ label: "金毛与萨摩耶不能通婚" });
+        } else if(aBreed && bBreed && aBreed === bBreed){
+            score += 10;
+            plus.push({ label: "同品种（" + aBreed + "），血统稳定" });
+        } else if(aBreed && bBreed){
+            score += 5;
+            plus.push({ label: "同大类不同品种，有混血惊喜" });
+        }
+    }
+
+    return { score: Math.round(score), plus, minus, isSameSex };
+}
+
+$("pairCalcBtn").onclick = () => {
+    ["A", "B"].forEach(side => {
+        if(pairState[side].srcTab === "manual"){
+            pairState[side].name = $("pairName" + side).value.trim();
+            pairState[side].gender = $("pairGender" + side).value;
+            pairState[side].category = $("pairCat" + side).value;
+            pairState[side].breed = $("pairBreed" + side).value;
+        }
+    });
+
+    const A = pairState.A, B = pairState.B;
+
+    const hasA = A.pet || A.name || A.category || A.breed || A.imgUrl;
+    const hasB = B.pet || B.name || B.category || B.breed || B.imgUrl;
+    if(!hasA || !hasB){ alert("请至少为 A、B 各选择宠物或填写一些信息"); return; }
+
+    const result = calculatePairScore(A, B);
+    const verdict = pairVerdict(result.score, result.isSameSex);
+
+    const displayData = {
+        A: {
+            imgUrl: A.pet && A.pet.img && isIndexedImg(A.pet.img) ? (getImageUrlSync(A.pet.img) || "") : (A.imgUrl || ""),
+            name: A.name || (A.pet ? A.pet.name : "宠物A"),
+            breed: A.breed || (A.pet ? A.pet.breed : "")
+        },
+        B: {
+            imgUrl: B.pet && B.pet.img && isIndexedImg(B.pet.img) ? (getImageUrlSync(B.pet.img) || "") : (B.imgUrl || ""),
+            name: B.name || (B.pet ? B.pet.name : "宠物B"),
+            breed: B.breed || (B.pet ? B.pet.breed : "")
+        },
+        score: result.score,
+        verdict: verdict,
+        plusItems: result.plus,
+        minusItems: result.minus,
+        isSameSex: result.isSameSex
+    };
+
+    const wrap = $("pairResult");
+    wrap.classList.remove("hidden");
+
+    let html = '';
+    html += '<div style="text-align:center;padding:16px;border-radius:14px;background:linear-gradient(135deg,#fff5fa 0%,#f0f4ff 100%);margin-bottom:12px">';
+    html += '<div style="font-size:42px;line-height:1">'+verdict.emoji+'</div>';
+    html += '<div style="font-size:26px;font-weight:bold;letter-spacing:2px;margin:6px 0;color:'+verdict.color+'">'+verdict.text+'</div>';
+    if(!result.isSameSex){
+        html += '<div style="font-size:44px;font-weight:bold;color:'+verdict.color+';line-height:1;margin:8px 0">'+result.score+'<span style="font-size:18px;color:#aaa;font-weight:normal;margin-left:4px">分</span></div>';
+    }
+    if(verdict.tip) html += '<div style="font-size:12px;color:#888;margin-top:4px">'+verdict.tip+'</div>';
+    html += '</div>';
+
+    html += '<div style="display:flex;gap:10px;align-items:center;justify-content:center;margin-bottom:12px">';
+    html += '<div style="text-align:center;flex:1">';
+    html += displayData.A.imgUrl ? '<img src="'+displayData.A.imgUrl+'" style="width:80px;height:80px;object-fit:cover;object-position:center center;border-radius:12px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.08)">' : '<div style="width:80px;height:80px;border-radius:12px;background:#f0f2f5;margin:0 auto;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:11px">无图</div>';
+    html += '<div style="font-size:13px;font-weight:bold;margin-top:6px">'+esc(displayData.A.name)+'</div>';
+    html += '<div style="font-size:11px;color:#888">'+esc(displayData.A.breed||"-")+'</div>';
+    html += '</div>';
+    html += '<div style="font-size:28px;color:#e85496">💞</div>';
+    html += '<div style="text-align:center;flex:1">';
+   html += displayData.B.imgUrl ? '<img src="'+displayData.B.imgUrl+'" style="width:80px;height:80px;object-fit:cover;object-position:center center;border-radius:12px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.08)">' : '<div style="width:80px;height:80px;border-radius:12px;background:#f0f2f5;margin:0 auto;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:11px">无图</div>';
+    html += '<div style="font-size:13px;font-weight:bold;margin-top:6px">'+esc(displayData.B.name)+'</div>';
+    html += '<div style="font-size:11px;color:#888">'+esc(displayData.B.breed||"-")+'</div>';
+    html += '</div>';
+    html += '</div>';
+
+    if(result.plus.length || result.minus.length){
+        html += '<div style="display:flex;gap:12px;font-size:12px;background:#fafbfd;border-radius:10px;padding:10px;margin-top:8px">';
+        html += '<div style="flex:1"><div style="font-weight:bold;color:#20b060;margin-bottom:4px">✅ 优势</div>';
+        if(result.plus.length){
+            result.plus.forEach(x => { html += '<div style="color:#20b060;font-size:12px;line-height:1.6">· '+esc(x.label)+'</div>'; });
+        } else {
+            html += '<div style="color:#999;font-size:12px">暂无</div>';
+        }
+        html += '</div>';
+        html += '<div style="flex:1"><div style="font-weight:bold;color:#c82424;margin-bottom:4px">❌ 顾虑</div>';
+        if(result.minus.length){
+            result.minus.forEach(x => { html += '<div style="color:#c82424;font-size:12px;line-height:1.6">· '+esc(x.label)+'</div>'; });
+        } else {
+            html += '<div style="color:#999;font-size:12px">暂无</div>';
+        }
+        html += '</div></div>';
+    }
+
+    html += '<div style="text-align:center;margin-top:14px;padding-top:12px;border-top:1px dashed #eee">';
+    html += '<button id="pairShareBtn" style="padding:8px 26px;font-size:13px;background:#e85496;color:#fff;border:1px solid #d94383;border-radius:20px;cursor:pointer;font-weight:bold">📤 分享这个结果</button>';
+    html += '</div>';
+
+    wrap.innerHTML = html;
+
+    $("pairShareBtn").onclick = () => {
+        showPairShareCard(displayData);
+    };
+
+    wrap.scrollIntoView({behavior:"smooth", block:"nearest"});
+};
 
 /* ==================== 使用教程 ==================== */
 const TOUR_STEPS = [
@@ -5904,7 +6830,7 @@ function endTour(){
     window.removeEventListener("scroll", repositionTour, true);
 }
 
-/* ==================== 每秒文本 tick（不重建 DOM） ==================== */
+/* ==================== 每秒文本 tick ==================== */
 function tickUpdate(){
     const now = Date.now();
     let needFullRender = false;
@@ -5972,15 +6898,37 @@ function tickUpdate(){
 
 /* ==================== 启动 ==================== */
 loadFromLocal();
-/* 旧数据补全：空闲但没有 recoveredAt 的宠物，用 utime 兜底 */
-(function fixRecoveredAt(){
+
+(function fixExpiredPets(){
     const now = Date.now();
     petList.forEach(p => {
+        if(p.isRunning && !p.locked && p.timerMode !== "breedFemale"){
+            const base = p.runStartRemain != null ? p.runStartRemain : (p.totalMs || 0);
+            const expectedEnd = (p.startTs || now) + base;
+            if(expectedEnd <= now){
+                p.isRunning = false;
+                p.pausedAt = 0;
+                p.runStartRemain = null;
+                p.recoveredAt = expectedEnd;
+            }
+        }
+        if(p.timerMode === "breedFemale" && p.isRunning && !p.locked){
+            const base = p.runStartRemain != null ? p.runStartRemain : (p.totalMs || 0);
+            const expectedEnd = (p.startTs || now) + base;
+            if(expectedEnd - FEMALE_LOCK_MS <= now){
+                p.pausedAt = FEMALE_LOCK_MS;
+                p.isRunning = false;
+                p.locked = true;
+                p.runStartRemain = null;
+                p.recoveredAt = expectedEnd;
+            }
+        }
         if(!p.recoveredAt && !p.isRunning && !p.locked && (p.pausedAt || 0) <= 0 && (p.totalMs || 0) === 0){
             p.recoveredAt = p.utime || now;
         }
     });
 })();
+
 if(matchSchemes.length === 0){
     const def = initDefaultScheme();
     matchSchemes.push(def);
@@ -5989,6 +6937,11 @@ if(matchSchemes.length === 0){
 getCurrentScheme();
 applyCpColVisibility();
 initBackupBanner();
+initMatchTempSelects();
+renderMatchTempFlawChips();
+initPairCategorySelects();
+renderPairFlawChips("A");
+renderPairFlawChips("B");
 render();
 updateUndoBtn();
 setInterval(() => {
@@ -6002,11 +6955,10 @@ setInterval(() => {
     if(!$("exportModal").classList.contains("hidden")) return;
     if(!$("importModal").classList.contains("hidden")) return;
     if(!$("schemeManageModal").classList.contains("hidden")) return;
-    if(!$("scoreCalcModal").classList.contains("hidden")) return;
-    if(!$("tempPetModal").classList.contains("hidden")) return;
     if(!$("shareModal").classList.contains("hidden")) return;
     if(!$("cpShareModal").classList.contains("hidden")) return;
     if(!$("shareSettingsModal").classList.contains("hidden")) return;
+    if(!$("petPickerModal").classList.contains("hidden")) return;
     if(checkAutoLock(Date.now())) saveLocal();
     tickUpdate();
 }, 1000);
