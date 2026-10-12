@@ -532,6 +532,8 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <button data-bench="144h-female" style="color:#e85496;font-weight:500">设为 144h 恢复（母宠·72h 卡分娩）</button>
 <span style="color:#ccc">|</span>
 <button data-bench="remove" class="warn" style="color:#c82424;border-color:#ffb4b4">从工作台移除</button>
+<span style="color:#ccc">|</span>
+<button id="benchExportIcs" style="color:#3070ee;font-weight:500">📅 导出日历提醒</button>
 </div>
 <div id="benchContainer" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px"></div>
 <div id="benchEmpty" class="hidden" style="text-align:center;color:#999;padding:40px 0;font-size:14px">
@@ -1142,10 +1144,13 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 </div>
 
 <div class="form-row img-input-box">
-<label>🖼️ 宠物图片（图片链接 / Ctrl+V 粘贴截图）</label>
-<input type="text" id="petImgUrl" placeholder="🔗 在此粘贴图片链接，或点下方按钮上传">
-<input type="file" accept="image/*" id="uploadImg" style="margin-top:4px">
-<div id="formImgPreviewWrap"><img id="formImgPreview" alt="预览"><button type="button" id="btnClearImg" style="padding:3px 6px;font-size:12px">清除</button></div>
+<label>🖼️ 宠物图片（选择文件 / Ctrl+V 粘贴截图）</label>
+<input type="file" accept="image/*" id="uploadImg">
+<div class="paste-zone" id="mainPasteZone" tabindex="0">📋 点击此处后按 Ctrl+V 粘贴图片</div>
+<div class="img-preview-inline" id="formImgPreviewWrap">
+  <img id="formImgPreview" alt="主图预览">
+  <button type="button" id="btnClearImg" style="padding:3px 6px;font-size:12px">清除</button>
+</div>
 </div>
 
 <div class="form-row img-input-box" style="background:#f5f9ff;border-color:#a8c8f0">
@@ -3110,6 +3115,137 @@ $("cpShareModal").addEventListener("click", e => { if(e.target === $("cpShareMod
 $("shareCloseBtn").onclick = () => $("shareModal").classList.add("hidden");
 $("shareModal").addEventListener("click", e => { if(e.target === $("shareModal")) $("shareModal").classList.add("hidden"); });
 
+/* ==================== 日历提醒（.ics 导出） ==================== */
+function makeICalDate(ts){
+    const d = new Date(ts);
+    const pad = n => String(n).padStart(2, "0");
+    return d.getUTCFullYear() + pad(d.getUTCMonth()+1) + pad(d.getUTCDate())
+         + "T" + pad(d.getUTCHours()) + pad(d.getUTCMinutes()) + pad(d.getUTCSeconds()) + "Z";
+}
+function escapeICS(s){
+    return String(s == null ? "" : s)
+        .replace(/\\/g, "\\\\")
+        .replace(/;/g, "\\;")
+        .replace(/,/g, "\\,")
+        .replace(/\r?\n/g, "\\n");
+}
+function buildVEVENT(uid, eventTs, title, desc){
+    const dtstamp = makeICalDate(Date.now());
+    const dtstart = makeICalDate(eventTs);
+    const dtend = makeICalDate(eventTs + 30 * 60 * 1000);
+    let s = "";
+    s += "BEGIN:VEVENT\r\n";
+    s += "UID:" + uid + "\r\n";
+    s += "DTSTAMP:" + dtstamp + "\r\n";
+    s += "DTSTART:" + dtstart + "\r\n";
+    s += "DTEND:" + dtend + "\r\n";
+    s += "SUMMARY:" + escapeICS(title) + "\r\n";
+    s += "DESCRIPTION:" + escapeICS(desc) + "\r\n";
+    s += "BEGIN:VALARM\r\n";
+    s += "TRIGGER:-PT10M\r\n";
+    s += "ACTION:DISPLAY\r\n";
+    s += "DESCRIPTION:" + escapeICS(title) + "\r\n";
+    s += "END:VALARM\r\n";
+    s += "BEGIN:VALARM\r\n";
+    s += "TRIGGER:PT0S\r\n";
+    s += "ACTION:DISPLAY\r\n";
+    s += "DESCRIPTION:" + escapeICS(title) + "\r\n";
+    s += "END:VALARM\r\n";
+    s += "END:VEVENT\r\n";
+    return s;
+}
+function downloadICSFile(filename, content){
+    try{
+        const blob = new Blob([content], { type: "text/calendar;charset=utf-8" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function(){
+            try{ a.remove(); }catch(e){}
+            try{ URL.revokeObjectURL(a.href); }catch(e){}
+        }, 2000);
+        return true;
+    }catch(e){
+        alert("生成日历文件失败：" + e.message);
+        return false;
+    }
+}
+/* 把单只宠物转成一个 VEVENT 字符串；不符合条件的返回 null */
+function petToVEvent(p){
+    if(!p || !p.isRunning || p.locked) return null;
+    const recoverTs = getRecoverTime(p);
+    if(!recoverTs) return null;
+    let eventTs = recoverTs;
+    let title = "";
+    let desc = "";
+    if(p.timerMode === "breedFemale"){
+        eventTs = recoverTs - FEMALE_LOCK_MS;
+        title = "【" + (p.name || "未命名") + "】到接生节点啦";
+        desc = "品种：" + (p.breed || "-")
+             + "\n账号：" + (p.account || "-")
+             + "\n接生节点：" + fmtDT(eventTs)
+             + "\n完整恢复时间：" + fmtDT(recoverTs);
+    } else {
+        title = "【" + (p.name || "未命名") + "】恢复啦";
+        desc = "品种：" + (p.breed || "-")
+             + "\n账号：" + (p.account || "-")
+             + "\n恢复时间：" + fmtDT(recoverTs);
+    }
+    const uid = p.id + "-" + Date.now() + "-" + Math.random().toString(36).slice(2,6) + "@petTimer";
+    return buildVEVENT(uid, eventTs, title, desc);
+}
+/* 工作台多选 → 批量导出 ics */
+function exportBenchToICS(){
+    if(benchSelectedIds.size === 0){
+        alert("请先在工作台内勾选宠物");
+        return;
+    }
+    const allSelected = petList.filter(p => benchSelectedIds.has(p.id));
+    const okPets = [];
+    const skipped = [];
+    allSelected.forEach(p => {
+        if(!p.isRunning){
+            skipped.push((p.name || "未命名") + "（未在计时）");
+        } else if(p.locked){
+            skipped.push((p.name || "未命名") + "（待接生）");
+        } else {
+            okPets.push(p);
+        }
+    });
+    if(okPets.length === 0){
+        alert("选中的宠物都没有正在计时，没有可导出的提醒。\n\n待接生的宠物也不支持导出（已经到点了）。");
+        return;
+    }
+    let ics = "BEGIN:VCALENDAR\r\n"
+            + "VERSION:2.0\r\n"
+            + "PRODID:-//绒光宠物录//PetTimer//CN\r\n"
+            + "CALSCALE:GREGORIAN\r\n"
+            + "METHOD:PUBLISH\r\n";
+    let count = 0;
+    okPets.forEach(p => {
+        const ev = petToVEvent(p);
+        if(ev){ ics += ev; count++; }
+    });
+    ics += "END:VCALENDAR\r\n";
+    const d = new Date();
+    const stamp = d.getFullYear() + String(d.getMonth()+1).padStart(2,"0") + String(d.getDate()).padStart(2,"0");
+    const filename = "绒光宠物录-工作台提醒-" + count + "只-" + stamp + ".ics";
+    if(downloadICSFile(filename, ics)){
+        setTimeout(function(){
+            let msg = "✓ 已导出 " + count + " 只宠物的日历提醒";
+            if(skipped.length > 0){
+                msg += "\n\n跳过 " + skipped.length + " 只：\n" + skipped.slice(0, 8).join("\n");
+                if(skipped.length > 8) msg += "\n...等共 " + skipped.length + " 只";
+            }
+            msg += "\n\n导入提示：\n· iPhone：在「文件」App 中点击 ics 文件 → 右上角分享 → 添加到日历\n· Android：用 Gmail 附件打开，或用 Google 日历网页版导入\n· Windows：用网页版 Outlook 导入（本地日历 App 不支持 ics）";
+            alert(msg);
+        }, 300);
+    }
+}
+
 /* ==================== 保存图片 ==================== */
 let h2cLoadingPromise = null;
 function loadHtml2CanvasLib(){
@@ -3479,6 +3615,7 @@ document.querySelectorAll("[data-bench]").forEach(btn => {
         alert("已对 " + count + " 只宠物应用批量操作");
     };
 });
+$("benchExportIcs").onclick = exportBenchToICS;
 
 /* ==================== 管理账号/品种 ==================== */
 function moveInArray(arr, fromIdx, toIdx){
@@ -4134,9 +4271,10 @@ function openEdit(pid){
     $("modalTitle").textContent = pid ? "编辑宠物档案" : "新增宠物档案";
     $("btnDel").classList.toggle("hidden", !pid);
 
-    ["petImgUrl","txtBreed","petName","petNote","petSire","petDam",
+       ["txtBreed","petName","petNote","petSire","petDam",
      "cp1Name","cp2Name","cp1PairTime","cp2PairTime",
      "cp1Days","cp1Hours","cp2Days","cp2Hours"].forEach(id => { if($(id)) $(id).value = ""; });
+    updatePasteZoneState("mainPasteZone", false);
     $("petTags").value = "";
     $("petFeatures").value = "";
     setEditGender("m");
@@ -4185,12 +4323,15 @@ function openEdit(pid){
         setTimeHint(p);
         renderFeatureQuickPick();
 
-        if(p.img){
+               if(p.img){
             if(isIndexedImg(p.img)){
                 const c = getImageUrlSync(p.img);
-                if(c) showPreview("formImgPreviewWrap","formImgPreview", c);
-                else getImageUrl(p.img).then(u => { if(u && editId === pid) showPreview("formImgPreviewWrap","formImgPreview", u); });
-            } else { $("petImgUrl").value = p.img; showPreview("formImgPreviewWrap","formImgPreview", p.img); }
+                if(c){ showPreview("formImgPreviewWrap","formImgPreview", c); updatePasteZoneState("mainPasteZone", true); }
+                else getImageUrl(p.img).then(u => { if(u && editId === pid){ showPreview("formImgPreviewWrap","formImgPreview", u); updatePasteZoneState("mainPasteZone", true); } });
+            } else {
+                showPreview("formImgPreviewWrap","formImgPreview", p.img);
+                updatePasteZoneState("mainPasteZone", true);
+            }
         }
         updateCpPreview("cp1");
         updateCpPreview("cp2");
@@ -4230,14 +4371,14 @@ $("babyPreview").addEventListener("click", function(){ if(this.src) openBigPrevi
     });
 });
 
-$("petImgUrl").addEventListener("paste", e => {
+$("mainPasteZone").addEventListener("paste", e => {
     for(const it of e.clipboardData.items){
         if(it.type.indexOf("image/") === 0){
             const f = it.getAsFile(); e.preventDefault();
             compressToBlob(f, 2000, 0.9).then(blob => {
                 pendingImgBlob = blob; pendingImgCleared = false;
-                $("petImgUrl").value = "";
                 showPreview("formImgPreviewWrap","formImgPreview", URL.createObjectURL(blob));
+                updatePasteZoneState("mainPasteZone", true);
             }).catch(err => alert("图片处理失败："+err.message));
             break;
         }
@@ -4247,16 +4388,12 @@ $("uploadImg").onchange = e => {
     const f = e.target.files[0]; if(!f) return;
     compressToBlob(f, 2000, 0.9).then(blob => {
         pendingImgBlob = blob; pendingImgCleared = false;
-        $("petImgUrl").value = "";
         showPreview("formImgPreviewWrap","formImgPreview", URL.createObjectURL(blob));
+        updatePasteZoneState("mainPasteZone", true);
     }).catch(err => alert("图片处理失败："+err.message));
     e.target.value = "";
 };
-$("btnClearImg").onclick = () => { pendingImgBlob = null; pendingImgCleared = true; $("petImgUrl").value = ""; showPreview("formImgPreviewWrap","formImgPreview", ""); };
-$("petImgUrl").addEventListener("input", function(){
-    const v = this.value.trim();
-    if(v){ if(pendingImgBlob) pendingImgBlob = null; pendingImgCleared = false; showPreview("formImgPreviewWrap","formImgPreview", v); }
-});
+$("btnClearImg").onclick = () => { pendingImgBlob = null; pendingImgCleared = true; showPreview("formImgPreviewWrap","formImgPreview", ""); updatePasteZoneState("mainPasteZone", false); };
 
 $("uploadImgBack").onchange = e => {
     const f = e.target.files[0]; if(!f) return;
@@ -4365,7 +4502,6 @@ $("btnSave").onclick = async () => {
     const tMode = currentEditTimerMode;
     const h = Number($("tHour").value || 0), m = Number($("tMinute").value || 0);
     const noteVal = $("petNote").value.trim();
-    const imgUrlInput = $("petImgUrl").value.trim();
     const sireVal = $("petSire").value.trim();
     const damVal = $("petDam").value.trim();
     const totalMs = hmToMs(h, m);
@@ -4389,9 +4525,6 @@ $("btnSave").onclick = async () => {
         } else if(pendingImgCleared){
             finalImg = "";
             if(oldPet && isIndexedImg(oldPet.img)) delImgs.push(oldPet.img);
-        } else if(imgUrlInput){
-            finalImg = imgUrlInput;
-            if(oldPet && isIndexedImg(oldPet.img) && oldPet.img !== imgUrlInput) delImgs.push(oldPet.img);
         } else finalImg = oldPet ? (oldPet.img || "") : "";
 
         if(pendingImgBackBlob){
