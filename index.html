@@ -259,20 +259,18 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
   position:relative;
   overflow:hidden;
   box-sizing:border-box;
-  max-height: 92vh;
 }
 .share-poster .img-wrap{position:relative;width:100%}
 .share-poster .img-zone{
   position:relative;width:100%;
   border-radius:12px 12px 0 0;
   overflow:hidden;background:#f5f5f5;line-height:0;
-  max-height: 60vh;
 }
-.share-poster .img-zone img.main{display:block;width:100%;height:auto}
+.share-poster .img-zone img.main{display:block;width:100%;height:100%;object-fit:cover;object-position:center 50%}
 .share-poster .img-zone.empty::after{
   content:"无图";position:absolute;inset:0;
   display:flex;align-items:center;justify-content:center;
-  color:#ccc;font-size:13px;background:#f5f5f5;min-height:280px;line-height:normal;
+  color:#ccc;font-size:13px;background:#f5f5f5;line-height:normal;
 }
 .share-poster .sub-img{
   position:absolute;z-index:6;border-radius:8px;border:2px solid #fff;
@@ -835,6 +833,17 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
       <input type="range" id="adjInfoHeight" min="80" max="320" value="120">
       <span class="val" id="adjInfoHeightVal">120px</span>
     </div>
+    <div class="group-title">主图</div>
+    <div class="row">
+      <label>主图高度</label>
+      <input type="range" id="adjImgHeight" min="320" max="740" value="640">
+      <span class="val" id="adjImgHeightVal">640px</span>
+    </div>
+    <div class="row">
+      <label>上下位置</label>
+      <input type="range" id="adjImgPosY" min="0" max="100" value="0">
+      <span class="val" id="adjImgPosYVal">0%</span>
+    </div>
     <div class="group-title">背面图（左下）</div>
     <div class="row chk-row">
       <input type="checkbox" id="adjBackShow" checked>
@@ -847,8 +856,8 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
     </div>
     <div class="row">
       <label>垂直位置</label>
-      <input type="range" id="adjBackTop" min="0" max="100" value="50">
-      <span class="val" id="adjBackTopVal">50%</span>
+      <input type="range" id="adjBackTop" min="0" max="100" value="62">
+      <span class="val" id="adjBackTopVal">78%</span>
     </div>
     <div class="group-title">幼年图（右下）</div>
     <div class="row chk-row">
@@ -862,8 +871,8 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
     </div>
     <div class="row">
       <label>垂直位置</label>
-      <input type="range" id="adjBabyTop" min="0" max="100" value="50">
-      <span class="val" id="adjBabyTopVal">50%</span>
+      <input type="range" id="adjBabyTop" min="0" max="100" value="62">
+      <span class="val" id="adjBabyTopVal">78%</span>
     </div>
     <div class="group-title">约亲信息位置</div>
     <div class="row">
@@ -2847,12 +2856,14 @@ function showShareCard(petId){
         frameColor: shareSettings.frameColor,
         fontScale: shareSettings.fontScale,
         infoHeight: 130,
+        imgHeight: 640,
+        imgPosY: 0,
         backShow: !!pet.imgBack,
         backSize: 28,
-        backTop: 50,
+        backTop: 62,
         babyShow: !!pet.imgBaby,
         babySize: 28,
-        babyTop: 50,
+        babyTop: 62,
         meetupTop: 22
     };
     $("shareMeetupInput").value = pet.meetup || "";
@@ -2861,6 +2872,10 @@ function showShareCard(petId){
     $("adjFontScaleVal").textContent = sharePreviewState.fontScale + "%";
     $("adjInfoHeight").value = sharePreviewState.infoHeight;
     $("adjInfoHeightVal").textContent = sharePreviewState.infoHeight + "px";
+    $("adjImgHeight").value = sharePreviewState.imgHeight;
+    $("adjImgHeightVal").textContent = sharePreviewState.imgHeight + "px";
+    $("adjImgPosY").value = sharePreviewState.imgPosY;
+    $("adjImgPosYVal").textContent = sharePreviewState.imgPosY + "%";
     $("adjBackShow").checked = sharePreviewState.backShow;
     $("adjBackSize").value = sharePreviewState.backSize;
     $("adjBackSizeVal").textContent = sharePreviewState.backSize + "%";
@@ -2900,8 +2915,9 @@ function renderShareCard(pet, wrap){
         frameColor: shareSettings.frameColor,
         fontScale: shareSettings.fontScale,
         infoHeight: 130,
-        backShow: !!pet.imgBack, backSize: 28, backTop: 50,
-        babyShow: !!pet.imgBaby, babySize: 28, babyTop: 50,
+        imgHeight: 640, imgPosY: 0,
+        backShow: !!pet.imgBack, backSize: 28, backTop: 62,
+        babyShow: !!pet.imgBaby, babySize: 28, babyTop: 62,
         meetupTop: 22
     };
 
@@ -2917,9 +2933,9 @@ function renderShareCard(pet, wrap){
     let html = '';
     html += '<div class="' + posterCls + '" style="--frame-color:'+esc(st.frameColor)+'">';
     html += '  <div class="img-wrap">';
-    html += '    <div class="img-zone' + (pet.img ? '' : ' empty') + '">';
+    html += '    <div class="img-zone' + (pet.img ? '' : ' empty') + '" style="height:'+st.imgHeight+'px">';
     if(pet.img){
-        html += '      <img class="main" data-imgid="'+esc(pet.img)+'" alt="">';
+        html += '      <img class="main" data-imgid="'+esc(pet.img)+'" style="object-position:center '+st.imgPosY+'%" alt="">';
     }
     html += '    </div>';
 
@@ -2994,6 +3010,16 @@ $("adjFontScale").oninput = e => {
 $("adjInfoHeight").oninput = e => {
     sharePreviewState.infoHeight = +e.target.value;
     $("adjInfoHeightVal").textContent = sharePreviewState.infoHeight + "px";
+    reRenderShare();
+};
+$("adjImgHeight").oninput = e => {
+    sharePreviewState.imgHeight = +e.target.value;
+    $("adjImgHeightVal").textContent = sharePreviewState.imgHeight + "px";
+    reRenderShare();
+};
+$("adjImgPosY").oninput = e => {
+    sharePreviewState.imgPosY = +e.target.value;
+    $("adjImgPosYVal").textContent = sharePreviewState.imgPosY + "%";
     reRenderShare();
 };
 $("adjBackShow").onchange = e => { sharePreviewState.backShow = e.target.checked; reRenderShare(); };
@@ -3130,7 +3156,7 @@ function swapImagesForCapture(root){
             div.style.cssText = img.style.cssText || "";
             div.style.boxSizing = "border-box";
             div.style.display = (cs.display === "inline") ? "inline-block" : (cs.display || "block");
-            /* 补齐 CSS 类里写的定位属性，否则绝对定位的头像会掉进文档流 */
+            /* 补齐 CSS 类里的定位属性，否则绝对定位的背面图/幼年图会掉进文档流 */
             div.style.position = cs.position;
             if(cs.position === "absolute" || cs.position === "fixed"){
                 if(cs.top !== "auto")    div.style.top    = cs.top;
@@ -6712,7 +6738,7 @@ $("pairCalcBtn").onclick = () => {
     html += '</div>';
     html += '<div style="font-size:28px;color:#e85496">💞</div>';
     html += '<div style="text-align:center;flex:1">';
-   html += displayData.B.imgUrl ? '<img src="'+displayData.B.imgUrl+'" style="width:80px;height:80px;object-fit:cover;object-position:center center;border-radius:12px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.08)">' : '<div style="width:80px;height:80px;border-radius:12px;background:#f0f2f5;margin:0 auto;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:11px">无图</div>';
+    html += displayData.B.imgUrl ? '<img src="'+displayData.B.imgUrl+'" style="width:80px;height:80px;object-fit:cover;object-position:center center;border-radius:12px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.08)">' : '<div style="width:80px;height:80px;border-radius:12px;background:#f0f2f5;margin:0 auto;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:11px">无图</div>';
     html += '<div style="font-size:13px;font-weight:bold;margin-top:6px">'+esc(displayData.B.name)+'</div>';
     html += '<div style="font-size:11px;color:#888">'+esc(displayData.B.breed||"-")+'</div>';
     html += '</div>';
