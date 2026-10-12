@@ -3154,23 +3154,9 @@ function buildVEVENT(uid, eventTs, title, desc){
     s += "END:VEVENT\r\n";
     return s;
 }
-async function downloadICSFile(filename, content){
-    const blob = new Blob([content], { type: "text/calendar;charset=utf-8" });
-    /* 移动端优先尝试 navigator.share：能弹系统分享菜单，可选「存储到文件 / 添加到日历」 */
-    if(navigator.canShare && typeof File !== "undefined"){
-        try{
-            const file = new File([blob], filename, { type: "text/calendar" });
-            if(navigator.canShare({ files: [file] })){
-                await navigator.share({ files: [file], title: filename });
-                return true;
-            }
-        }catch(e){
-            /* 用户主动取消分享：视为成功；其它错误继续走下载 */
-            if(e && e.name === "AbortError") return true;
-        }
-    }
-    /* 桌面端 / 不支持分享时，退回传统下载 */
+function downloadICSFile(filename, content){
     try{
+        const blob = new Blob([content], { type: "text/calendar;charset=utf-8" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
         a.download = filename;
@@ -3222,7 +3208,6 @@ function petToVEvent(p){
     const uid = p.id + "-" + Date.now() + "-" + Math.random().toString(36).slice(2,6) + "@petTimer";
     return buildVEVENT(uid, eventTs, title, desc);
 }
-
 /* 工作台多选 → 批量导出 ics */
 function exportBenchToICS(){
     if(benchSelectedIds.size === 0){
@@ -3266,7 +3251,7 @@ function exportBenchToICS(){
                 msg += "\n\n跳过 " + skipped.length + " 只：\n" + skipped.slice(0, 8).join("\n");
                 if(skipped.length > 8) msg += "\n...等共 " + skipped.length + " 只";
             }
-            msg += "\n\n导入提示：\n· iPhone：在「文件」App 中点击 ics 文件 → 右上角分享 → 添加到日历\n· Android：用 Gmail 附件打开，或用 Google 日历网页版导入\n· Windows：用网页版 Outlook 导入（本地日历 App 不支持 ics）";
+            msg += "\n\n导入提示：\n· iPhone：Safari浏览器可直接添加到日历\n· Android：用 Gmail 附件打开，或用 Google 日历网页版导入\n· Windows：用网页版 Outlook 导入（本地日历 App 不支持 ics）";
             alert(msg);
         }, 300);
     }
