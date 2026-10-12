@@ -3154,9 +3154,23 @@ function buildVEVENT(uid, eventTs, title, desc){
     s += "END:VEVENT\r\n";
     return s;
 }
-function downloadICSFile(filename, content){
+async function downloadICSFile(filename, content){
+    const blob = new Blob([content], { type: "text/calendar;charset=utf-8" });
+    /* 移动端优先尝试 navigator.share：能弹系统分享菜单，可选「存储到文件 / 添加到日历」 */
+    if(navigator.canShare && typeof File !== "undefined"){
+        try{
+            const file = new File([blob], filename, { type: "text/calendar" });
+            if(navigator.canShare({ files: [file] })){
+                await navigator.share({ files: [file], title: filename });
+                return true;
+            }
+        }catch(e){
+            /* 用户主动取消分享：视为成功；其它错误继续走下载 */
+            if(e && e.name === "AbortError") return true;
+        }
+    }
+    /* 桌面端 / 不支持分享时，退回传统下载 */
     try{
-        const blob = new Blob([content], { type: "text/calendar;charset=utf-8" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
         a.download = filename;
@@ -3178,6 +3192,15 @@ function petToVEvent(p){
     if(!p || !p.isRunning || p.locked) return null;
     const recoverTs = getRecoverTime(p);
     if(!recoverTs) return null;
+    /* 收集 CP 信息 */
+    const cpParts = [];
+    if(p.cp1 && p.cp1.name){
+        cpParts.push("CP1：" + p.cp1.name + (p.cp1.pairTime ? "（配对时间 " + p.cp1.pairTime + "）" : ""));
+    }
+    if(p.cp2 && p.cp2.name){
+        cpParts.push("CP2：" + p.cp2.name + (p.cp2.pairTime ? "（配对时间 " + p.cp2.pairTime + "）" : ""));
+    }
+    const cpLine = cpParts.length ? "\n" + cpParts.join("\n") : "";
     let eventTs = recoverTs;
     let title = "";
     let desc = "";
@@ -3187,15 +3210,18 @@ function petToVEvent(p){
         desc = "品种：" + (p.breed || "-")
              + "\n账号：" + (p.account || "-")
              + "\n接生节点：" + fmtDT(eventTs)
-             + "\n完整恢复时间：" + fmtDT(recoverTs);
+             + "\n完整恢复时间：" + fmtDT(recoverTs)
+             + cpLine;
     } else {
         title = "【" + (p.name || "未命名") + "】恢复啦";
         desc = "品种：" + (p.breed || "-")
              + "\n账号：" + (p.account || "-")
-             + "\n恢复时间：" + fmtDT(recoverTs);
+             + "\n恢复时间：" + fmtDT(recoverTs)
+             + cpLine;
     }
     const uid = p.id + "-" + Date.now() + "-" + Math.random().toString(36).slice(2,6) + "@petTimer";
     return buildVEVENT(uid, eventTs, title, desc);
+}
 }
 /* 工作台多选 → 批量导出 ics */
 function exportBenchToICS(){
