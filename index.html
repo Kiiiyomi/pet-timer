@@ -3222,7 +3222,7 @@ function petToVEvent(p){
     const uid = p.id + "-" + Date.now() + "-" + Math.random().toString(36).slice(2,6) + "@petTimer";
     return buildVEVENT(uid, eventTs, title, desc);
 }
-}
+
 /* 工作台多选 → 批量导出 ics */
 function exportBenchToICS(){
     if(benchSelectedIds.size === 0){
