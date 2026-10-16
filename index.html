@@ -6516,7 +6516,20 @@ function switchMatchTargetSrc(src){
     else { tempTargetPet = null; renderMatchSelectedTargetInfo(); }
     refreshMatchResults();
 }
-
+function getAccountBreedingStatus(acc){
+    if(!acc) return { blocked: false, litters: 0, unlockAt: null };
+    const s = getAccountSlots(acc);
+    if((s.nurseryLitters || 0) <= NURSERY_BREED_LIMIT){
+        return { blocked: false, litters: s.nurseryLitters || 0, unlockAt: null };
+    }
+    const sched = buildAccountSchedule(acc);
+    const unlockAt = getBreedingUnlockTime(sched);
+    /* getBreedingUnlockTime 返回 Date.now() 表示当前就能配；返回 null 表示算不出 */
+    if(unlockAt && unlockAt <= Date.now()){
+        return { blocked: false, litters: s.nurseryLitters || 0, unlockAt: null };
+    }
+    return { blocked: true, litters: s.nurseryLitters || 0, unlockAt: unlockAt || null };
+}
 function renderMatchResults(petA, scheme){
     const now = Date.now();
     const results = [];
@@ -6544,6 +6557,20 @@ function renderMatchResults(petA, scheme){
     if(results.length === 0){ wrap.innerHTML = '<div style="color:#999;padding:20px;text-align:center">暂无符合条件的宠物（老年/天使/送养中的宠物已被过滤）</div>'; return; }
     wrap.innerHTML = results.map(r => {
         const p = r.pet;
+        /* 若候选是公宠，且其账号宝宝房 >5 胎，加"暂时配不了"提示 */
+        let breedingWarnHtml = "";
+        if(p.gender === "m" && p.account){
+            const __bs = getAccountBreedingStatus(p.account);
+            if(__bs.blocked){
+                let __hint = "🔴 暂时配不了（该账号宝宝房 " + __bs.litters + " 胎";
+                if(__bs.unlockAt){
+                    __hint += "，预计 " + fmtDT(__bs.unlockAt) + " 解锁）";
+                } else {
+                    __hint += "，需先补充接出宝宝房计划）";
+                }
+                breedingWarnHtml = '<div style="margin-top:4px;font-size:11px;color:#c82424;background:#fff3f3;border:1px solid #ffc8c8;border-radius:6px;padding:3px 8px;display:inline-block">' + __hint + '</div>';
+            }
+        }
         const gTag = p.gender === "m" ? '<span class="gender-m">公</span>' : '<span class="gender-f">母</span>';
         const imgHtml = p.img
             ? '<img class="match-thumb" data-imgid="'+esc(p.img)+'" data-pet-id="'+esc(p.id)+'" style="width:48px;height:48px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid #eee;flex-shrink:0" alt="">'
@@ -6567,6 +6594,7 @@ function renderMatchResults(petA, scheme){
             + '</div>'
             + '<div style="font-size:12px;color:#666;margin-top:2px">' + esc(p.breed||"-") + '｜' + esc(p.account||"-") + '</div>'
             + (plusHtml || minusHtml ? '<div style="margin-top:4px">' + plusHtml + minusHtml + '</div>' : '')
+            + breedingWarnHtml
             + '</div></div>';
     }).join("");
     fillImgElements(wrap);
@@ -7074,7 +7102,26 @@ function simulateHomeSlots(initialFree, releases, tasks){
     const queue = tasks.slice();
     let free = initialFree;
     let ri = 0;
-    function drain(at, reason){
+
+    /* strict：严格按列表顺序，队首做不了就停下等下一次 release */
+    function drainStrict(at, reason){
+        let moved = true;
+        while(moved && queue.length > 0){
+            moved = false;
+            const t = queue[0];
+            if(free >= t.minFree){
+                let execAt = at;
+                if(t.type === "birth" && t.deliverAt > at) execAt = t.deliverAt;
+                schedule.push(Object.assign({}, t, { at: execAt, reason }));
+                free -= t.consume;
+                queue.shift();
+                moved = true;
+            }
+        }
+    }
+
+    /* greedy：从前往后找第一个能做的（能做的先做） */
+    function drainGreedy(at, reason){
         let moved = true;
         while(moved){
             moved = false;
@@ -7092,6 +7139,9 @@ function simulateHomeSlots(initialFree, releases, tasks){
             }
         }
     }
+
+    const drain = (schedSimMode === "greedy") ? drainGreedy : drainStrict;
+
     drain(now, "现在就能做");
     while(queue.length > 0 && ri < releases.length){
         const r = releases[ri++];
@@ -7506,6 +7556,7 @@ function openEditEvict(id, isManual){
 
 /* ==================== 排期弹窗 ==================== */
 let currentSchedAcc = "";
+let schedSimMode = "strict";   /* "strict"=按列表顺序（默认）；"greedy"=能做的先做 */
 function openSchedulePanel(acc){
     currentSchedAcc = acc;
     const sched = buildAccountSchedule(acc);
@@ -7602,7 +7653,13 @@ function renderSchedulePanel(sched){
         🏠 家庭 <b>${s.home}/${HOME_TOTAL}</b>（空 ${s.homeFree}${s.extraHomeFree > 0 ? "，+托管可腾 " + s.extraHomeFree : ""}） ｜ 📦 托管 <b>${s.boarding}/${BOARD_TOTAL}</b>（空 ${s.boardFree}） ｜ 👶 宝宝房 <b>${s.nurseryLitters} 胎</b> ｜ ${unlockLine}
       </div>
       <div class="sched-panel">
-        <h4>🎯 任务优先级（拖动调整顺序）</h4>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+          <h4 style="margin:0">🎯 任务优先级（拖动调整顺序）</h4>
+          <div style="display:flex;gap:4px">
+            <button id="schedModeStrict" class="mf-btn${schedSimMode === 'strict' ? ' active' : ''}" style="font-size:12px;padding:4px 10px" title="严格按任务列表顺序：队首做不了就一直等，不跳过">📋 按列表顺序</button>
+            <button id="schedModeGreedy" class="mf-btn${schedSimMode === 'greedy' ? ' active' : ''}" style="font-size:12px;padding:4px 10px" title="从前往后找第一个能做的任务，能做的先做">⚡ 能做的先做</button>
+          </div>
+        </div>
         <div id="schedTaskList">${taskHtml}</div>
         <div style="font-size:12px;color:#888;margin-top:8px;line-height:1.7">
           💡 母宠分娩需要 <b>2 个家庭空位入场</b>，单胎消耗 1 格、双胞胎消耗 2 格；<br>
@@ -7621,6 +7678,10 @@ function renderSchedulePanel(sched){
     `;
     $("scheduleContent").innerHTML = html;
     bindScheduleDrag(acc);
+    const __btnStrict = $("schedModeStrict");
+    const __btnGreedy = $("schedModeGreedy");
+    if(__btnStrict) __btnStrict.onclick = () => { schedSimMode = "strict"; openSchedulePanel(acc); };
+    if(__btnGreedy) __btnGreedy.onclick = () => { schedSimMode = "greedy"; openSchedulePanel(acc); };
     $("schedClose").onclick = () => $("scheduleModal").classList.add("hidden");
     $("schedRunSim").onclick = () => openSchedulePanel(acc);
     $("schedEditNursery").onclick = () => openNurseryModal(acc);
