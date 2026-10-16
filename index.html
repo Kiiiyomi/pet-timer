@@ -7101,56 +7101,76 @@ function simulateHomeSlots(initialFree, releases, tasks){
     const schedule = [];
     const queue = tasks.slice();
     let free = initialFree;
+
+    /* 收集所有关键时间点：现在 + 每次送养释放 + 每个待分娩时间 */
+    const timeSet = new Set();
+    timeSet.add(now);
+    releases.forEach(r => timeSet.add(r.at));
+    tasks.forEach(t => { if(t.type === "birth" && t.deliverAt) timeSet.add(t.deliverAt); });
+    const timePoints = Array.from(timeSet).sort((a, b) => a - b);
+
+    const releasesSorted = releases.slice().sort((a, b) => a.at - b.at);
     let ri = 0;
 
-    /* strict：严格按列表顺序，队首做不了就停下等下一次 release */
-    function drainStrict(at, reason){
+    function tryDrain(at, reason){
         let moved = true;
         while(moved && queue.length > 0){
             moved = false;
-            const t = queue[0];
-            if(free >= t.minFree){
-                let execAt = at;
-                if(t.type === "birth" && t.deliverAt > at) execAt = t.deliverAt;
-                schedule.push(Object.assign({}, t, { at: execAt, reason }));
-                free -= t.consume;
-                queue.shift();
-                moved = true;
-            }
-        }
-    }
-
-    /* greedy：从前往后找第一个能做的（能做的先做） */
-    function drainGreedy(at, reason){
-        let moved = true;
-        while(moved){
-            moved = false;
-            for(let i = 0; i < queue.length; i++){
-                const t = queue[i];
+            if(schedSimMode === "strict"){
+                /* 严格列表顺序：只看队首 */
+                const t = queue[0];
+                /* 队首是 birth 但 deliverAt 还没到 → 不执行，也不往后看，等它自己的时间点 */
+                if(t.type === "birth" && t.deliverAt > at) return;
                 if(free >= t.minFree){
-                    let execAt = at;
-                    if(t.type === "birth" && t.deliverAt > at) execAt = t.deliverAt;
+                    const execAt = (t.type === "birth") ? Math.max(at, t.deliverAt) : at;
                     schedule.push(Object.assign({}, t, { at: execAt, reason }));
                     free -= t.consume;
-                    queue.splice(i, 1);
+                    queue.shift();
                     moved = true;
-                    break;
+                } else {
+                    /* 队首格子不够，等待下一次 release 或时间推进 */
+                    return;
+                }
+            } else {
+                /* greedy：从前往后找第一个能做的（跳过 deliverAt 未到的 birth） */
+                for(let i = 0; i < queue.length; i++){
+                    const t = queue[i];
+                    if(t.type === "birth" && t.deliverAt > at) continue;
+                    if(free >= t.minFree){
+                        const execAt = (t.type === "birth") ? Math.max(at, t.deliverAt) : at;
+                        schedule.push(Object.assign({}, t, { at: execAt, reason }));
+                        free -= t.consume;
+                        queue.splice(i, 1);
+                        moved = true;
+                        break;
+                    }
                 }
             }
         }
     }
 
-    const drain = (schedSimMode === "greedy") ? drainGreedy : drainStrict;
-
-    drain(now, "现在就能做");
-    while(queue.length > 0 && ri < releases.length){
-        const r = releases[ri++];
-        free += 1;
-        const reasonTxt = (r.kind === "boarding")
-            ? "等「" + r.name + "」送养完成（托管释放，需把家庭宠物挪到托管）"
-            : "等「" + r.name + "」送养完成";
-        drain(r.at, reasonTxt);
+    for(let i = 0; i < timePoints.length; i++){
+        const t = timePoints[i];
+        /* 处理所有到期的送养释放 */
+        const releasedItems = [];
+        while(ri < releasesSorted.length && releasesSorted[ri].at <= t){
+            const r = releasesSorted[ri];
+            free += 1;
+            releasedItems.push(r);
+            ri++;
+        }
+        let reason;
+        if(t === now && releasedItems.length === 0){
+            reason = "现在就能做";
+        } else if(releasedItems.length > 0){
+            const names = releasedItems.map(r => r.name + (r.kind === "boarding" ? "（托管）" : "")).join("、");
+            reason = "等「" + names + "」送养完成";
+        } else {
+            reason = "时间推进到 " + fmtDT(t);
+        }
+        tryDrain(t, reason);
     }
+
     return { schedule, unplaced: queue, finalFree: free };
 }
 
