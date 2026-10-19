@@ -1634,7 +1634,13 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 
 <div class="form-row"><label>总时长</label>
 <div class="time-hint" id="timeStatusHint"></div>
-<div class="quick-time">
+<div style="background:#fffdf3;border:1px solid #f0e0a0;border-radius:6px;padding:8px;margin-bottom:8px;">
+    <div style="font-size:12px;color:#a06a10;margin-bottom:4px">💡 根据预计恢复时间反算（补录用）</div>
+    <div style="display:flex;gap:6px;align-items:center;">
+        <input type="datetime-local" id="calcRemainTarget" style="flex:1;font-size:12px;padding:4px;">
+        <button type="button" id="btnCalcRemain" style="font-size:12px;padding:5px 12px;background:#fff8e6;border-color:#e8c060;color:#a06a10;cursor:pointer;">自动换算</button>
+    </div>
+</div><div class="quick-time">
     <button type="button" data-quick="4">4 小时</button>
     <button type="button" data-quick="72">72 小时</button>
     <button type="button" data-quick="144">144 小时</button>
@@ -2316,6 +2322,40 @@ function updateUndoBtn(){
     }
 }
 $("btnUndo").onclick = undoLast;
+
+/* 万能时间解析：支持留空、月-日、纯数字、标准格式 */
+function parseFlexibleDate(str) {
+    if (!str || !String(str).trim()) return Date.now();
+    str = String(str).trim();
+    // 替换中文和分隔符
+    str = str.replace(/[年月\.\/]/g, "-").replace(/[日]/g, "").trim();
+    
+    // 支持 "10-15" 或 "10-5"
+    let m = str.match(/^(\d{1,2})-(\d{1,2})$/);
+    if (m) {
+        const now = new Date();
+        const month = parseInt(m[1], 10) - 1;
+        const day = parseInt(m[2], 10);
+        const d = new Date(now.getFullYear(), month, day, now.getHours(), now.getMinutes());
+        return d.getTime();
+    }
+    // 支持纯数字 "1015"
+    m = str.match(/^(\d{2})(\d{2})$/);
+    if (m) {
+        const now = new Date();
+        const month = parseInt(m[1], 10) - 1;
+        const day = parseInt(m[2], 10);
+        const d = new Date(now.getFullYear(), month, day, now.getHours(), now.getMinutes());
+        return d.getTime();
+    }
+    
+    // 兼容性处理：把空格替换成 T 处理
+    str = str.replace(" ", "T");
+    const t = new Date(str).getTime();
+    if (!isNaN(t)) return t;
+    
+    return null; // 解析失败返回 null
+}
 
 function toLocalInputVal(dateStr){
     if(!dateStr) return "";
@@ -3738,13 +3778,10 @@ function handleStageSelect(pet, val){
     }
     if(val === "senior"){
         const cur = pet.seniorAt ? fmtDT(pet.seniorAt) : "";
-        const input = prompt("请输入进入老年的时间（可留空）：\n格式 yyyy-mm-dd hh:mm\n例如：" + fmtDT(Date.now()), cur);
+        const input = prompt("请输入进入老年的时间（留空默认当前）：\n支持：10-15 或 2026-10-15 14:30", cur);
         if(input === null) return;
-        let ts = 0;
-        if(input.trim()){
-            const t = new Date(input.trim().replace(" ","T")).getTime();
-            ts = isNaN(t) ? Date.now() : t;
-        }
+        const ts = parseFlexibleDate(input);
+        if(ts === null) { alert("格式错误"); return; }
         takeSnapshot("切换阶段「" + (pet.name||"未命名") + "」→老年期");
         pet.stage = "senior";
         pet.seniorAt = ts;
@@ -3754,14 +3791,11 @@ function handleStageSelect(pet, val){
         return;
     }
    if(val === "angel"){
-    const cur = pet.angelAt ? fmtDT(pet.angelAt) : "";
-    const input = prompt("请输入进入天使期的时间（可留空）：\n格式 yyyy-mm-dd hh:mm\n例如：" + fmtDT(Date.now()), cur);
-    if(input === null) return;
-    let ts = 0;
-    if(input.trim()){
-        const t = new Date(input.trim().replace(" ","T")).getTime();
-        ts = isNaN(t) ? Date.now() : t;
-    }
+        const cur = pet.angelAt ? fmtDT(pet.angelAt) : "";
+        const input = prompt("请输入进入天使期的时间（留空默认当前）：\n支持：10-15 或 2026-10-15 14:30", cur);
+        if(input === null) return;
+        const ts = parseFlexibleDate(input);
+        if(ts === null) { alert("格式错误"); return; }
     takeSnapshot("切换阶段「" + (pet.name||"未命名") + "」→天使期");
     pet.location = "angel";
     pet.stage = "angel";
@@ -3884,13 +3918,10 @@ document.addEventListener("click", e => {
         const pet = petList.find(x => x.id === seniorTime.dataset.editSenior);
         if(!pet) return;
         const cur = pet.seniorAt ? fmtDT(pet.seniorAt) : "";
-        const input = prompt("修改进入老年的时间：\n格式 yyyy-mm-dd hh:mm", cur);
+        const input = prompt("修改进入老年的时间（留空默认当前）：\n支持格式：\n· 10-15 或 1015（默认今年，当前时分）\n· 2026-10-15 14:30", cur);
         if(input === null) return;
-        let ts = 0;
-        if(input.trim()){
-            const t = new Date(input.trim().replace(" ","T")).getTime();
-            ts = isNaN(t) ? Date.now() : t;
-        }
+        const ts = parseFlexibleDate(input);
+        if(ts === null) { alert("时间格式错误，请重试"); return; }
         takeSnapshot("修改进入老年时间「" + (pet.name||"未命名") + "」");
         pet.seniorAt = ts;
         touchPet(pet);
@@ -3904,13 +3935,10 @@ document.addEventListener("click", e => {
         const pet = petList.find(x => x.id === angelTime.dataset.editAngel);
         if(!pet) return;
         const cur = pet.angelAt ? fmtDT(pet.angelAt) : "";
-        const input = prompt("修改进入天使期的时间：\n格式 yyyy-mm-dd hh:mm", cur);
+        const input = prompt("修改进入天使期的时间（留空默认当前）：\n支持格式：\n· 10-15 或 1015（默认今年，当前时分）\n· 2026-10-15 14:30", cur);
         if(input === null) return;
-        let ts = 0;
-        if(input.trim()){
-            const t = new Date(input.trim().replace(" ","T")).getTime();
-            ts = isNaN(t) ? Date.now() : t;
-        }
+        const ts = parseFlexibleDate(input);
+        if(ts === null) { alert("时间格式错误，请重试"); return; }
         takeSnapshot("修改进入天使时间「" + (pet.name||"未命名") + "」");
         pet.angelAt = ts;
         touchPet(pet);
@@ -5461,6 +5489,22 @@ function closeEdit(){
     currentEditStage = "adult";
 }
 $("btnAdd").onclick = () => openEdit(null);
+$("btnCalcRemain").onclick = () => {
+    const v = $("calcRemainTarget").value;
+    if(!v) { alert("请先选择预计恢复的日期和时间"); return; }
+    const target = new Date(v).getTime();
+    let diff = target - Date.now();
+    if(diff <= 0) {
+        alert("目标时间早于或等于当前时间，已归零");
+        diff = 0;
+    }
+    const totalMins = Math.floor(diff / 60000);
+    $("tHour").value = Math.floor(totalMins / 60);
+    $("tMinute").value = totalMins % 60;
+    
+    if(editId !== null) timeEditedByUser = true;
+    alert(`已换算：距离目标还有 ${$("tHour").value} 小时 ${$("tMinute").value} 分钟`);
+};
 $("btnCancel").onclick = closeEdit;
 
 function openEdit(pid){
@@ -5480,7 +5524,7 @@ function openEdit(pid){
     $("modalTitle").textContent = pid ? "编辑宠物档案" : "新增宠物档案";
     $("btnDel").classList.toggle("hidden", !pid);
 
-    ["txtBreed","petName","petNote","petSire","petDam","cp1Name","cp2Name","cp1PairTime","cp2PairTime","cp1Days","cp1Hours","cp2Days","cp2Hours"].forEach(id => { if($(id)) $(id).value = ""; });
+["txtBreed","petName","petNote","petSire","petDam","cp1Name","cp2Name","cp1PairTime","cp2PairTime","cp1Days","cp1Hours","cp2Days","cp2Hours","calcRemainTarget"].forEach(id => { if($(id)) $(id).value = ""; });
     updatePasteZoneState("mainPasteZone", false);
     $("petTags").value = ""; $("petFeatures").value = "";
     setEditGender("m");
