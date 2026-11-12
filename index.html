@@ -26,7 +26,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .mf-btn{background:#fff;border:1px solid #cbd5e1;padding:6px 10px;border-radius:6px;font-size:13px;color:#444}
 .mf-btn.active{background:#e8f0ff;border-color:#3070ee;color:#3070ee}
 .mf-btn .cnt{background:#3070ee;color:#fff;border-radius:10px;padding:0 6px;font-size:11px;margin-left:4px}
-.mf-panel{position:fixed;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:8px;box-shadow:0 6px 20px rgba(0,0,0,.15);z-index:800;max-height:60vh;overflow:auto;min-width:200px;max-width:320px}
+.mf-panel{position:fixed;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:8px;box-shadow:0 6px 20px rgba(0,0,0,.15);z-index:800;overflow-y:auto;min-width:200px;max-width:320px}
 .mf-panel h5{margin:4px 0 6px;font-size:12px;color:#888;font-weight:600}
 .mf-panel label{display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:4px;font-size:13px;cursor:pointer}
 .mf-panel label:hover{background:#f4f7fb}
@@ -414,7 +414,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .stage-btn.senior{background:#ffe8c8;border-color:#d89020;color:#8a5010}
 .stage-btn.angel{background:#e8f5ee;border-color:#88c8a0;color:#1a7a4a}
 
-.stage-menu{position:fixed;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:6px;box-shadow:0 6px 20px rgba(0,0,0,.15);z-index:1000;min-width:140px}
+.stage-menu{position:fixed;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:6px;box-shadow:0 6px 20px rgba(0,0,0,.15);z-index:1000;min-width:140px;overflow-y:auto}
 .stage-menu button{display:block;width:100%;text-align:left;padding:8px 12px;font-size:13px;border:none;background:transparent;border-radius:6px;cursor:pointer;color:#333}
 .stage-menu button:hover{background:#f4f7fb}
 .stage-menu button.curr{background:#e8f0ff;color:#3070ee;font-weight:500}
@@ -466,6 +466,17 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .sched-task .task-cost{font-size:11px;padding:2px 8px;border-radius:10px;background:#eef3fa;color:#3070ee;white-space:nowrap}
 .sched-task.done{background:#f0fbf5;border-color:#a8d8c0}
 .sched-task.blocked{background:#fff8e6;border-color:#f0e0a0}
+.sched-task.done .task-name { font-size: 13px; }
+.sched-task.blocked .task-name { font-size: 12px; }
+.sched-task.done .sched-status { font-size: 12px; }
+.sched-task.blocked .sched-status { font-size: 10px; }
+
+@media (max-width: 520px) {
+  .sched-task { flex-wrap: wrap; align-items: flex-start; gap: 4px; }
+  .sched-task .task-name { flex: 1 1 160px; }
+  .sched-task .task-cost { flex: 0 0 auto; }
+  .sched-task .sched-status { flex: 0 0 100%; text-align: right; margin-top: 2px; }
+}
 
 .sched-result{margin-top:12px;background:#f7f9fc;border-radius:8px;padding:10px;font-size:12px;line-height:1.9;max-height:400px;overflow:auto}
 .sched-result .line{padding:3px 0;border-bottom:1px dashed #eef1f5}
@@ -1784,8 +1795,9 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
     <span style="color:#888;font-size:12px;margin-left:8px">超过 5 胎，该账号公宠无法繁育</span>
   </div>
   <div class="form-row">
-    <label>当前后代总数（参考值）</label>
-    <input type="number" id="nurseryBabies" min="0" max="999" style="width:100px">
+    <label>其中双胞胎数量</label>
+    <input type="number" id="nurseryTwins" min="0" max="99" style="width:100px">
+    <span style="color:#888;font-size:12px;margin-left:8px">每对双胞胎占 2 个后代位</span>
   </div>
   <div class="form-row">
     <label style="display:flex;justify-content:space-between;align-items:center">
@@ -1927,19 +1939,15 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
   <div class="form-row">
     <label>导出条数 <span id="schedExportTotal" style="color:#888;font-weight:normal"></span></label>
     <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-      <input type="number" id="schedExportCount" min="1" value="2" style="width:90px">
-      <button type="button" data-sched-export-n="2" style="font-size:12px;padding:4px 10px">前 2 条</button>
+      <input type="number" id="schedExportCount" min="1" value="1" style="width:90px">
+      <button type="button" data-sched-export-n="3" style="font-size:12px;padding:4px 10px">前 3 条</button>
       <button type="button" data-sched-export-n="5" style="font-size:12px;padding:4px 10px">前 5 条</button>
-      <button type="button" data-sched-export-n="10" style="font-size:12px;padding:4px 10px">前 10 条</button>
       <button type="button" data-sched-export-all="1" style="font-size:12px;padding:4px 10px">全部</button>
     </div>
   </div>
   <div class="form-row">
     <label>事件预览</label>
     <div id="schedExportPreview" style="border:1px solid #e3e8ef;border-radius:6px;max-height:240px;overflow:auto;background:#fafbfd"></div>
-  </div>
-  <div style="font-size:12px;color:#888;background:#f8f9fb;padding:10px;border-radius:6px;line-height:1.7;margin-top:8px">
-    蓝色高亮的为「将被导出」，灰色为「本次不导出」。
   </div>
 </div></div>
 <script>
@@ -2053,18 +2061,14 @@ let lastSnapshot = null;
 let tipCurrentTab = "wechat";
 let tipCurrentAmt = null;
 let cardLargeImg = false;
-let cardLocFilter = "all";  /* 卡片位置筛选：all | home | boarding */
+let cardLocFilter = "all";
 let flawScores = {};
 let mainAccount = "";
 
-/* ==================== 格子追踪状态 ==================== */
-/* 宝宝房手动数据 */
+/* 格子追踪状态 */
 let nurseryByAccount = {};
-/* 排期顺序 */
 let scheduleOrderByAccount = {};
-/* 格子数修正（delta）：工具算 + delta = 显示值 */
 let slotDelta = {};
-/* 手动送养清单：[{id, name, location:"home"|"boarding", evictDoneAt}] */
 let slotEvicts = [];
 
 /* 速配方案 */
@@ -2104,7 +2108,7 @@ let pairState = {
 let pairPickerSide = null;
 let tempTargetFlaws = new Set();
 
-let featureMode = "or";   /* or=并集, and=交集 */
+let featureMode = "or";
 const filterState = {
     status: new Set(), gender: new Set(), category: new Set(),
     breed: new Set(), account: new Set(), feature: new Set()
@@ -2113,6 +2117,7 @@ const filterExcludeState = {
     status: new Set(),
     feature: new Set()
 };
+
 /* ==================== 工具函数 ==================== */
 const $ = id => document.getElementById(id);
 const esc = s => s == null ? "" : String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
@@ -2129,7 +2134,6 @@ const msToHM = ms => {
     if(h > 0) return h + "时" + m + "分";
     return m + "分";
 };
-/* 剩余时间格式：48:00 风格（小时:分钟，小时可以超过 24） */
 const msToHHMM = ms => {
     const t = Math.floor(Math.max(0,ms)/1000);
     const h = Math.floor(t/3600);
@@ -2143,7 +2147,6 @@ const isIndexedImg = img => img && img.indexOf("img_") === 0;
 const isBase64Img = img => img && img.indexOf("data:image/") === 0;
 const touchPet = (p,ts) => { if(p) p.utime = ts || Date.now(); };
 
-/* 解析 "48:00" → 毫秒 */
 function parseHHMM(str){
     if(!str) return null;
     str = String(str).trim();
@@ -2323,14 +2326,10 @@ function updateUndoBtn(){
 }
 $("btnUndo").onclick = undoLast;
 
-/* 万能时间解析：支持留空、月-日、纯数字、标准格式 */
 function parseFlexibleDate(str) {
     if (!str || !String(str).trim()) return Date.now();
     str = String(str).trim();
-    // 替换中文和分隔符
     str = str.replace(/[年月\.\/]/g, "-").replace(/[日]/g, "").trim();
-    
-    // 支持 "10-15" 或 "10-5"
     let m = str.match(/^(\d{1,2})-(\d{1,2})$/);
     if (m) {
         const now = new Date();
@@ -2339,7 +2338,6 @@ function parseFlexibleDate(str) {
         const d = new Date(now.getFullYear(), month, day, now.getHours(), now.getMinutes());
         return d.getTime();
     }
-    // 支持纯数字 "1015"
     m = str.match(/^(\d{2})(\d{2})$/);
     if (m) {
         const now = new Date();
@@ -2348,13 +2346,10 @@ function parseFlexibleDate(str) {
         const d = new Date(now.getFullYear(), month, day, now.getHours(), now.getMinutes());
         return d.getTime();
     }
-    
-    // 兼容性处理：把空格替换成 T 处理
     str = str.replace(" ", "T");
     const t = new Date(str).getTime();
     if (!isNaN(t)) return t;
-    
-    return null; // 解析失败返回 null
+    return null;
 }
 
 function toLocalInputVal(dateStr){
@@ -2380,7 +2375,6 @@ function isAngel(p){ return p && p.location === "angel"; }
 function isEvicted(p){ return p && p.location === "evicted"; }
 function isSenior(p){ return p && p.stage === "senior"; }
 
-/* 冻结判断：送走中 / 托管 → 冻结；天使/已送养 → 不占格 */
 function isFrozen(p){
     if(!p) return false;
     if(p.location === "angel" || p.location === "evicted") return false;
@@ -2388,7 +2382,6 @@ function isFrozen(p){
     return false;
 }
 
-/* 计算账号的格子占用（不含 delta） */
 function computeAccountSlots(acc){
     const now = Date.now();
     const pets = petList.filter(p => p.account === acc && p.location !== "angel" && p.location !== "evicted");
@@ -2402,12 +2395,11 @@ function computeAccountSlots(acc){
             releases.push({ id: p.id, name: p.name, from: p.location, at: p.evictDoneAt, isManual: false });
         }
     });
-    // 加上手动送养
     slotEvicts.forEach(ev => {
         if(ev.evictDoneAt <= now) return;
         if(ev.account !== acc) return;
-        if(ev.location === "home") home++;          // ← 新增
-        else if(ev.location === "boarding") boarding++; // ← 新增
+        if(ev.location === "home") home++;
+        else if(ev.location === "boarding") boarding++;
         evicting++;
         releases.push({ id: ev.id, name: ev.name, from: ev.location, at: ev.evictDoneAt, isManual: true });
     });
@@ -2415,16 +2407,14 @@ function computeAccountSlots(acc){
     return { home, boarding, evicting, releases };
 }
 
-/* 加 delta 后的实际数值 */
 function getAccountSlots(acc){
     const base = computeAccountSlots(acc);
     const d = slotDelta[acc] || { home: 0, boarding: 0 };
-    const n = nurseryByAccount[acc] || { litters:0, babies:0, exitTasks:[] };
+    const n = nurseryByAccount[acc] || { litters:0, twins:0, babies:0, exitTasks:[] };
     const home = base.home + (d.home || 0);
     const boarding = base.boarding + (d.boarding || 0);
     const homeFree = HOME_TOTAL - home;
     const boardFree = BOARD_TOTAL - boarding;
-    /* 托管可腾挪：家庭里有宠物 + 托管有空位 → 可以把家庭宠物挪到托管腾格 */
     const movableHomePets = petList.filter(p =>
         p.account === acc &&
         p.location === "home"
@@ -2440,13 +2430,13 @@ function getAccountSlots(acc){
         evicting: base.evicting,
         releases: base.releases,
         nurseryLitters: n.litters || 0,
+        nurseryTwins: n.twins || 0,
         nurseryBabies: n.babies || 0,
         canBreed: (n.litters || 0) <= NURSERY_BREED_LIMIT,
         canDeliver: (homeFree + extraHomeFree) >= 2
     };
 }
 
-/* 修改格子数（写入 delta） */
 function setAccountSlotOverride(acc, field, newValue){
     const base = computeAccountSlots(acc);
     const baseVal = field === "home" ? base.home : base.boarding;
@@ -2459,19 +2449,16 @@ function resetAccountSlotOverride(acc){
     saveLocal();
 }
 
-/* 移动宠物位置（家庭 ↔ 托管） */
 function movePet(pet, newLoc){
     if(!pet || !newLoc) return;
     if(newLoc === pet.location) return;
     if(pet.location === "angel" || pet.location === "evicted"){ alert("天使期/已送养的宠物不能移动"); return; }
-    /* 送养中的宠物：只能从家庭移到托管；托管 → 家庭需要先取消送养 */
     if(isEvicting(pet) && newLoc === "home"){
         alert("送养中的宠物要接回家庭，请先取消送养。\n\n在卡片上点「阶段」按钮 → 选「↩ 取消送养」。");
         return;
     }
 
     if(newLoc === "boarding"){
-        /* 先算剩余时间，再改 location，否则 getRemain 会把 location=boarding 当成冻结 */
         if(pet.isRunning){
             pet.pausedAt = getRemain(pet);
             pet.isRunning = false;
@@ -2480,7 +2467,6 @@ function movePet(pet, newLoc){
         pet.location = newLoc;
     } else if(newLoc === "home"){
         pet.location = newLoc;
-        /* 取出托管：有剩余时间且未锁定 → 恢复计时 */
         if(!pet.isRunning && !pet.locked && (pet.pausedAt || 0) > 0 && (pet.totalMs || 0) > 0){
             startTimer(pet);
         }
@@ -2492,7 +2478,6 @@ function movePet(pet, newLoc){
     render();
 }
 
-/* ==================== 导入内容比较 ==================== */
 function petDiffers(a, b){
     const simple = ['name','gender','account','category','breed','timerMode','totalMs','pausedAt','isRunning','startTs','runStartRemain','locked','note','img','imgBack','imgBaby','meetup','sire','dam','recoveredAt','location','stage','seniorAt','angelAt','evictStartTs','evictDoneAt'];
     for(let i = 0; i < simple.length; i++){
@@ -2634,7 +2619,6 @@ function normalizePet(p){
     else if(typeof p.features === "string" && p.features.trim()){
         featArr = p.features.split(/[\n,，;；]+/).map(s => s.trim()).filter(Boolean);
     }
-    /* 旧备份自动迁移：没有 location 时按 isRunning 推断 */
     let loc = p.location;
     if(!loc){
         if(p.isRunning) loc = "home";
@@ -2643,10 +2627,7 @@ function normalizePet(p){
     }
     return {
         id: p.id || genId(), ctime: created, utime: p.utime || created,
-        img: p.img || "",
-        imgBack: p.imgBack || "",
-        imgBaby: p.imgBaby || "",
-        meetup: p.meetup || "",
+        img: p.img || "", imgBack: p.imgBack || "", imgBaby: p.imgBaby || "", meetup: p.meetup || "",
         name: p.name || "未命名", gender: p.gender || "m",
         account: p.account || "", category: p.category || "", breed: p.breed || "",
         tags: Array.isArray(p.tags) ? p.tags : [],
@@ -2683,6 +2664,10 @@ function loadFromLocal(){
         matchSchemes = Array.isArray(obj.matchSchemes) ? obj.matchSchemes : [];
         currentSchemeId = obj.currentSchemeId || "";
         nurseryByAccount = (obj.nurseryByAccount && typeof obj.nurseryByAccount === "object") ? obj.nurseryByAccount : {};
+        // 兼容旧数据，确保 twins 字段存在
+        Object.keys(nurseryByAccount).forEach(k => {
+            if(nurseryByAccount[k].twins === undefined) nurseryByAccount[k].twins = 0;
+        });
         scheduleOrderByAccount = (obj.scheduleOrderByAccount && typeof obj.scheduleOrderByAccount === "object") ? obj.scheduleOrderByAccount : {};
         slotDelta = (obj.slotDelta && typeof obj.slotDelta === "object") ? obj.slotDelta : {};
         slotEvicts = Array.isArray(obj.slotEvicts) ? obj.slotEvicts : [];
@@ -2741,7 +2726,7 @@ function startTimer(p, now){
     now = now || Date.now();
     p.runStartRemain = p.isRunning ? getRemain(p, now) : (p.pausedAt != null ? p.pausedAt : (p.totalMs || 0));
     p.isRunning = true; p.startTs = now; p.recoveredAt = 0;
-    p.location = "home";  /* 开始计时即在家庭 */
+    p.location = "home";
     touchPet(p, now);
 }
 function pauseTimer(p, now){
@@ -2765,10 +2750,8 @@ function deliverBaby(p, now){
 }
 const FEMALE_LOCK_MS = hmToMs(72,0);
 
-/* 待接生母宠放托管：只改位置，不碰计时（因为 locked 已经卡住了） */
 function moveLockedPetToBoarding(p){
     p.location = "boarding";
-    /* locked 状态保留，pausedAt 保留（FEMALE_LOCK_MS） */
     touchPet(p);
 }
 
@@ -2798,7 +2781,6 @@ function checkAutoLock(now){
                 alerts.push("【"+(p.name||"未命名")+"】到达接生节点！");
             }
         }
-        /* 宠物送走完成 → 变 evicted */
         if(p.evictDoneAt && p.evictDoneAt <= now && p.location !== "evicted" && p.location !== "angel"){
             p.location = "evicted";
             p.isRunning = false;
@@ -2807,7 +2789,6 @@ function checkAutoLock(now){
             changed = true;
         }
     });
-    /* 手动送养清单到期清理 */
     const before = slotEvicts.length;
     slotEvicts = slotEvicts.filter(ev => ev.evictDoneAt > now);
     if(slotEvicts.length !== before) changed = true;
@@ -2833,6 +2814,7 @@ function calcWaitTime(p, now){
     const m = Math.floor((diff % 3600000) / 60000);
     return (d > 0 ? d + "天" : "") + h + "时" + m + "分";
 }
+
 /* ==================== 卡片 ==================== */
 function buildCard(p, now, showIdle){
     const div = document.createElement("div");
@@ -2857,7 +2839,6 @@ function buildCard(p, now, showIdle){
     const cp1Name = (p.cp1 && p.cp1.name || "").trim();
     const cp2Name = (p.cp2 && p.cp2.name || "").trim();
 
-    /* 状态文字（用于状态块） */
     let statusText = "";
     let statusCls = "";
     if(isLockedNow){ statusText = "🔒 待接生"; statusCls = "status-locked"; }
@@ -2868,7 +2849,6 @@ function buildCard(p, now, showIdle){
     else if(p.isRunning){ statusText = "⏱ 计时中"; statusCls = "status-running"; }
     else { statusText = "⏸ 托管"; statusCls = ""; }
 
-    /* 位置按钮 */
     let locHtml = '';
     if(isAngelNow || isEvictedNow){
         locHtml = '<span style="font-size:11px;color:#888">'+(isAngelNow?"🕊 天使期":"📜 已送养")+'</span>';
@@ -2877,20 +2857,17 @@ function buildCard(p, now, showIdle){
           + '<span class="loc-btn'+(p.location==="boarding"?" active boarding":"")+'" data-loc-toggle="'+p.id+'" data-loc="boarding">📦 托管</span>';
     }
 
-    /* 阶段标签 */
     let stageTagHtml = '';
     if(!isAngelNow && !isEvictedNow){
         const stageCls = isSeniorNow ? " senior" : "";
         stageTagHtml = '<span class="stage-tag'+stageCls+'" data-stage-btn="'+p.id+'">'+(STAGE_LABEL[p.stage] || "成年期")+'</span>';
     }
 
-    /* 送养提示 */
     let evictHint = '';
     if(isEvictingNow){
         evictHint = '<div style="font-size:11px;color:#a06a10;margin:3px 0">⏳ 送养中 剩余 '+msToHHMM(p.evictDoneAt - now)+'</div>';
     }
 
-    /* 状态块 */
     let timerHtml = '';
     if(isAngelNow){
         const aDate = p.angelAt ? fmtDT(p.angelAt) : "未记录";
@@ -2905,14 +2882,21 @@ function buildCard(p, now, showIdle){
         if(showIdle && !p.isRunning && !isLockedNow && rem <= 0){
             if(p.recoveredAt) idleInfo = '已空闲 ' + msToHMS(now - p.recoveredAt) + '（' + fmtDT(p.recoveredAt) + ' 恢复）';
         }
+
+        let lockedWaitHtml = '';
+        if(isLockedNow && p.recoveredAt){
+            const lockAt = p.recoveredAt - FEMALE_LOCK_MS;
+            lockedWaitHtml = '<div class="status-sub locked-wait" style="color:#c82424;font-weight:bold;margin-top:4px">已等待 ' + msToHMS(Math.max(0, now - lockAt)) + '</div>';
+        }
+
         timerHtml = '<div class="status-block '+statusCls+'">'
           + '<div class="status-main"><span class="status-text">'+statusText+'</span> · 剩余 <span class="remain-text">'+msToHMS(rem)+'</span></div>'
           + '<div class="status-sub recover-text">'+(recover?'预计恢复 '+fmtDT(recover):'')+'</div>'
           + '<div class="idle-info" data-show-idle="'+(showIdle?"1":"0")+'" style="font-size:11px;color:#888">'+idleInfo+'</div>'
+          + lockedWaitHtml
           + '</div>';
     }
 
-    /* CP 行（无 CP 时不显示） */
     let cpHtml = '';
     if(cp1Name || cp2Name){
         const cpItems = [];
@@ -2921,18 +2905,15 @@ function buildCard(p, now, showIdle){
         cpHtml = '<div class="cp-line">'+cpItems.join('')+'</div>';
     }
 
-    /* 特征 / 标签 */
     const tagHtml = (p.tags || []).map(t => '<span class="tag">'+esc(t)+'</span>').join("");
     const featHtml = (p.features || []).map(f => featureChip(f)).join("");
 
-    /* 头像 */
     const imgHtml = p.img
         ? '<div class="avatar-wrap" data-bigimg="'+esc(p.img)+'"><img data-imgid="'+esc(p.img)+'" alt=""></div>'
         : '<div class="avatar-wrap"></div>';
 
     const noteHtml = p.note ? '<div style="margin-top:6px;font-size:12px;color:#555">备注：'+esc(p.note)+'</div>' : '';
 
-    /* 底部按钮行 */
     let actionsHtml = '';
     if(!isEvictedNow && !isAngelNow){
         const locHome  = p.location === "home" ? " active" : "";
@@ -3251,7 +3232,6 @@ function getFilteredList(now){
     const sortMode = $("sortModeSel").value;
     let list = petList.slice();
 
-    /* 默认隐藏已送养，除非筛选里勾了「已送养」 */
     if(!filterState.status.has("evicted")){
         list = list.filter(p => p.location !== "evicted");
     }
@@ -3288,7 +3268,7 @@ function getFilteredList(now){
             return statuses.some(s => filterState.status.has(s));
         });
     }
-    // 排除状态逻辑
+    
     if(filterExcludeState.status && filterExcludeState.status.size){
         list = list.filter(p => {
             const rem = getRemain(p, now);
@@ -3313,7 +3293,6 @@ function getFilteredList(now){
         });
     }
 
-    // 排除特征逻辑
     if(filterExcludeState.feature && filterExcludeState.feature.size){
         list = list.filter(p => {
             const feats = p.features || [];
@@ -3646,7 +3625,8 @@ panel.appendChild(h5El);
 
         cb.onchange = () => {
             if(cb.checked) filterState[type].add(o.v); else filterState[type].delete(o.v);
-            if(type === "category"){ filterState.breed.clear(); closeFilterPanel(); render(); return; }
+            // 修复：品种大类勾选后不再自动关闭面板
+            if(type === "category"){ filterState.breed.clear(); render(); return; }
             render();
         };
         leftPart.appendChild(cb);
@@ -3699,8 +3679,24 @@ panel.appendChild(h5El);
 
     document.body.appendChild(panel);
     const r = btn.getBoundingClientRect();
+    
+    // 修复：智能判断弹窗方向及内部滚动
+    const spaceBelow = window.innerHeight - r.bottom - 10;
+    const spaceAbove = r.top - 10;
+    
     panel.style.left = Math.min(r.left, window.innerWidth - 320) + "px";
-    panel.style.top = (r.bottom + 4) + "px";
+    
+    if (spaceBelow < 200 && spaceAbove > spaceBelow) {
+        // 向上弹出
+        panel.style.top = 'auto';
+        panel.style.bottom = (window.innerHeight - r.top + 4) + 'px';
+        panel.style.maxHeight = Math.min(spaceAbove, window.innerHeight * 0.6) + "px";
+    } else {
+        // 向下弹出
+        panel.style.bottom = 'auto';
+        panel.style.top = (r.bottom + 4) + "px";
+        panel.style.maxHeight = Math.min(spaceBelow, window.innerHeight * 0.6) + "px";
+    }
 
     filterOutsideHandler = function(e){
         if(e.target.closest(".mf-panel") || e.target.closest(".mf-btn")) return;
@@ -3745,8 +3741,22 @@ function openStageMenu(pet, anchor){
     document.body.appendChild(menu);
     stageMenuEl = menu;
     const r = anchor.getBoundingClientRect();
+    
+    // 修复：智能判断弹窗方向
+    const spaceBelow = window.innerHeight - r.bottom - 10;
+    const spaceAbove = r.top - 10;
+    
     menu.style.left = Math.min(r.left, window.innerWidth - 160) + "px";
-    menu.style.top = (r.bottom + 4) + "px";
+    
+    if (spaceBelow < 180 && spaceAbove > spaceBelow) {
+        menu.style.top = 'auto';
+        menu.style.bottom = (window.innerHeight - r.top + 4) + 'px';
+        menu.style.maxHeight = spaceAbove + "px";
+    } else {
+        menu.style.bottom = 'auto';
+        menu.style.top = (r.bottom + 4) + "px";
+        menu.style.maxHeight = spaceBelow + "px";
+    }
 
     menu.addEventListener("click", e => {
         const btn = e.target.closest("[data-stage-val]");
@@ -3811,7 +3821,6 @@ function handleStageSelect(pet, val){
         if(isEvicting(pet)){
             if(!confirm("确认取消【" + (pet.name||"未命名") + "】的送养？")) return;
             takeSnapshot("取消送养「" + (pet.name||"未命名") + "」");
-            const remain = pet.pausedAt || 0;
             pet.evictStartTs = 0;
             pet.evictDoneAt = 0;
             touchPet(pet);
@@ -3856,11 +3865,7 @@ $("evictConfirm").onclick = () => {
     pets.forEach(p => {
         p.evictStartTs = now;
         p.evictDoneAt = doneAt;
-        if(p.isRunning){
-            p.pausedAt = getRemain(p, now);
-            p.isRunning = false;
-            p.runStartRemain = null;
-        }
+        // 修复：送养不改变计时状态
         touchPet(p, now);
     });
     $("evictModal").classList.add("hidden");
@@ -3874,12 +3879,10 @@ $("evictModal").addEventListener("click", e => {
 
 /* ==================== 事件委托 ==================== */
 document.addEventListener("click", e => {
-    /* 校准位置按钮 */
     const calibBtn = e.target.closest("[data-calibrate-loc]");
     if(calibBtn){
         e.stopPropagation(); openCalibrationModal(calibBtn.dataset.calibrateLoc); return;
     }
-    /* 位置切换按钮（卡片 + 表格） */
     const locBtn = e.target.closest("[data-loc-toggle]");
     if(locBtn){
         e.stopPropagation();
@@ -3887,7 +3890,6 @@ document.addEventListener("click", e => {
         if(!pet) return;
         const newLoc = locBtn.dataset.loc;
         if(newLoc === pet.location) return;
-        /* ★ 新增：记录快照，可撤回 */
         if(isEvicting(pet) && newLoc === "home"){
             alert("送养中的宠物要接回家庭，请先取消送养。\n\n在卡片上点「阶段」按钮 → 选「↩ 取消送养」。");
             return;
@@ -3902,7 +3904,6 @@ document.addEventListener("click", e => {
         return;
     }
 
-    /* 阶段按钮 */
     const stageBtn = e.target.closest("[data-stage-btn]");
     if(stageBtn){
         e.stopPropagation();
@@ -3911,7 +3912,6 @@ document.addEventListener("click", e => {
         return;
     }
 
-    /* 老年时间编辑 */
     const seniorTime = e.target.closest("[data-edit-senior]");
     if(seniorTime){
         e.stopPropagation();
@@ -3928,7 +3928,6 @@ document.addEventListener("click", e => {
         saveLocal(); render();
         return;
     }
-    /* 天使时间编辑 */
     const angelTime = e.target.closest("[data-edit-angel]");
     if(angelTime){
         e.stopPropagation();
@@ -4147,11 +4146,11 @@ document.addEventListener("keydown", e => {
         closeStageMenu();
     }
 });
+
 /* ==================== 单只宠物分享卡 ==================== */
 let currentSharePetId = "";
 
 function getSharePreviewState(pet){
-    /* 优先读宠物自身保存的细调；没有就用全局默认 */
     if(pet && pet.sharePreview){
         return JSON.parse(JSON.stringify(pet.sharePreview));
     }
@@ -4425,7 +4424,7 @@ function exportBenchToICS(){
     }
 }
 
-/* ==================== 排期日历导出（支持选前 N 条） ==================== */
+/* ==================== 排期日历导出 ==================== */
 let schedExportAcc = "";
 let schedExportEvents = [];
 
@@ -4434,7 +4433,6 @@ function exportScheduleICS(acc){
     sched.acc = acc;
     const result = sched.result;
 
-    /* 收集所有排期事件 */
     const events = [];
     result.schedule.forEach(t => {
         events.push({
@@ -4446,7 +4444,6 @@ function exportScheduleICS(acc){
             reason: t.reason || ""
         });
     });
-    /* 繁育解锁事件 */
     const unlockAt = getBreedingUnlockTime(sched);
     if(unlockAt && unlockAt > Date.now() && sched.slots.nurseryLitters > NURSERY_BREED_LIMIT){
         events.push({
@@ -4465,11 +4462,11 @@ function exportScheduleICS(acc){
     schedExportAcc = acc;
     schedExportEvents = events;
 
-    $("schedExportCount").value = Math.min(2, events.length);
+    // 默认导出 1 条
+    $("schedExportCount").value = Math.min(1, events.length);
     $("schedExportCount").max = events.length;
     $("schedExportTotal").textContent = "（共 " + events.length + " 条）";
 
-    /* 预览前 5 条 */
     const previewHtml = events.slice(0, 5).map((e, i) => {
         let title;
         if(e.type === "birth") title = "🐾 【" + esc(e.name) + "】可以分娩了";
@@ -4545,6 +4542,7 @@ $("schedExportConfirm").onclick = () => {
         }, 300);
     }
 }
+
 /* ==================== 保存图片 ==================== */
 let h2cLoadingPromise = null;
 function loadHtml2CanvasLib(){
@@ -4648,10 +4646,8 @@ function safeFileName(s){
     return v.slice(0, 40) || "分享卡";
 }
 
-/* 生成单张分享卡的 canvas（不下载，返回 blob） */
 async function renderShareCardToBlob(pet){
     await loadHtml2CanvasLib();
-    /* 用离屏容器渲染 */
     const offscreen = document.createElement("div");
     offscreen.style.cssText = "position:fixed;left:-99999px;top:0;width:420px;background:#fff;padding:20px;";
     document.body.appendChild(offscreen);
@@ -4759,7 +4755,6 @@ async function batchExportImages(){
                 console.error("生成失败", p.name, err);
                 failCount++;
             }
-            /* 让 UI 有机会刷新 */
             await new Promise(r => setTimeout(r, 30));
         }
         if(zip && okCount > 0){
@@ -5057,7 +5052,7 @@ $("addAccBtn").onclick = () => {
     const v = $("newAccInput").value.trim();
     if(v && accountOptions.indexOf(v) === -1){
         accountOptions.push(v);
-        if(!nurseryByAccount[v]) nurseryByAccount[v] = { litters:0, babies:0, exitTasks:[] };
+        if(!nurseryByAccount[v]) nurseryByAccount[v] = { litters:0, twins:0, babies:0, exitTasks:[] };
         saveLocal(); $("newAccInput").value = ""; renderOptManage(); render();
     }
 };
@@ -5247,7 +5242,7 @@ function renderAccountPicker(){
             const name = v.trim();
             if(accountOptions.indexOf(name) === -1){
                 accountOptions.push(name);
-                if(!nurseryByAccount[name]) nurseryByAccount[name] = { litters:0, babies:0, exitTasks:[] };
+                if(!nurseryByAccount[name]) nurseryByAccount[name] = { litters:0, twins:0, babies:0, exitTasks:[] };
                 currentEditAccount = name;
                 saveLocal(); renderAccountPicker(); render();
             } else { alert("该账号已存在"); currentEditAccount = name; renderAccountPicker(); }
@@ -5489,13 +5484,14 @@ function closeEdit(){
     currentEditStage = "adult";
 }
 $("btnAdd").onclick = () => openEdit(null);
+
+// 修复：日期换算直接填入，不弹窗
 $("btnCalcRemain").onclick = () => {
     const v = $("calcRemainTarget").value;
     if(!v) { alert("请先选择预计恢复的日期和时间"); return; }
     const target = new Date(v).getTime();
     let diff = target - Date.now();
     if(diff <= 0) {
-        alert("目标时间早于或等于当前时间，已归零");
         diff = 0;
     }
     const totalMins = Math.floor(diff / 60000);
@@ -5503,7 +5499,18 @@ $("btnCalcRemain").onclick = () => {
     $("tMinute").value = totalMins % 60;
     
     if(editId !== null) timeEditedByUser = true;
-    alert(`已换算：距离目标还有 ${$("tHour").value} 小时 ${$("tMinute").value} 分钟`);
+    
+    // 简单按钮文字反馈，不再弹窗
+    const btn = $("btnCalcRemain");
+    const oldText = btn.textContent;
+    btn.textContent = "已换算 ✓";
+    btn.style.color = "#1a9c50";
+    btn.style.borderColor = "#28c76f";
+    setTimeout(() => {
+        btn.textContent = oldText;
+        btn.style.color = "";
+        btn.style.borderColor = "";
+    }, 1500);
 };
 $("btnCancel").onclick = closeEdit;
 
@@ -5681,7 +5688,7 @@ $("btnSave").onclick = async () => {
         else finalCp2Img = editCp2ImgValue || "";
 
         if(accountVal && accountOptions.indexOf(accountVal) === -1) accountOptions.push(accountVal);
-        if(accountVal && !nurseryByAccount[accountVal]) nurseryByAccount[accountVal] = { litters:0, babies:0, exitTasks:[] };
+        if(accountVal && !nurseryByAccount[accountVal]) nurseryByAccount[accountVal] = { litters:0, twins:0, babies:0, exitTasks:[] };
         if(categoryVal && !(categoryVal in breedMap)) { breedMap[categoryVal] = []; if(!featureMap[categoryVal]) featureMap[categoryVal] = {}; }
         if(categoryVal && breedVal && breedMap[categoryVal].indexOf(breedVal) === -1) breedMap[categoryVal].push(breedVal);
         featArr.forEach(f => ensureFeatureExists(f, categoryVal));
@@ -5689,7 +5696,6 @@ $("btnSave").onclick = async () => {
         const cp1 = { name: $("cp1Name").value.trim(), img: finalCp1Img, pairTime: cp1Pair };
         const cp2 = { name: $("cp2Name").value.trim(), img: finalCp2Img, pairTime: cp2Pair };
 
-        /* 位置处理 */
         let finalLoc = locVal;
         let finalIsRunning = oldPet ? oldPet.isRunning : false;
         if(stageVal === "angel"){
@@ -5697,7 +5703,6 @@ $("btnSave").onclick = async () => {
             finalIsRunning = false;
         } else {
             if(oldPet && (oldPet.location === "angel" || oldPet.location === "evicted")) finalLoc = "home";
-            /* 位置变化联动计时 */
             if(finalLoc === "home" && oldPet && oldPet.location === "boarding"){
                 if(!oldPet.isRunning && !oldPet.locked && (oldPet.pausedAt || 0) > 0 && (oldPet.totalMs || 0) > 0){ finalIsRunning = true; }
             } else if(finalLoc === "boarding" && oldPet && oldPet.location !== "boarding"){
@@ -5721,7 +5726,6 @@ $("btnSave").onclick = async () => {
                     isRunning: finalIsRunning
                 });
                 if(timeEditedByUser){
-                    /* 改时间 → 重置为新时长，默认启动（家庭） */
                     updated.totalMs = totalMs; updated.pausedAt = totalMs;
                     updated.isRunning = (stageVal !== "angel" && finalLoc === "home") ? true : false;
                     updated.startTs = updated.isRunning ? now : null;
@@ -5739,9 +5743,7 @@ $("btnSave").onclick = async () => {
                 delImgs.forEach(imgId => safeDeleteImg(imgId, editId));
             }
         } else {
-            /* 根据用户选的位置 + 总时长决定初始状态 */
             const initLoc = (stageVal === "angel") ? "angel" : (locVal || "home");
-            /* 天使期：不启动；托管：不启动；家庭 + 有时长：启动 */
             const initRunning = (stageVal !== "angel") && (initLoc === "home") && totalMs > 0;
             petList.push({
                 id: genId(), ctime: now, utime: now,
@@ -5768,6 +5770,7 @@ $("btnSave").onclick = async () => {
     closeEdit(); saveLocal(); render();
 };
 $("btnDel").onclick = () => { if(editId && confirm("确定删除？")){ deletePet(editId); closeEdit(); } };
+
 /* ==================== 批量新建 ==================== */
 $("btnBatchAdd").onclick = () => { $("batchAddText").value = ""; $("batchAddModal").classList.remove("hidden"); updateBatchHint(); };
 document.querySelectorAll('input[name="batchMode"]').forEach(r => { r.onchange = updateBatchHint; });
@@ -5811,7 +5814,7 @@ $("batchAddApply").onclick = () => {
             const gender = (parts[1] === "母" || parts[1] === "f" || parts[1] === "F") ? "f" : "m";
             const acc = parts[2] || defaultAcc;
             if(acc && accountOptions.indexOf(acc) === -1) accountOptions.push(acc);
-            if(acc && !nurseryByAccount[acc]) nurseryByAccount[acc] = { litters:0, babies:0, exitTasks:[] };
+            if(acc && !nurseryByAccount[acc]) nurseryByAccount[acc] = { litters:0, twins:0, babies:0, exitTasks:[] };
             let category = defaultCat, breed = defaultBreed;
             if(parts[3]){
                 const cb = parts[3].split("/").map(s => s.trim());
@@ -6112,7 +6115,7 @@ $("importApply").onclick = function(){
                 }
                 petList.forEach(function(p){ if(!p.features) return; p.features.forEach(function(f){ ensureFeatureExists(f, p.category); }); });
                 accountOptions.forEach(function(a){
-                    if(!nurseryByAccount[a]) nurseryByAccount[a] = { litters:0, babies:0, exitTasks:[] };
+                    if(!nurseryByAccount[a]) nurseryByAccount[a] = { litters:0, twins:0, babies:0, exitTasks:[] };
                     if(!nurseryByAccount[a].exitTasks) nurseryByAccount[a].exitTasks = [];
                 });
                 saveLocal();
@@ -6219,14 +6222,6 @@ $("bmApply").onclick = () => {
                 p.timerMode = (p.gender === "f") ? "breedFemale" : "normal";
                 p.pausedAt = p.totalMs; p.isRunning = false; p.startTs = null; p.runStartRemain = null; p.locked = false; p.location = "home";
                 startTimer(p, now);
-            } else if(statusVal === "144h-normal"){
-                p.totalMs = hmToMs(144, 0); p.timerMode = "normal";
-                p.pausedAt = p.totalMs; p.isRunning = false; p.startTs = null; p.runStartRemain = null; p.locked = false; p.location = "home";
-                startTimer(p, now);
-            } else if(statusVal === "144h-female"){
-                p.totalMs = hmToMs(144, 0); p.timerMode = "breedFemale";
-                p.pausedAt = p.totalMs; p.isRunning = false; p.startTs = null; p.runStartRemain = null; p.locked = false; p.location = "home";
-                startTimer(p, now);
             } else if(statusVal === "reset"){ resetTimer(p, now); }
             else if(statusVal === "start"){ if(!p.isRunning && !p.locked) startTimer(p, now); }
             else if(statusVal === "toBoarding"){
@@ -6247,7 +6242,7 @@ $("bmApply").onclick = () => {
             else if(statusVal === "evict"){
                 p.evictStartTs = now;
                 p.evictDoneAt = now + evictMs;
-                if(p.isRunning){ p.pausedAt = getRemain(p, now); p.isRunning = false; p.runStartRemain = null; }
+                // 修复：批量送养也不暂停计时
             }
         }
         if(doFeatAdd){
@@ -6408,7 +6403,6 @@ function isDogConflict(petA, petB){
     if(petA.breed !== petB.breed && dogBreeds.includes(petA.breed) && dogBreeds.includes(petB.breed)) return true;
     return false;
 }
-/* 速配过滤：排除老年、天使、在送、已送 */
 function isEligibleForMatch(p){
     if(!p) return false;
     if(p.stage === "senior") return false;
@@ -6798,7 +6792,6 @@ function getAccountBreedingStatus(acc){
     }
     const sched = buildAccountSchedule(acc);
     const unlockAt = getBreedingUnlockTime(sched);
-    /* getBreedingUnlockTime 返回 Date.now() 表示当前就能配；返回 null 表示算不出 */
     if(unlockAt && unlockAt <= Date.now()){
         return { blocked: false, litters: s.nurseryLitters || 0, unlockAt: null };
     }
@@ -6831,7 +6824,6 @@ function renderMatchResults(petA, scheme){
     if(results.length === 0){ wrap.innerHTML = '<div style="color:#999;padding:20px;text-align:center">暂无符合条件的宠物（老年/天使/送养中的宠物已被过滤）</div>'; return; }
     wrap.innerHTML = results.map(r => {
         const p = r.pet;
-        /* 若候选是公宠，且其账号宝宝房 >5 胎，加"暂时配不了"提示 */
         let breedingWarnHtml = "";
         if(p.gender === "m" && p.account){
             const __bs = getAccountBreedingStatus(p.account);
@@ -7286,16 +7278,15 @@ $("pairCalcBtn").onclick = () => {
     $("pairShareBtn").onclick = () => { showPairShareCard(displayData); };
     wrap.scrollIntoView({behavior:"smooth", block:"nearest"});
 };
+
 /* ==================== 排期模拟 ==================== */
 function getHomeReleases(acc){
     const now = Date.now();
     const releases = [];
-    /* 1. 家庭送养：直接释放家庭格 */
     petList.filter(p => p.account === acc && isEvicting(p, now) && p.location === "home")
         .forEach(p => releases.push({ name: p.name, at: p.evictDoneAt, kind: "home" }));
     slotEvicts.filter(ev => ev.account === acc && ev.location === "home" && ev.evictDoneAt > now)
         .forEach(ev => releases.push({ name: ev.name, at: ev.evictDoneAt, kind: "home" }));
-    /* 2. 托管送养：释放托管格，用户可把家庭宠物挪过去 → 间接释放家庭格 */
     petList.filter(p => p.account === acc && isEvicting(p, now) && p.location === "boarding")
         .forEach(p => releases.push({ name: p.name, at: p.evictDoneAt, kind: "boarding" }));
     slotEvicts.filter(ev => ev.account === acc && ev.location === "boarding" && ev.evictDoneAt > now)
@@ -7310,13 +7301,11 @@ function getBirthTasks(acc){
             if(p.timerMode !== "breedFemale") return false;
             if(p.location === "angel" || p.location === "evicted") return false;
             if(isEvicting(p)) return false;
-            /* 孕期中(isRunning) 或 已到接生节点(locked) 的母宠都要排进去 */
             return p.isRunning || p.locked;
         })
         .map(p => {
             let deliverAt;
             if(p.locked){
-                /* 已到接生节点（或已过），可以立即接生 */
                 const expectedEnd = p.recoveredAt || Date.now();
                 deliverAt = expectedEnd - FEMALE_LOCK_MS;
                 if(deliverAt < Date.now()) deliverAt = Date.now();
@@ -7376,7 +7365,6 @@ function simulateHomeSlots(initialFree, releases, tasks){
     const queue = tasks.slice();
     let free = initialFree;
 
-    /* 收集所有关键时间点：现在 + 每次送养释放 + 每个待分娩时间 */
     const timeSet = new Set();
     timeSet.add(now);
     releases.forEach(r => timeSet.add(r.at));
@@ -7391,9 +7379,7 @@ function simulateHomeSlots(initialFree, releases, tasks){
         while(moved && queue.length > 0){
             moved = false;
             if(schedSimMode === "strict"){
-                /* 严格列表顺序：只看队首 */
                 const t = queue[0];
-                /* 队首是 birth 但 deliverAt 还没到 → 不执行，也不往后看，等它自己的时间点 */
                 if(t.type === "birth" && t.deliverAt > at) return;
                 if(free >= t.minFree){
                     const execAt = (t.type === "birth") ? Math.max(at, t.deliverAt) : at;
@@ -7402,11 +7388,9 @@ function simulateHomeSlots(initialFree, releases, tasks){
                     queue.shift();
                     moved = true;
                 } else {
-                    /* 队首格子不够，等待下一次 release 或时间推进 */
                     return;
                 }
             } else {
-                /* greedy：从前往后找第一个能做的（跳过 deliverAt 未到的 birth） */
                 for(let i = 0; i < queue.length; i++){
                     const t = queue[i];
                     if(t.type === "birth" && t.deliverAt > at) continue;
@@ -7425,7 +7409,6 @@ function simulateHomeSlots(initialFree, releases, tasks){
 
     for(let i = 0; i < timePoints.length; i++){
         const t = timePoints[i];
-        /* 处理所有到期的送养释放 */
         const releasedItems = [];
         while(ri < releasesSorted.length && releasesSorted[ri].at <= t){
             const r = releasesSorted[ri];
@@ -7508,7 +7491,6 @@ function renderSlots(){
         });
         events.sort((a, b) => a.at - b.at);
 
-        /* 送养清单（卡片宠物的送养 + 手动的送养） */
         const evictList = [];
         petList.filter(p => p.account === acc && isEvicting(p, now)).forEach(p => {
             evictList.push({ id: p.id, petId: p.id, name: p.name, location: p.location, evictDoneAt: p.evictDoneAt, isManual: false });
@@ -7557,7 +7539,7 @@ function renderSlots(){
             <div class="slot-row">
               <span>👶 宝宝房</span>
               <div class="slot-bar"><div style="width:${nursePct}%;background:${nurseryColor}"></div></div>
-              <span style="font-size:12px;color:${nurseryColor};font-weight:bold;width:56px;text-align:right">${s.nurseryLitters} 胎</span>
+              <span style="font-size:12px;color:${nurseryColor};font-weight:bold;min-width:56px;text-align:right">${s.nurseryLitters} 胎${s.nurseryTwins ? "（双胞胎 "+s.nurseryTwins+"）" : ""}</span>
             </div>
             ${(s.homeDelta !== 0 || s.boardingDelta !== 0) ? '<div style="font-size:11px;color:#a06a10;margin:4px 0;text-align:right"><a href="javascript:void(0)" data-slot-reset="'+esc(acc)+'" class="slot-reset">恢复默认数量</a>（工具算：家庭 '+s.homeBase+' / 托管 '+s.boardingBase+'）</div>' : ''}
             <div class="slot-status">
@@ -7654,8 +7636,7 @@ document.addEventListener("click", e => {
     }
 });
 
-/* 添加手动送养 */
-/* ==================== 添加送养（弹窗版，批量） ==================== */
+/* ==================== 添加送养 ==================== */
 function openAddSlotEvict(acc){
     const accSel = $("evictAddAcc");
     accSel.innerHTML = "";
@@ -7668,7 +7649,6 @@ function openAddSlotEvict(acc){
     });
     accSel.value = acc || (allAccs[0] || "");
 
-    /* 默认托管 */
     document.querySelectorAll("#evictAddLocPick .mode-opt").forEach(el => {
         el.classList.toggle("selected", el.dataset.loc === "boarding");
     });
@@ -7732,7 +7712,7 @@ $("evictAddConfirm").onclick = () => {
     renderSlots();
 };
 
-/* ==================== 批量修改送养时间（弹窗版） ==================== */
+/* ==================== 批量修改送养时间 ==================== */
 function openBatchEvictTime(acc){
     const now = Date.now();
     const list = [];
@@ -7810,7 +7790,6 @@ $("evictBatchTimeConfirm").onclick = () => {
     renderSlots();
 };
 
-/* 编辑送养条目 */
 function openEditEvict(id, isManual){
     const now = Date.now();
     let ev;
@@ -7833,9 +7812,6 @@ function openEditEvict(id, isManual){
         if(item){
             item.evictDoneAt = now + ms;
             item.location = location;
-            if(location === "home" && !isManual){
-                /* 不处理 */
-            }
         }
     } else {
         const p = petList.find(x => x.id === id);
@@ -7851,7 +7827,7 @@ function openEditEvict(id, isManual){
 
 /* ==================== 排期弹窗 ==================== */
 let currentSchedAcc = "";
-let schedSimMode = "strict";   /* "strict"=按列表顺序（默认）；"greedy"=能做的先做 */
+let schedSimMode = "strict";
 function openSchedulePanel(acc){
     currentSchedAcc = acc;
     const sched = buildAccountSchedule(acc);
@@ -7887,13 +7863,14 @@ function renderSchedulePanel(sched){
                   <div class="task-meta">${metaText}</div>
                 </div>
                 <span class="task-cost">需 ${t.minFree} 格 → 消耗 ${t.consume} 格</span>
-                ${isDone ? '<span style="color:#20b060;font-size:11px">✓ '+fmtDT(sch.at)+'</span>' : '<span style="color:#e08030;font-size:11px">⏸ 待格</span>'}
+                ${isDone
+                  ? '<span class="sched-status" style="color:#20b060">✓ '+fmtDT(sch.at)+'</span>'
+                  : '<span class="sched-status" style="color:#e08030">⏸ 待格</span>'}
               </div>
             `;
         }).join("");
 
     const now = Date.now();
-    /* 合并事件：送养释放 + 排期任务 */
     const timelineEvents = [];
     sched.releases.forEach(r => timelineEvents.push({ at: r.at, type: "evict", name: r.name, location: r.kind }));
     result.schedule.forEach(x => timelineEvents.push({ at: x.at, type: "task", task: x }));
@@ -8018,12 +7995,12 @@ function bindScheduleDrag(acc){
 let currentNurseryAcc = "";
 function openNurseryModal(acc){
     currentNurseryAcc = acc;
-    const n = nurseryByAccount[acc] || { litters:0, babies:0, exitTasks:[] };
+    const n = nurseryByAccount[acc] || { litters:0, twins:0, babies:0, exitTasks:[] };
     if(!n.exitTasks) n.exitTasks = [];
     nurseryByAccount[acc] = n;
     $("nurseryAccName").textContent = acc;
     $("nurseryLitters").value = n.litters || 0;
-    $("nurseryBabies").value = n.babies || 0;
+    $("nurseryTwins").value = n.twins || 0;
     renderNurseryExitList();
     $("nurseryModal").classList.remove("hidden");
 }
@@ -8063,7 +8040,8 @@ $("nurseryAddExit").onclick = () => {
 $("nurserySave").onclick = () => {
     const n = nurseryByAccount[currentNurseryAcc];
     n.litters = Math.max(0, Number($("nurseryLitters").value) || 0);
-    n.babies = Math.max(0, Number($("nurseryBabies").value) || 0);
+    n.twins = Math.max(0, Math.min(n.litters, Number($("nurseryTwins").value) || 0));
+    n.babies = n.litters + n.twins; // 兼容旧字段
     saveLocal();
     $("nurseryModal").classList.add("hidden");
     if(currentView === "slots") renderSlots();
@@ -8155,6 +8133,7 @@ function endTour(){
     window.removeEventListener("resize", repositionTour);
     window.removeEventListener("scroll", repositionTour, true);
 }
+
 /* ==================== 宠物位置校准逻辑 ==================== */
 let calibAcc = "";
 let calibLocFilter = "all";
@@ -8253,34 +8232,39 @@ $("calibCloseBtn").onclick = () => $("calibrationModal").classList.add("hidden")
 $("calibrationModal").addEventListener("click", e => { if(e.target === $("calibrationModal")) $("calibrationModal").classList.add("hidden"); });
 $("calibClearBtn").onclick = () => { calibSelectedIds.clear(); renderCalibrationGrid(); };
 
+// 修复：校准家庭，仅清除成功移动的选中项
 $("calibMoveHomeBtn").onclick = () => {
     if (calibSelectedIds.size === 0) { alert("请先点击图片选中宠物"); return; }
     takeSnapshot("校准位置：批量移入家庭");
     let count = 0;
+    const successIds = new Set();
     calibSelectedIds.forEach(id => {
         const pet = petList.find(x => x.id === id);
         if (pet && pet.location !== "home" && pet.location !== "angel" && pet.location !== "evicted") {
-            if (isEvicting(pet)) return;
+            if (isEvicting(pet)) return; // 送养中的家庭不能动
             pet.location = "home";
             if (!pet.isRunning && !pet.locked && (pet.pausedAt || 0) > 0 && (pet.totalMs || 0) > 0) startTimer(pet);
             touchPet(pet);
+            successIds.add(id);
             count++;
         }
     });
     saveLocal(); render(); renderCalibrationGrid();
     if(count > 0) alert("✓ 已移入家庭");
-    calibSelectedIds.clear(); 
-    $("calibSelectedCount").textContent = "0";
+    successIds.forEach(id => calibSelectedIds.delete(id));
+    $("calibSelectedCount").textContent = calibSelectedIds.size;
 };
 
+// 修复：校准托管，送养中可以从家庭移托管，且仅清除成功移动的选中项
 $("calibMoveBoardBtn").onclick = () => {
     if (calibSelectedIds.size === 0) { alert("请先点击图片选中宠物"); return; }
     takeSnapshot("校准位置：批量移入托管");
     let count = 0;
+    const successIds = new Set();
     calibSelectedIds.forEach(id => {
         const pet = petList.find(x => x.id === id);
         if (pet && pet.location !== "boarding" && pet.location !== "angel" && pet.location !== "evicted") {
-            if (isEvicting(pet)) return;
+            // 送养中的允许从家庭移到托管
             if (pet.isRunning) {
                 pet.pausedAt = getRemain(pet);
                 pet.isRunning = false;
@@ -8288,14 +8272,16 @@ $("calibMoveBoardBtn").onclick = () => {
             }
             pet.location = "boarding";
             touchPet(pet);
+            successIds.add(id);
             count++;
         }
     });
     saveLocal(); render(); renderCalibrationGrid();
     if(count > 0) alert("✓ 已移入托管");
-    calibSelectedIds.clear();
-    $("calibSelectedCount").textContent = "0";
+    successIds.forEach(id => calibSelectedIds.delete(id));
+    $("calibSelectedCount").textContent = calibSelectedIds.size;
 };
+
 /* ==================== 每秒 tick ==================== */
 function tickUpdate(){
     const now = Date.now();
@@ -8319,6 +8305,11 @@ function tickUpdate(){
                 if(p.recoveredAt){ const idleMs = now - p.recoveredAt; idleEl.textContent = "已空闲 " + msToHMS(idleMs) + "（" + fmtDT(p.recoveredAt) + " 恢复）"; }
                 else { idleEl.textContent = "已空闲（恢复时间未记录）"; }
             } else { idleEl.textContent = ""; }
+        }
+        const lockedWaitEl = cardEl.querySelector(".locked-wait");
+        if(lockedWaitEl && p.locked && p.recoveredAt){
+            const lockAt = p.recoveredAt - FEMALE_LOCK_MS;
+            lockedWaitEl.textContent = "已等待 " + msToHMS(Math.max(0, now - lockAt));
         }
     });
     document.querySelectorAll("#tableBody tr[data-id]").forEach(tr => {
@@ -8382,7 +8373,7 @@ loadFromLocal();
 })();
 
 accountOptions.forEach(acc => {
-    if(!nurseryByAccount[acc]) nurseryByAccount[acc] = { litters:0, babies:0, exitTasks:[] };
+    if(!nurseryByAccount[acc]) nurseryByAccount[acc] = { litters:0, twins:0, babies:0, exitTasks:[] };
     if(!nurseryByAccount[acc].exitTasks) nurseryByAccount[acc].exitTasks = [];
 });
 
