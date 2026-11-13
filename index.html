@@ -1914,6 +1914,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
       <span>已选中 <b id="calibSelectedCount" style="color:#3070ee">0</b> 只</span>
       <button class="primary" id="calibMoveHomeBtn" style="font-size:12px;padding:5px 12px">移入家庭</button>
       <button class="primary" id="calibMoveBoardBtn" style="font-size:12px;padding:5px 12px">移入托管</button>
+      <button id="calibInvertBtn" style="font-size:12px;padding:5px 12px;background:#f4f7fb;border-color:#cbd5e1;color:#444">🔄 反选</button>
       <button id="calibClearBtn" style="font-size:12px;padding:5px 12px">取消选择</button>
     </div>
   </div>
@@ -8227,7 +8228,27 @@ document.querySelectorAll("[data-calib-loc]").forEach(btn => {
         renderCalibrationGrid();
     };
 });
+$("calibInvertBtn").onclick = () => {
+    // 获取当前分类（全部/家庭/托管）下显示的所有宠物
+    let pets = petList.filter(p => p.account === calibAcc && p.location !== "angel" && p.location !== "evicted");
+    if (calibLocFilter === "home") {
+        pets = pets.filter(p => p.location === "home");
+    } else if (calibLocFilter === "boarding") {
+        pets = pets.filter(p => p.location === "boarding");
+    }
 
+    // 遍历当前显示的宠物，如果已选中就取消，如果没选中就勾上
+    pets.forEach(p => {
+        if (calibSelectedIds.has(p.id)) {
+            calibSelectedIds.delete(p.id);
+        } else {
+            calibSelectedIds.add(p.id);
+        }
+    });
+    
+    // 重新渲染界面刷新勾选状态
+    renderCalibrationGrid();
+};
 $("calibCloseBtn").onclick = () => $("calibrationModal").classList.add("hidden");
 $("calibrationModal").addEventListener("click", e => { if(e.target === $("calibrationModal")) $("calibrationModal").classList.add("hidden"); });
 $("calibClearBtn").onclick = () => { calibSelectedIds.clear(); renderCalibrationGrid(); };
