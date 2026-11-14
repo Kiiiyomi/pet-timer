@@ -814,16 +814,18 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 
 <div class="filter-hint hidden" id="filterHint"></div>
 
-<!-- 将筛选方案与卡片操作合并为一行 -->
+<!-- 合并后的工具栏：左侧筛选方案，右侧卡片操作 -->
 <div class="sub-toolbar-row">
-  <div class="filter-scheme-row" style="display:flex; gap:8px; align-items:center;">
+  <div id="filterSchemeWrap" class="filter-scheme-row" style="display:flex; gap:8px; align-items:center;">
     <span style="font-size:12px; color:#666">筛选方案：</span>
     <select id="filterSchemeSelect" style="min-width:150px; padding:4px 8px; font-size:13px;">
       <option value="">-- 选择方案快速筛选 --</option>
     </select>
-    <button id="btnSaveFilterScheme" style="font-size:12px; padding:4px 10px; background:#f0f7ff; border-color:#a8c8f0; color:#3070ee">💾 保存当前筛选</button>
-    <button id="btnManageFilterSchemes" style="font-size:12px; padding:4px 10px;">⚙️ 管理筛选方案</button>
+    <button id="btnSaveFilterScheme" style="font-size:12px; padding:4px 10px; background:#f0f7ff; border-color:#a8c8f0; color:#3070ee">💾 保存</button>
+    <button id="btnSaveAsFilterScheme" style="font-size:12px; padding:4px 10px;">📋 另存为方案</button>
+    <button id="btnManageFilterSchemes" style="font-size:12px; padding:4px 10px;">⚙️ 管理</button>
   </div>
+  
   <div id="cardToolbar" style="display:flex; gap:6px; align-items:center;">
     <select id="cardLocFilterSel" style="font-size:12px;padding:4px 8px">
       <option value="all">全部位置</option>
@@ -2105,6 +2107,7 @@ let matchSortMode = "score";
 
 /* 筛选方案 */
 let filterSchemes = [];
+let currentFilterSchemeId = "";
 
 /* 速配找对象 */
 let matchTargetSrcTab = "lib";
@@ -3407,6 +3410,10 @@ function render(){
     if ($("cardToolbar")) {
         $("cardToolbar").style.display = (currentView === "card") ? "flex" : "none";
     }
+    // 控制筛选方案只在卡片视图显示
+    if ($("filterSchemeWrap")) {
+        $("filterSchemeWrap").style.display = (currentView === "card") ? "flex" : "none";
+    }
 
    if(currentView === "card"){
     let cardList = list;
@@ -3505,7 +3512,12 @@ $("btnClearFilter").onclick = () => {
         });
     }
     if($("searchInput").value.trim()){ hadAny = true; $("searchInput").value = ""; }
-    if(hadAny){ closeFilterPanel(); render(); }
+    if(hadAny){ 
+        currentFilterSchemeId = ""; // 清空当前选中的方案ID
+        renderFilterSchemeSelect(); // 刷新下拉框
+        closeFilterPanel(); 
+        render(); 
+    }
 };
 
 function applyCpColVisibility(){
@@ -8352,14 +8364,10 @@ function renderFilterSchemeSelect() {
         o.textContent = s.name;
         sel.appendChild(o);
     });
-    sel.value = ""; // 应用后重置
+    sel.value = currentFilterSchemeId || ""; // 恢复选中状态
 }
 
-$("btnSaveFilterScheme").onclick = () => {
-    const name = prompt("请输入新筛选方案名称：", "方案 " + (filterSchemes.length + 1));
-    if (!name || !name.trim()) return;
-    
-    // 深拷贝当前筛选状态
+function getCurrentFilterState() {
     const state = {};
     Object.keys(filterState).forEach(k => {
         state[k] = Array.from(filterState[k]);
@@ -8368,24 +8376,56 @@ $("btnSaveFilterScheme").onclick = () => {
     Object.keys(filterExcludeState).forEach(k => {
         exState[k] = Array.from(filterExcludeState[k]);
     });
-    
-    const newScheme = {
-        id: "fs_" + genId(),
-        name: name.trim(),
+    return {
         state: state,
         excludeState: exState,
         featureMode: featureMode,
         keyword: $("searchInput").value.trim()
     };
+}
+
+$("btnSaveFilterScheme").onclick = () => {
+    if (!currentFilterSchemeId) {
+        $("btnSaveAsFilterScheme").click();
+        return;
+    }
+    const s = filterSchemes.find(x => x.id === currentFilterSchemeId);
+    if (!s) return;
+    
+    const currentData = getCurrentFilterState();
+    s.state = currentData.state;
+    s.excludeState = currentData.excludeState;
+    s.featureMode = currentData.featureMode;
+    s.keyword = currentData.keyword;
+    
+    saveLocal();
+    alert("✓ 已更新方案【" + s.name + "】");
+};
+
+$("btnSaveAsFilterScheme").onclick = () => {
+    const name = prompt("请输入新筛选方案名称：", "方案 " + (filterSchemes.length + 1));
+    if (!name || !name.trim()) return;
+    
+    const currentData = getCurrentFilterState();
+    const newScheme = {
+        id: "fs_" + genId(),
+        name: name.trim(),
+        state: currentData.state,
+        excludeState: currentData.excludeState,
+        featureMode: currentData.featureMode,
+        keyword: currentData.keyword
+    };
     
     filterSchemes.push(newScheme);
+    currentFilterSchemeId = newScheme.id;
     saveLocal();
     renderFilterSchemeSelect();
-    alert("✓ 筛选方案已保存");
+    alert("✓ 已另存为方案【" + newScheme.name + "】");
 };
 
 $("filterSchemeSelect").onchange = function() {
     const id = this.value;
+    currentFilterSchemeId = id;
     if (!id) return;
     const s = filterSchemes.find(x => x.id === id);
     if (!s) return;
@@ -8403,7 +8443,7 @@ $("filterSchemeSelect").onchange = function() {
     featureMode = s.featureMode || "or";
     $("searchInput").value = s.keyword || "";
     
-    render(); // 触发界面刷新
+    render();
 };
 
 function renderFilterSchemeManage() {
@@ -8449,7 +8489,11 @@ $("filterSchemeListWrap").addEventListener("click", e => {
     if(delBtn) { 
         const i = Number(delBtn.dataset.fsDel); 
         if(!confirm("确认删除方案【" + filterSchemes[i].name + "】？")) return; 
+        const deletedId = filterSchemes[i].id;
         filterSchemes.splice(i, 1); 
+        if (currentFilterSchemeId === deletedId) {
+            currentFilterSchemeId = "";
+        }
         saveLocal(); renderFilterSchemeSelect(); renderFilterSchemeManage(); 
         return; 
     }
