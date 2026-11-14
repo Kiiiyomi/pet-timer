@@ -23,6 +23,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 .view-tab.active{color:#3070ee;border-bottom-color:#3070ee;font-weight:bold}
 .search-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
 .filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;align-items:center;position:relative}
+.sub-toolbar-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;}
 .mf-btn{background:#fff;border:1px solid #cbd5e1;padding:6px 10px;border-radius:6px;font-size:13px;color:#444}
 .mf-btn.active{background:#e8f0ff;border-color:#3070ee;color:#3070ee}
 .mf-btn .cnt{background:#3070ee;color:#fff;border-radius:10px;padding:0 6px;font-size:11px;margin-left:4px}
@@ -813,8 +814,17 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 
 <div class="filter-hint hidden" id="filterHint"></div>
 
-<div id="cardView">
-  <div style="margin-bottom:6px;display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap;align-items:center">
+<!-- 将筛选方案与卡片操作合并为一行 -->
+<div class="sub-toolbar-row">
+  <div class="filter-scheme-row" style="display:flex; gap:8px; align-items:center;">
+    <span style="font-size:12px; color:#666">筛选方案：</span>
+    <select id="filterSchemeSelect" style="min-width:150px; padding:4px 8px; font-size:13px;">
+      <option value="">-- 选择方案快速筛选 --</option>
+    </select>
+    <button id="btnSaveFilterScheme" style="font-size:12px; padding:4px 10px; background:#f0f7ff; border-color:#a8c8f0; color:#3070ee">💾 保存当前筛选</button>
+    <button id="btnManageFilterSchemes" style="font-size:12px; padding:4px 10px;">⚙️ 管理筛选方案</button>
+  </div>
+  <div id="cardToolbar" style="display:flex; gap:6px; align-items:center;">
     <select id="cardLocFilterSel" style="font-size:12px;padding:4px 8px">
       <option value="all">全部位置</option>
       <option value="home">🏠 家庭</option>
@@ -822,6 +832,9 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
     </select>
     <button id="btnToggleCardSize" style="font-size:12px;padding:4px 10px">切换大图</button>
   </div>
+</div>
+
+<div id="cardView">
   <div id="petContainer"></div>
 </div>
 
@@ -1152,6 +1165,18 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
     <input id="newSchemeName" placeholder="新方案名" style="flex:1">
     <button id="addSchemeBtn">新建方案</button>
   </div>
+</div></div>
+
+<!-- 新增：筛选方案管理弹窗 -->
+<div class="modal hidden" id="filterSchemeManageModal"><div class="modal-box" style="max-width:500px">
+  <div class="modal-header">
+    <h3>管理筛选方案</h3>
+    <div class="modal-header-btns">
+      <button id="closeFilterSchemeManage">关闭</button>
+    </div>
+  </div>
+  <div style="font-size:12px;color:#666;margin-bottom:8px">支持改名、排序和删除。选择方案后会自动应用对应的筛选条件。</div>
+  <div id="filterSchemeListWrap" style="max-height:50vh;overflow:auto"></div>
 </div></div>
 
 <!-- 分享卡片弹窗 -->
@@ -2078,6 +2103,9 @@ let currentSchemeId = "";
 let schemeDirty = false;
 let matchSortMode = "score";
 
+/* 筛选方案 */
+let filterSchemes = [];
+
 /* 速配找对象 */
 let matchTargetSrcTab = "lib";
 let currentMatchTargetPetId = "";
@@ -2580,6 +2608,7 @@ function safeSave(){
             pets: petList, accounts: accountOptions, breedMap, featureMap,
             flawScores: flawScores, mainAccount: mainAccount,
             matchSchemes: matchSchemes, currentSchemeId: currentSchemeId,
+            filterSchemes: filterSchemes,
             shareSettings: shareSettings,
             nurseryByAccount: nurseryByAccount,
             scheduleOrderByAccount: scheduleOrderByAccount,
@@ -2590,7 +2619,7 @@ function safeSave(){
     }catch(e){
         console.warn("写入失败", e);
         try{
-            const slim = {pets:petList.map(p => Object.assign({}, p, {img:"", imgBack:"", imgBaby:""})), accounts:accountOptions, breedMap, featureMap, flawScores:flawScores, mainAccount:mainAccount, matchSchemes:matchSchemes, currentSchemeId:currentSchemeId, shareSettings:shareSettings, nurseryByAccount:nurseryByAccount, scheduleOrderByAccount:scheduleOrderByAccount, slotDelta:slotDelta, slotEvicts:slotEvicts};
+            const slim = {pets:petList.map(p => Object.assign({}, p, {img:"", imgBack:"", imgBaby:""})), accounts:accountOptions, breedMap, featureMap, flawScores:flawScores, mainAccount:mainAccount, matchSchemes:matchSchemes, currentSchemeId:currentSchemeId, filterSchemes:filterSchemes, shareSettings:shareSettings, nurseryByAccount:nurseryByAccount, scheduleOrderByAccount:scheduleOrderByAccount, slotDelta:slotDelta, slotEvicts:slotEvicts};
             localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
             alert("⚠️ 本地存储已满！已紧急丢弃图片字段。请立即导出备份。"); return false;
         }catch(e2){ alert("⚠️ 本地存储写不进去！请立即导出备份。"); return false; }
@@ -2663,6 +2692,7 @@ function loadFromLocal(){
         flawScores = obj.flawScores && typeof obj.flawScores === "object" ? obj.flawScores : {};
         mainAccount = obj.mainAccount || "";
         matchSchemes = Array.isArray(obj.matchSchemes) ? obj.matchSchemes : [];
+        filterSchemes = Array.isArray(obj.filterSchemes) ? obj.filterSchemes : [];
         currentSchemeId = obj.currentSchemeId || "";
         nurseryByAccount = (obj.nurseryByAccount && typeof obj.nurseryByAccount === "object") ? obj.nurseryByAccount : {};
         // 兼容旧数据，确保 twins 字段存在
@@ -3371,6 +3401,11 @@ function render(){
             hintEl.classList.add("hidden");
             hintEl.innerHTML = "";
         }
+    }
+
+    // 控制卡片专属按钮只在卡片视图显示
+    if ($("cardToolbar")) {
+        $("cardToolbar").style.display = (currentView === "card") ? "flex" : "none";
     }
 
    if(currentView === "card"){
@@ -5910,6 +5945,7 @@ $("exportApply").onclick = async () => {
             pets: pets, accounts: accountOptions, breedMap: breedMap, featureMap: featureMap,
             flawScores: flawScores, mainAccount: mainAccount,
             matchSchemes: matchSchemes, currentSchemeId: currentSchemeId,
+            filterSchemes: filterSchemes,
             shareSettings: shareSettings,
             nurseryByAccount: nurseryByAccount,
             scheduleOrderByAccount: scheduleOrderByAccount,
@@ -6037,6 +6073,7 @@ $("importApply").onclick = function(){
                     flawScores = obj.flawScores && typeof obj.flawScores === "object" ? obj.flawScores : {};
                     mainAccount = obj.mainAccount || "";
                     matchSchemes = Array.isArray(obj.matchSchemes) ? obj.matchSchemes : [];
+                    filterSchemes = Array.isArray(obj.filterSchemes) ? obj.filterSchemes : [];
                     currentSchemeId = obj.currentSchemeId || "";
                     nurseryByAccount = obj.nurseryByAccount && typeof obj.nurseryByAccount === "object" ? obj.nurseryByAccount : {};
                     scheduleOrderByAccount = obj.scheduleOrderByAccount && typeof obj.scheduleOrderByAccount === "object" ? obj.scheduleOrderByAccount : {};
@@ -6079,6 +6116,7 @@ $("importApply").onclick = function(){
                     }
                     if(obj.mainAccount && !mainAccount) mainAccount = obj.mainAccount;
                     if(Array.isArray(obj.matchSchemes)){ obj.matchSchemes.forEach(s => { if(!matchSchemes.some(x => x.id === s.id)) matchSchemes.push(s); }); }
+                    if(Array.isArray(obj.filterSchemes)){ obj.filterSchemes.forEach(s => { if(!filterSchemes.some(x => x.id === s.id)) filterSchemes.push(s); }); }
                     if(obj.nurseryByAccount && typeof obj.nurseryByAccount === "object"){
                         Object.keys(obj.nurseryByAccount).forEach(function(k){ if(!nurseryByAccount[k]) nurseryByAccount[k] = obj.nurseryByAccount[k]; });
                     }
@@ -8303,6 +8341,126 @@ $("calibMoveBoardBtn").onclick = () => {
     $("calibSelectedCount").textContent = calibSelectedIds.size;
 };
 
+/* ==================== 筛选方案管理 ==================== */
+function renderFilterSchemeSelect() {
+    const sel = $("filterSchemeSelect");
+    if (!sel) return;
+    sel.innerHTML = '<option value="">-- 选择方案快速筛选 --</option>';
+    filterSchemes.forEach(s => {
+        const o = document.createElement("option");
+        o.value = s.id;
+        o.textContent = s.name;
+        sel.appendChild(o);
+    });
+    sel.value = ""; // 应用后重置
+}
+
+$("btnSaveFilterScheme").onclick = () => {
+    const name = prompt("请输入新筛选方案名称：", "方案 " + (filterSchemes.length + 1));
+    if (!name || !name.trim()) return;
+    
+    // 深拷贝当前筛选状态
+    const state = {};
+    Object.keys(filterState).forEach(k => {
+        state[k] = Array.from(filterState[k]);
+    });
+    const exState = {};
+    Object.keys(filterExcludeState).forEach(k => {
+        exState[k] = Array.from(filterExcludeState[k]);
+    });
+    
+    const newScheme = {
+        id: "fs_" + genId(),
+        name: name.trim(),
+        state: state,
+        excludeState: exState,
+        featureMode: featureMode,
+        keyword: $("searchInput").value.trim()
+    };
+    
+    filterSchemes.push(newScheme);
+    saveLocal();
+    renderFilterSchemeSelect();
+    alert("✓ 筛选方案已保存");
+};
+
+$("filterSchemeSelect").onchange = function() {
+    const id = this.value;
+    if (!id) return;
+    const s = filterSchemes.find(x => x.id === id);
+    if (!s) return;
+    
+    // 恢复筛选状态
+    Object.keys(filterState).forEach(k => {
+        filterState[k].clear();
+        (s.state[k] || []).forEach(v => filterState[k].add(v));
+    });
+    Object.keys(filterExcludeState).forEach(k => {
+        filterExcludeState[k].clear();
+        (s.excludeState[k] || []).forEach(v => filterExcludeState[k].add(v));
+    });
+    
+    featureMode = s.featureMode || "or";
+    $("searchInput").value = s.keyword || "";
+    
+    render(); // 触发界面刷新
+};
+
+function renderFilterSchemeManage() {
+    const wrap = $("filterSchemeListWrap"); 
+    wrap.innerHTML = "";
+    if (filterSchemes.length === 0) {
+        wrap.innerHTML = '<div style="color:#999;padding:12px;text-align:center">暂无筛选方案</div>';
+        return;
+    }
+    filterSchemes.forEach((s, i) => {
+        const row = document.createElement("div");
+        row.style.cssText = "display:flex;align-items:center;gap:6px;padding:8px 6px;border-bottom:1px solid #eef1f5";
+        row.innerHTML = `<span style="flex:1;font-size:13px"><b>${esc(s.name)}</b></span>`
+            + `<button class="mini-btn" data-fs-up="${i}" ${i === 0 ? 'disabled' : ''} title="上移">↑</button>`
+            + `<button class="mini-btn" data-fs-down="${i}" ${i === filterSchemes.length - 1 ? 'disabled' : ''} title="下移">↓</button>`
+            + `<button class="mini-btn" data-fs-rename="${i}">改名</button>`
+            + `<button class="del-opt" data-fs-del="${i}">删除</button>`;
+        wrap.appendChild(row);
+    });
+}
+
+$("filterSchemeListWrap").addEventListener("click", e => {
+    const upBtn = e.target.closest("[data-fs-up]");
+    if(upBtn) { 
+        const i = Number(upBtn.dataset.fsUp); 
+        if(i > 0){ const tmp = filterSchemes[i - 1]; filterSchemes[i - 1] = filterSchemes[i]; filterSchemes[i] = tmp; saveLocal(); renderFilterSchemeSelect(); renderFilterSchemeManage(); } 
+        return; 
+    }
+    const downBtn = e.target.closest("[data-fs-down]");
+    if(downBtn) { 
+        const i = Number(downBtn.dataset.fsDown); 
+        if(i < filterSchemes.length - 1){ const tmp = filterSchemes[i + 1]; filterSchemes[i + 1] = filterSchemes[i]; filterSchemes[i] = tmp; saveLocal(); renderFilterSchemeSelect(); renderFilterSchemeManage(); } 
+        return; 
+    }
+    const renameBtn = e.target.closest("[data-fs-rename]");
+    if(renameBtn) { 
+        const i = Number(renameBtn.dataset.fsRename); 
+        const nv = prompt("新名称：", filterSchemes[i].name); 
+        if(nv && nv.trim()){ filterSchemes[i].name = nv.trim(); saveLocal(); renderFilterSchemeSelect(); renderFilterSchemeManage(); } 
+        return; 
+    }
+    const delBtn = e.target.closest("[data-fs-del]");
+    if(delBtn) { 
+        const i = Number(delBtn.dataset.fsDel); 
+        if(!confirm("确认删除方案【" + filterSchemes[i].name + "】？")) return; 
+        filterSchemes.splice(i, 1); 
+        saveLocal(); renderFilterSchemeSelect(); renderFilterSchemeManage(); 
+        return; 
+    }
+});
+
+$("btnManageFilterSchemes").onclick = () => {
+    renderFilterSchemeManage();
+    $("filterSchemeManageModal").classList.remove("hidden");
+};
+$("closeFilterSchemeManage").onclick = () => $("filterSchemeManageModal").classList.add("hidden");
+
 /* ==================== 每秒 tick ==================== */
 function tickUpdate(){
     const now = Date.now();
@@ -8411,6 +8569,7 @@ renderMatchTempFlawChips();
 initPairCategorySelects();
 renderPairFlawChips("A");
 renderPairFlawChips("B");
+renderFilterSchemeSelect(); // 初始化筛选方案
 render();
 updateUndoBtn();
 
