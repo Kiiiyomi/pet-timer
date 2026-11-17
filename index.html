@@ -771,8 +771,7 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <div class="top-bar">
 <button class="primary" id="btnAdd">➕新增宠物</button>
 <button id="btnBatchAdd" style="background:#f0f7ff;border-color:#a8c8f0;color:#3070ee">⚡批量新建</button>
-<button id="btnExport">💾导出备份</button>
-<button id="btnImport">📂导入备份</button>
+<button id="btnSync" style="background:#f0f7ff;border-color:#a8c8f0;color:#3070ee">🔄 备份与恢复</button>
 <button id="btnManageOpt">⚙️管理账号/品种</button>
 <button id="btnManageFeat">🎨管理特征</button>
 <button id="btnShareSettings">📤分享设置</button>
@@ -1347,6 +1346,31 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
   </div>
 </div></div>
 
+<!-- 剪贴板极速同步帮助弹窗 -->
+<div class="modal hidden" id="clipHelpModal" style="z-index:9999;">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-header">
+      <h3>📋 剪贴板极速同步</h3>
+      <div class="modal-header-btns">
+        <button id="closeClipHelp">关闭</button>
+      </div>
+    </div>
+    <div style="font-size:14px;line-height:1.8;color:#333;padding:4px 2px;">
+<p><strong>什么是“剪贴板极速同步”？</strong></p>
+<p>剪贴板就是你平时长按文字使用的“复制”和“粘贴”。利用苹果系统的通用剪贴板（或微信输入法跨设备复制粘贴），你可以把旧手机的数据，瞬间粘贴到新设备上。</p>
+
+<p>🔁 <strong>怎么操作？</strong></p>
+<p>1.在旧设备上，点击【📤 复制备份】。（数据会暂存在剪贴板里）</p>
+<p>2.在新设备上，点击【📥 粘贴恢复】。（文字会自动填入下方框内）</p>
+<p>3.检查无误后，点击最下方的【从上方文本恢复数据】即可完成同步。</p>
+
+<p>⚠️ <strong>注意：</strong>这种方式传输的是纯文本（不含图片），速度极快，适合日常快速同步。如果需要备份图片，请使用最下方的“高级文件导出”。</p>
+    </div>
+  </div>
+</div>
+
+
+
 <div class="batch-bar hidden" id="batchBar">
 <span id="batchCount">已选 0 只</span>
 <button id="batchModify" class="hl">批量修改</button>
@@ -1474,64 +1498,82 @@ button.del-opt{background:#ffeeee;color:#c82424;border-color:#ffb4b4;padding:2px
 <div style="font-size:12px;color:#888;margin-top:6px">提示：可以先在电脑上用 Excel/记事本整理好，再粘贴进来。</div>
 </div></div>
 
-<!-- 导出备份选项 -->
-<div class="modal hidden" id="exportModal"><div class="modal-box" style="max-width:480px">
-<div class="modal-header">
-<h3>💾 导出备份</h3>
-<div class="modal-header-btns">
-<button class="primary" id="exportApply">导出</button>
-<button id="exportCancel">取消</button>
-</div>
-</div>
-<div class="form-row">
-<label>导出范围</label>
-<select id="exportScope" style="width:100%">
-  <option value="all">全部宠物（默认）</option>
-  <option value="filtered" id="optFiltered">仅当前筛选结果（0 只）</option>
-  <option value="selected" id="optSelected">仅勾选的宠物（0 只）</option>
-  <option value="recent">最近改动过的</option>
-</select>
-<div id="exportRecentDaysWrap" class="hidden" style="margin-top:8px;display:flex;align-items:center;gap:8px">
-  <span style="font-size:13px;color:#555">最近</span>
-  <select id="exportRecentDays" style="width:auto">
-    <option value="1">1 天</option><option value="3" selected>3 天</option>
-    <option value="7">7 天</option><option value="14">14 天</option><option value="30">30 天</option>
-  </select>
-  <span style="font-size:13px;color:#555">内改动过的宠物</span>
-</div>
-</div>
-<div class="form-row">
-<label>是否包含图片</label>
-<select id="exportWithImages" style="width:100%">
-  <option value="yes">包含图片（文件较大，用于首次完整迁移）</option>
-  <option value="no">不含图片（文件很小，用于增量备份）</option>
-</select>
-</div>
-<div style="font-size:12px;color:#888;background:#f8f9fb;padding:10px;border-radius:6px;margin-top:8px;line-height:1.7">
-  <b>建议：</b><br>· 首次迁移到新设备：选"全部 + 含图片"<br>· 日常增量备份：选"最近改动过的 + 不含图片"<br>· 两台设备间同步：导出最近改动 + 不含图片，然后到另一台设备用"智能合并"导入<br><br><span style="color:#a06080">iPhone/iPad 用户：导出后请在「文件」App →「下载」文件夹里查找。</span>
-</div>
-</div></div>
+<!-- 新的统一备份与恢复弹窗 -->
+<div class="modal hidden" id="syncModal"><div class="modal-box" style="max-width:560px">
+  <div class="modal-header">
+    <h3>🔄 备份与恢复</h3>
+    <div class="modal-header-btns">
+      <button id="closeSyncModal">关闭</button>
+    </div>
+  </div>
 
-<!-- 导入备份选项 -->
-<div class="modal hidden" id="importModal"><div class="modal-box" style="max-width:480px">
-<div class="modal-header">
-<h3>📂 导入备份</h3>
-<div class="modal-header-btns">
-<button class="primary" id="importApply">选择文件并导入</button>
-<button id="importCancel">取消</button>
-</div>
-</div>
-<div class="form-row">
-<label>导入方式</label>
-<select id="importMode" style="width:100%">
-  <option value="merge">智能合并（推荐）：按内容比较，不同则更新</option>
-  <option value="replace">覆盖：清空现有数据后导入</option>
-</select>
-</div>
-<div style="font-size:12px;color:#888;background:#f8f9fb;padding:10px;border-radius:6px;margin-top:8px;line-height:1.7">
-  <b>智能合并规则（按内容比较，不看时间）：</b><br>
-  · 备份里 id 不存在：新增<br>· 备份里 id 存在，内容不同：用备份覆盖（备份没图时保留本地图）<br>· 备份里 id 存在，内容完全相同：跳过<br>· 现有但不在备份里的宠物：保留
-</div>
+  <!-- 1. 剪贴板同步（无图） -->
+  <div style="background:#f8faff;border:1px solid #e3e8ef;border-radius:10px;padding:14px;margin-bottom:12px;">
+     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <div style="display:flex;gap:6px;align-items:center;">
+        <div style="font-weight:bold;color:#444;font-size:14px;">📋 剪贴板极速同步</div>
+        <button id="clipHelpBtn" style="width:18px;height:18px;border-radius:50%;border:1px solid #cbd5e1;background:#fff;color:#3070ee;font-weight:bold;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;padding:0;margin-left:4px">?</button>
+      </div>
+      <div style="font-size:11px;color:#888;">跨设备数据互传（仅文本无图）</div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:8px;">
+      <button id="btnCopyBackup" style="flex:1;padding:10px;background:#3b82f6;color:#fff;border:none;border-radius:6px;font-weight:bold;font-size:13px;">📤 复制备份</button>
+      <button id="btnPasteBackup" style="flex:1;padding:10px;background:#8b5cf6;color:#fff;border:none;border-radius:6px;font-weight:bold;font-size:13px;">📥 粘贴恢复</button>
+    </div>
+    <textarea id="syncTextArea" rows="4" style="width:100%;font-family:Consolas,Monaco,monospace;font-size:12px;padding:10px;border:1px solid #cbd5e1;border-radius:6px;margin-bottom:8px;" placeholder="点击“复制备份”会复制到剪贴板；点击“粘贴恢复”会自动读取剪贴板；也可手动在此粘贴代码。"></textarea>
+    <button id="btnRecoverFromText" style="width:100%;padding:10px;background:#f59e0b;color:#fff;border:none;border-radius:6px;font-weight:bold;font-size:13px;">从上方文本恢复数据（会覆盖）</button>
+  </div>
+
+  <!-- 2. 文件导入导出（可包含图片） -->
+  <details style="border:1px solid #e3e8ef;border-radius:10px;padding:12px;background:#fff;">
+    <summary style="cursor:pointer;font-size:13px;font-weight:bold;color:#666;user-select:none;">📁 高级：文件导入 / 导出（含图片大文件）</summary>
+    
+    <div style="margin-top:14px;border-top:1px dashed #eee;padding-top:12px;">
+      <h4 style="margin:0 0 8px;font-size:13px;color:#444">导出到文件</h4>
+      <div class="form-row">
+        <label>导出范围</label>
+        <select id="exportScope" style="width:100%">
+          <option value="all">全部宠物（默认）</option>
+          <option value="filtered" id="optFiltered">仅当前筛选结果（0 只）</option>
+          <option value="selected" id="optSelected">仅勾选的宠物（0 只）</option>
+          <option value="recent">最近改动过的</option>
+        </select>
+        <div id="exportRecentDaysWrap" class="hidden" style="margin-top:8px;display:flex;align-items:center;gap:8px">
+          <span style="font-size:13px;color:#555">最近</span>
+          <select id="exportRecentDays" style="width:auto">
+            <option value="1">1 天</option><option value="3" selected>3 天</option>
+            <option value="7">7 天</option><option value="14">14 天</option><option value="30">30 天</option>
+          </select>
+          <span style="font-size:13px;color:#555">内改动过的宠物</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>是否包含图片</label>
+        <select id="exportWithImages" style="width:100%">
+          <option value="yes">包含图片（文件较大，用于首次完整迁移）</option>
+          <option value="no">不含图片（文件很小，用于增量备份）</option>
+        </select>
+      </div>
+      <div style="text-align:right;margin-top:8px">
+        <button class="primary" id="exportApply">导出文件</button>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;border-top:1px dashed #eee;padding-top:12px;">
+      <h4 style="margin:0 0 8px;font-size:13px;color:#444">从文件恢复</h4>
+      <div class="form-row">
+        <label>导入方式</label>
+        <select id="importMode" style="width:100%">
+          <option value="merge">智能合并（推荐）：按内容比较，不同则更新</option>
+          <option value="replace">覆盖：清空现有数据后导入</option>
+        </select>
+      </div>
+      <div style="text-align:right;margin-top:8px">
+        <button class="primary" id="importApply">选择文件并导入</button>
+      </div>
+    </div>
+  </details>
 </div></div>
 
 <!-- 送养弹窗（统一时间输入） -->
@@ -5895,20 +5937,448 @@ $("batchAddApply").onclick = () => {
     alert(msg);
 };
 
-/* ==================== 导出 ==================== */
-$("btnExport").onclick = function(){
-    try{
-        const filteredCount = getFilteredList().length;
-        const selectedCount = selectedIds.size;
-        $("optFiltered").textContent = "仅当前筛选结果（" + filteredCount + " 只）";
-        $("optSelected").textContent = "仅勾选的宠物（" + selectedCount + " 只）";
-        $("exportScope").value = "all";
-        const opt = $("exportScope").querySelector('option[value="recent"]');
-        if(opt) opt.textContent = "最近改动过的";
-        $("exportRecentDaysWrap").classList.add("hidden");
-        $("exportModal").classList.remove("hidden");
-    }catch(e){ alert("点击导出按钮出错：" + e.message); }
+// 核心导入处理逻辑（供文件导入和剪贴板导入共用）
+function processImportedData(obj, mode, fromClipboard = false) {
+    if(!obj || !Array.isArray(obj.pets)){ alert("导入失败：数据缺少 pets 数组"); return; }
+    const migrated = obj.pets.map(normalizePet);
+    const images = obj.images || {};
+    const imgIds = Object.keys(images);
+    const base64List = [];
+    migrated.forEach(function(p){
+        if(isBase64Img(p.img)) base64List.push({ p: p, field: "img" });
+        if(isBase64Img(p.imgBack)) base64List.push({ p: p, field: "imgBack" });
+        if(isBase64Img(p.imgBaby)) base64List.push({ p: p, field: "imgBaby" });
+        if(p.cp1 && isBase64Img(p.cp1.img)) base64List.push({ p: p, field: "cp1.img" });
+        if(p.cp2 && isBase64Img(p.cp2.img)) base64List.push({ p: p, field: "cp2.img" });
+    });
+    
+    let confirmMsg = "", planAdd = [], planUpdate = [], planKeep = [];
+    if(mode === "replace"){
+        confirmMsg = "覆盖导入将清空现有 " + petList.length + " 只宠物，用备份里的 " + migrated.length + " 只替换。\n\n确认继续？";
+    } else {
+        const localMap = new Map();
+        petList.forEach(function(p){ localMap.set(p.id, p); });
+        migrated.forEach(function(mp){
+            if(!localMap.has(mp.id)){ planAdd.push(mp); }
+            else {
+                const exist = localMap.get(mp.id);
+                if(petDiffers(mp, exist)) planUpdate.push({ mp: mp, exist: exist });
+                else planKeep.push(mp);
+            }
+        });
+        confirmMsg = "智能合并（按内容比较）：\n\n· 会新增 " + planAdd.length + " 只\n· 会更新 " + planUpdate.length + " 只\n· 会跳过 " + planKeep.length + " 只\n\n确认继续？";
+    }
+    if(!confirm(confirmMsg)) return;
+
+    function processImagesSequentially(callback){
+        let i = 0;
+        const total = base64List.length + imgIds.length;
+        if(total === 0){ callback(); return; }
+        function step(){
+            if(i >= base64List.length){
+                const j = i - base64List.length;
+                if(j >= imgIds.length){ callback(); return; }
+                const id = imgIds[j];
+                i++;
+                base64ToBlob(images[id]).then(function(blob){ return saveImage(id, blob); }).catch(function(){}).then(function(){ setTimeout(step, 0); });
+                return;
+            }
+            const item = base64List[i];
+            i++;
+            base64ToBlob(getFieldValue(item.p, item.field)).then(function(blob){
+                const nid = "img_" + genId();
+                return saveImage(nid, blob).then(function(){ setFieldValue(item.p, item.field, nid); });
+            }).catch(function(){ setFieldValue(item.p, item.field, ""); }).then(function(){ setTimeout(step, 0); });
+        }
+        step();
+    }
+
+    processImagesSequentially(function(){
+        let stat = { added: 0, updated: 0, kept: 0 };
+        if(mode === "replace"){ 
+            petList = migrated; 
+            stat.added = migrated.length; 
+        }
+        else {
+            planAdd.forEach(function(mp){ petList.push(mp); stat.added++; });
+            planUpdate.forEach(function(item){
+                const idx = petList.findIndex(function(x){ return x.id === item.mp.id; });
+                if(idx < 0) return;
+                const merged = Object.assign({}, item.mp);
+                if(!merged.img && item.exist.img) merged.img = item.exist.img;
+                if(!merged.imgBack && item.exist.imgBack) merged.imgBack = item.exist.imgBack;
+                if(!merged.imgBaby && item.exist.imgBaby) merged.imgBaby = item.exist.imgBaby;
+                if(merged.cp1 && !merged.cp1.img && item.exist.cp1 && item.exist.cp1.img) merged.cp1.img = item.exist.cp1.img;
+                if(merged.cp2 && !merged.cp2.img && item.exist.cp2 && item.exist.cp2.img) merged.cp2.img = item.exist.cp2.img;
+                petList[idx] = merged;
+                stat.updated++;
+            });
+            stat.kept = planKeep.length;
+        }
+
+        if(mode === "replace"){
+            accountOptions = Array.isArray(obj.accounts) ? obj.accounts : [];
+            if(obj.breedMap && typeof obj.breedMap === "object") breedMap = obj.breedMap;
+            flawScores = obj.flawScores && typeof obj.flawScores === "object" ? obj.flawScores : {};
+            mainAccount = obj.mainAccount || "";
+            matchSchemes = Array.isArray(obj.matchSchemes) ? obj.matchSchemes : [];
+            filterSchemes = Array.isArray(obj.filterSchemes) ? obj.filterSchemes : [];
+            currentSchemeId = obj.currentSchemeId || "";
+            nurseryByAccount = obj.nurseryByAccount && typeof obj.nurseryByAccount === "object" ? obj.nurseryByAccount : {};
+            scheduleOrderByAccount = obj.scheduleOrderByAccount && typeof obj.scheduleOrderByAccount === "object" ? obj.scheduleOrderByAccount : {};
+            slotDelta = obj.slotDelta && typeof obj.slotDelta === "object" ? obj.slotDelta : {};
+            slotEvicts = Array.isArray(obj.slotEvicts) ? obj.slotEvicts : [];
+            if(obj.featureMap && typeof obj.featureMap === "object"){
+                const keys = Object.keys(obj.featureMap);
+                const isOld = keys.length > 0 && typeof obj.featureMap[keys[0]] === "string";
+                if(isOld){
+                    featureMap = initFeatureMapFromDefaults();
+                    Object.keys(obj.featureMap).forEach(function(name){
+                        const color = obj.featureMap[name];
+                        const guess = guessFeatureCategory(name);
+                        if(guess){ if(!featureMap[guess]) featureMap[guess] = {}; featureMap[guess][name] = color; }
+                        else { if(!featureMap[CAT_COMMON]) featureMap[CAT_COMMON] = {}; featureMap[CAT_COMMON][name] = color; }
+                    });
+                } else { featureMap = obj.featureMap; if(!featureMap[CAT_COMMON]) featureMap[CAT_COMMON] = {}; }
+            }
+            if(obj.shareSettings){
+                const ss = obj.shareSettings;
+                if(ss.frameColor) shareSettings.frameColor = ss.frameColor;
+                if(typeof ss.fontScale === "number") shareSettings.fontScale = ss.fontScale;
+                if(ss.bigImg && typeof ss.bigImg === "object"){
+                    ["name","gender","breed","account","tags","features","note","recoverTime","remainTime"].forEach(k => { if(typeof ss.bigImg[k] === "boolean") shareSettings.bigImg[k] = ss.bigImg[k]; });
+                }
+                if(ss.batch && typeof ss.batch === "object"){
+                    ["main","back","baby","meetup"].forEach(k => { if(typeof ss.batch[k] === "boolean") shareSettings.batch[k] = ss.batch[k]; });
+                }
+            }
+        } else {
+            if(Array.isArray(obj.accounts)){ obj.accounts.forEach(function(a){ if(accountOptions.indexOf(a) === -1) accountOptions.push(a); }); }
+            if(obj.breedMap && typeof obj.breedMap === "object"){
+                Object.keys(obj.breedMap).forEach(function(cat){
+                    if(!(cat in breedMap)) breedMap[cat] = [];
+                    (obj.breedMap[cat] || []).forEach(function(b){ if(breedMap[cat].indexOf(b) === -1) breedMap[cat].push(b); });
+                });
+            }
+            if(obj.flawScores && typeof obj.flawScores === "object"){
+                Object.keys(obj.flawScores).forEach(function(k){ if(flawScores[k] === undefined) flawScores[k] = obj.flawScores[k]; });
+            }
+            if(obj.mainAccount && !mainAccount) mainAccount = obj.mainAccount;
+            if(Array.isArray(obj.matchSchemes)){ obj.matchSchemes.forEach(s => { if(!matchSchemes.some(x => x.id === s.id)) matchSchemes.push(s); }); }
+            if(Array.isArray(obj.filterSchemes)){ obj.filterSchemes.forEach(s => { if(!filterSchemes.some(x => x.id === s.id)) filterSchemes.push(s); }); }
+            if(obj.nurseryByAccount && typeof obj.nurseryByAccount === "object"){
+                Object.keys(obj.nurseryByAccount).forEach(function(k){ if(!nurseryByAccount[k]) nurseryByAccount[k] = obj.nurseryByAccount[k]; });
+            }
+            if(obj.scheduleOrderByAccount && typeof obj.scheduleOrderByAccount === "object"){
+                Object.keys(obj.scheduleOrderByAccount).forEach(function(k){ if(!scheduleOrderByAccount[k]) scheduleOrderByAccount[k] = obj.scheduleOrderByAccount[k]; });
+            }
+            if(obj.slotDelta && typeof obj.slotDelta === "object"){
+                Object.keys(obj.slotDelta).forEach(function(k){ if(!slotDelta[k]) slotDelta[k] = obj.slotDelta[k]; });
+            }
+            if(Array.isArray(obj.slotEvicts)){
+                obj.slotEvicts.forEach(function(ev){
+                    if(!slotEvicts.some(x => x.id === ev.id)) slotEvicts.push(ev);
+                });
+            }
+            if(obj.featureMap && typeof obj.featureMap === "object"){
+                const keys = Object.keys(obj.featureMap);
+                const isOld = keys.length > 0 && typeof obj.featureMap[keys[0]] === "string";
+                if(isOld){
+                    Object.keys(obj.featureMap).forEach(function(name){
+                        const color = obj.featureMap[name];
+                        const guess = guessFeatureCategory(name);
+                        const target = guess || CAT_COMMON;
+                        if(!featureMap[target]) featureMap[target] = {};
+                        if(!featureMap[target][name]) featureMap[target][name] = color;
+                    });
+                } else {
+                    Object.keys(obj.featureMap).forEach(function(cat){
+                        if(!featureMap[cat]) featureMap[cat] = {};
+                        Object.keys(obj.featureMap[cat]).forEach(function(name){
+                            if(!featureMap[cat][name]) featureMap[cat][name] = obj.featureMap[cat][name];
+                        });
+                    });
+                }
+            }
+        }
+        petList.forEach(function(p){ if(!p.features) return; p.features.forEach(function(f){ ensureFeatureExists(f, p.category); }); });
+        accountOptions.forEach(function(a){
+            if(!nurseryByAccount[a]) nurseryByAccount[a] = { litters:0, twins:0, babies:0, exitTasks:[] };
+            if(!nurseryByAccount[a].exitTasks) nurseryByAccount[a].exitTasks = [];
+        });
+        saveLocal();
+        lastSnapshot = null;
+        updateUndoBtn();
+        setTimeout(function(){
+            render();
+            $("syncModal").classList.add("hidden"); // 导入完成后关闭弹窗
+            setTimeout(function(){
+                if(mode === "replace"){
+                    alert("恢复成功！\n模式：覆盖\n共导入 " + migrated.length + " 只\n当前共 " + petList.length + " 只宠物");
+                } else {
+                    alert("恢复成功！\n模式：智能合并\n· 新增 " + stat.added + " 只\n· 更新 " + stat.updated + " 只\n· 跳过 " + stat.kept + " 只\n\n当前共 " + petList.length + " 只宠物");
+                }
+            }, 100);
+        }, 0);
+    });
+}
+
+/* ==================== 统一的数据备份与恢复逻辑 ==================== */
+
+// 核心导入处理逻辑（供文件导入和剪贴板导入共用）
+function processImportedData(obj, mode) {
+    if(!obj || !Array.isArray(obj.pets)){ alert("导入失败：数据缺少 pets 数组"); return; }
+    const migrated = obj.pets.map(normalizePet);
+    const images = obj.images || {};
+    const imgIds = Object.keys(images);
+    const base64List = [];
+    migrated.forEach(function(p){
+        if(isBase64Img(p.img)) base64List.push({ p: p, field: "img" });
+        if(isBase64Img(p.imgBack)) base64List.push({ p: p, field: "imgBack" });
+        if(isBase64Img(p.imgBaby)) base64List.push({ p: p, field: "imgBaby" });
+        if(p.cp1 && isBase64Img(p.cp1.img)) base64List.push({ p: p, field: "cp1.img" });
+        if(p.cp2 && isBase64Img(p.cp2.img)) base64List.push({ p: p, field: "cp2.img" });
+    });
+    
+    let confirmMsg = "", planAdd = [], planUpdate = [], planKeep = [];
+    if(mode === "replace"){
+        confirmMsg = "覆盖导入将清空现有 " + petList.length + " 只宠物，用备份里的 " + migrated.length + " 只替换。\n\n确认继续？";
+    } else {
+        const localMap = new Map();
+        petList.forEach(function(p){ localMap.set(p.id, p); });
+        migrated.forEach(function(mp){
+            if(!localMap.has(mp.id)){ planAdd.push(mp); }
+            else {
+                const exist = localMap.get(mp.id);
+                if(petDiffers(mp, exist)) planUpdate.push({ mp: mp, exist: exist });
+                else planKeep.push(mp);
+            }
+        });
+        confirmMsg = "智能合并（按内容比较）：\n\n· 会新增 " + planAdd.length + " 只\n· 会更新 " + planUpdate.length + " 只\n· 会跳过 " + planKeep.length + " 只\n\n确认继续？";
+    }
+    if(!confirm(confirmMsg)) return;
+
+    function processImagesSequentially(callback){
+        let i = 0;
+        const total = base64List.length + imgIds.length;
+        if(total === 0){ callback(); return; }
+        function step(){
+            if(i >= base64List.length){
+                const j = i - base64List.length;
+                if(j >= imgIds.length){ callback(); return; }
+                const id = imgIds[j];
+                i++;
+                base64ToBlob(images[id]).then(function(blob){ return saveImage(id, blob); }).catch(function(){}).then(function(){ setTimeout(step, 0); });
+                return;
+            }
+            const item = base64List[i];
+            i++;
+            base64ToBlob(getFieldValue(item.p, item.field)).then(function(blob){
+                const nid = "img_" + genId();
+                return saveImage(nid, blob).then(function(){ setFieldValue(item.p, item.field, nid); });
+            }).catch(function(){ setFieldValue(item.p, item.field, ""); }).then(function(){ setTimeout(step, 0); });
+        }
+        step();
+    }
+
+    processImagesSequentially(function(){
+        let stat = { added: 0, updated: 0, kept: 0 };
+        if(mode === "replace"){ 
+            petList = migrated; 
+            stat.added = migrated.length; 
+        }
+        else {
+            planAdd.forEach(function(mp){ petList.push(mp); stat.added++; });
+            planUpdate.forEach(function(item){
+                const idx = petList.findIndex(function(x){ return x.id === item.mp.id; });
+                if(idx < 0) return;
+                const merged = Object.assign({}, item.mp);
+                if(!merged.img && item.exist.img) merged.img = item.exist.img;
+                if(!merged.imgBack && item.exist.imgBack) merged.imgBack = item.exist.imgBack;
+                if(!merged.imgBaby && item.exist.imgBaby) merged.imgBaby = item.exist.imgBaby;
+                if(merged.cp1 && !merged.cp1.img && item.exist.cp1 && item.exist.cp1.img) merged.cp1.img = item.exist.cp1.img;
+                if(merged.cp2 && !merged.cp2.img && item.exist.cp2 && item.exist.cp2.img) merged.cp2.img = item.exist.cp2.img;
+                petList[idx] = merged;
+                stat.updated++;
+            });
+            stat.kept = planKeep.length;
+        }
+
+        if(mode === "replace"){
+            accountOptions = Array.isArray(obj.accounts) ? obj.accounts : [];
+            if(obj.breedMap && typeof obj.breedMap === "object") breedMap = obj.breedMap;
+            flawScores = obj.flawScores && typeof obj.flawScores === "object" ? obj.flawScores : {};
+            mainAccount = obj.mainAccount || "";
+            matchSchemes = Array.isArray(obj.matchSchemes) ? obj.matchSchemes : [];
+            filterSchemes = Array.isArray(obj.filterSchemes) ? obj.filterSchemes : [];
+            currentSchemeId = obj.currentSchemeId || "";
+            nurseryByAccount = obj.nurseryByAccount && typeof obj.nurseryByAccount === "object" ? obj.nurseryByAccount : {};
+            scheduleOrderByAccount = obj.scheduleOrderByAccount && typeof obj.scheduleOrderByAccount === "object" ? obj.scheduleOrderByAccount : {};
+            slotDelta = obj.slotDelta && typeof obj.slotDelta === "object" ? obj.slotDelta : {};
+            slotEvicts = Array.isArray(obj.slotEvicts) ? obj.slotEvicts : [];
+            if(obj.featureMap && typeof obj.featureMap === "object"){
+                const keys = Object.keys(obj.featureMap);
+                const isOld = keys.length > 0 && typeof obj.featureMap[keys[0]] === "string";
+                if(isOld){
+                    featureMap = initFeatureMapFromDefaults();
+                    Object.keys(obj.featureMap).forEach(function(name){
+                        const color = obj.featureMap[name];
+                        const guess = guessFeatureCategory(name);
+                        if(guess){ if(!featureMap[guess]) featureMap[guess] = {}; featureMap[guess][name] = color; }
+                        else { if(!featureMap[CAT_COMMON]) featureMap[CAT_COMMON] = {}; featureMap[CAT_COMMON][name] = color; }
+                    });
+                } else { featureMap = obj.featureMap; if(!featureMap[CAT_COMMON]) featureMap[CAT_COMMON] = {}; }
+            }
+            if(obj.shareSettings){
+                const ss = obj.shareSettings;
+                if(ss.frameColor) shareSettings.frameColor = ss.frameColor;
+                if(typeof ss.fontScale === "number") shareSettings.fontScale = ss.fontScale;
+                if(ss.bigImg && typeof ss.bigImg === "object"){
+                    ["name","gender","breed","account","tags","features","note","recoverTime","remainTime"].forEach(k => { if(typeof ss.bigImg[k] === "boolean") shareSettings.bigImg[k] = ss.bigImg[k]; });
+                }
+                if(ss.batch && typeof ss.batch === "object"){
+                    ["main","back","baby","meetup"].forEach(k => { if(typeof ss.batch[k] === "boolean") shareSettings.batch[k] = ss.batch[k]; });
+                }
+            }
+        } else {
+            if(Array.isArray(obj.accounts)){ obj.accounts.forEach(function(a){ if(accountOptions.indexOf(a) === -1) accountOptions.push(a); }); }
+            if(obj.breedMap && typeof obj.breedMap === "object"){
+                Object.keys(obj.breedMap).forEach(function(cat){
+                    if(!(cat in breedMap)) breedMap[cat] = [];
+                    (obj.breedMap[cat] || []).forEach(function(b){ if(breedMap[cat].indexOf(b) === -1) breedMap[cat].push(b); });
+                });
+            }
+            if(obj.flawScores && typeof obj.flawScores === "object"){
+                Object.keys(obj.flawScores).forEach(function(k){ if(flawScores[k] === undefined) flawScores[k] = obj.flawScores[k]; });
+            }
+            if(obj.mainAccount && !mainAccount) mainAccount = obj.mainAccount;
+            if(Array.isArray(obj.matchSchemes)){ obj.matchSchemes.forEach(s => { if(!matchSchemes.some(x => x.id === s.id)) matchSchemes.push(s); }); }
+            if(Array.isArray(obj.filterSchemes)){ obj.filterSchemes.forEach(s => { if(!filterSchemes.some(x => x.id === s.id)) filterSchemes.push(s); }); }
+            if(obj.nurseryByAccount && typeof obj.nurseryByAccount === "object"){
+                Object.keys(obj.nurseryByAccount).forEach(function(k){ if(!nurseryByAccount[k]) nurseryByAccount[k] = obj.nurseryByAccount[k]; });
+            }
+            if(obj.scheduleOrderByAccount && typeof obj.scheduleOrderByAccount === "object"){
+                Object.keys(obj.scheduleOrderByAccount).forEach(function(k){ if(!scheduleOrderByAccount[k]) scheduleOrderByAccount[k] = obj.scheduleOrderByAccount[k]; });
+            }
+            if(obj.slotDelta && typeof obj.slotDelta === "object"){
+                Object.keys(obj.slotDelta).forEach(function(k){ if(!slotDelta[k]) slotDelta[k] = obj.slotDelta[k]; });
+            }
+            if(Array.isArray(obj.slotEvicts)){
+                obj.slotEvicts.forEach(function(ev){
+                    if(!slotEvicts.some(x => x.id === ev.id)) slotEvicts.push(ev);
+                });
+            }
+            if(obj.featureMap && typeof obj.featureMap === "object"){
+                const keys = Object.keys(obj.featureMap);
+                const isOld = keys.length > 0 && typeof obj.featureMap[keys[0]] === "string";
+                if(isOld){
+                    Object.keys(obj.featureMap).forEach(function(name){
+                        const color = obj.featureMap[name];
+                        const guess = guessFeatureCategory(name);
+                        const target = guess || CAT_COMMON;
+                        if(!featureMap[target]) featureMap[target] = {};
+                        if(!featureMap[target][name]) featureMap[target][name] = color;
+                    });
+                } else {
+                    Object.keys(obj.featureMap).forEach(function(cat){
+                        if(!featureMap[cat]) featureMap[cat] = {};
+                        Object.keys(obj.featureMap[cat]).forEach(function(name){
+                            if(!featureMap[cat][name]) featureMap[cat][name] = obj.featureMap[cat][name];
+                        });
+                    });
+                }
+            }
+        }
+        petList.forEach(function(p){ if(!p.features) return; p.features.forEach(function(f){ ensureFeatureExists(f, p.category); }); });
+        accountOptions.forEach(function(a){
+            if(!nurseryByAccount[a]) nurseryByAccount[a] = { litters:0, twins:0, babies:0, exitTasks:[] };
+            if(!nurseryByAccount[a].exitTasks) nurseryByAccount[a].exitTasks = [];
+        });
+        saveLocal();
+        lastSnapshot = null;
+        updateUndoBtn();
+        setTimeout(function(){
+            render();
+            $("syncModal").classList.add("hidden");
+            setTimeout(function(){
+                if(mode === "replace"){
+                    alert("恢复成功！\n模式：覆盖\n共导入 " + migrated.length + " 只\n当前共 " + petList.length + " 只宠物");
+                } else {
+                    alert("恢复成功！\n模式：智能合并\n· 新增 " + stat.added + " 只\n· 更新 " + stat.updated + " 只\n· 跳过 " + stat.kept + " 只\n\n当前共 " + petList.length + " 只宠物");
+                }
+            }, 100);
+        }, 0);
+    });
+}
+
+// 绑定备份与恢复主按钮
+$("btnSync").onclick = function(){
+    const filteredCount = getFilteredList().length;
+    const selectedCount = selectedIds.size;
+    $("optFiltered").textContent = "仅当前筛选结果（" + filteredCount + " 只）";
+    $("optSelected").textContent = "仅勾选的宠物（" + selectedCount + " 只）";
+    $("exportScope").value = "all";
+    $("syncTextArea").value = ""; // 清空同步框
+    $("syncModal").classList.remove("hidden");
 };
+$("closeSyncModal").onclick = () => $("syncModal").classList.add("hidden");
+
+// 1. 剪贴板极速同步：复制备份
+$("btnCopyBackup").onclick = async () => {
+    try{
+        const payload = {
+            pets: petList, accounts: accountOptions, breedMap: breedMap, featureMap: featureMap,
+            flawScores: flawScores, mainAccount: mainAccount,
+            matchSchemes: matchSchemes, currentSchemeId: currentSchemeId,
+            filterSchemes: filterSchemes, shareSettings: shareSettings,
+            nurseryByAccount: nurseryByAccount, scheduleOrderByAccount: scheduleOrderByAccount,
+            slotDelta: slotDelta, slotEvicts: slotEvicts,
+            images: {}, // 极速同步：强制不含图片
+            exportInfo: { scope: "all", withImages: false, count: petList.length, ts: Date.now() }
+        };
+        const jsonStr = JSON.stringify(payload);
+        await navigator.clipboard.writeText(jsonStr);
+        $("syncTextArea").value = jsonStr; // 顺便放入文本框
+        alert("✓ 无图备份已复制到剪贴板！\n可以直接在另一台设备点击「粘贴恢复」同步。");
+    }catch(err){
+        alert("复制失败，浏览器可能限制了剪贴板权限。\n请手动在文本框中复制内容。\n错误: " + err.message);
+    }
+};
+
+// 2. 剪贴板极速同步：读取到文本框
+$("btnPasteBackup").onclick = async () => {
+    try{
+        const text = await navigator.clipboard.readText();
+        if(!text || !text.trim()){
+            alert("剪贴板为空，请先在另一台设备上点击「复制备份」。");
+            return;
+        }
+        $("syncTextArea").value = text;
+        alert("✓ 读取成功！请检查文本无误后，点击下方橙色按钮恢复数据。");
+    }catch(err){
+        alert("读取剪贴板失败！请手动粘贴代码到文本框。\n错误: " + err.message);
+    }
+};
+
+// 3. 从文本框恢复数据（防误触确认）
+$("btnRecoverFromText").onclick = () => {
+    const text = $("syncTextArea").value.trim();
+    if(!text){
+        alert("文本框为空，请先粘贴代码或点击粘贴恢复。");
+        return;
+    }
+    let obj;
+    try{
+        obj = JSON.parse(text);
+    }catch(e){
+        alert("解析失败：文本格式不是有效的备份数据，请检查粘贴的代码。");
+        return;
+    }
+    const mode = $("importMode").value;
+    processImportedData(obj, mode);
+};
+
+// 4. 高级文件导出逻辑
 $("exportScope").onchange = function(){
     const isRecent = this.value === "recent";
     $("exportRecentDaysWrap").classList.toggle("hidden", !isRecent);
@@ -5922,7 +6392,7 @@ function updateRecentExportCount(){
     const opt = $("exportScope").querySelector('option[value="recent"]');
     opt.textContent = "最近改动过的（" + cnt + " 只）";
 }
-$("exportCancel").onclick = () => $("exportModal").classList.add("hidden");
+
 $("exportApply").onclick = async () => {
     const scope = $("exportScope").value;
     const withImages = $("exportWithImages").value === "yes";
@@ -5957,12 +6427,9 @@ $("exportApply").onclick = async () => {
             pets: pets, accounts: accountOptions, breedMap: breedMap, featureMap: featureMap,
             flawScores: flawScores, mainAccount: mainAccount,
             matchSchemes: matchSchemes, currentSchemeId: currentSchemeId,
-            filterSchemes: filterSchemes,
-            shareSettings: shareSettings,
-            nurseryByAccount: nurseryByAccount,
-            scheduleOrderByAccount: scheduleOrderByAccount,
-            slotDelta: slotDelta,
-            slotEvicts: slotEvicts,
+            filterSchemes: filterSchemes, shareSettings: shareSettings,
+            nurseryByAccount: nurseryByAccount, scheduleOrderByAccount: scheduleOrderByAccount,
+            slotDelta: slotDelta, slotEvicts: slotEvicts,
             images: imgMap,
             exportInfo: { scope: scope, withImages: withImages, count: pets.length, ts: Date.now() }
         };
@@ -5976,20 +6443,14 @@ $("exportApply").onclick = async () => {
         a.style.display = "none";
         document.body.appendChild(a); a.click();
         setTimeout(() => { try{ document.body.removeChild(a); }catch(e){} try{ URL.revokeObjectURL(a.href); }catch(e){} }, 2000);
-        if(/iPad|iPhone|iPod/.test(navigator.userAgent)){
-            setTimeout(() => { alert("文件已开始下载。\niPhone/iPad 用户请在「文件」App → 「下载」文件夹里查找。"); }, 800);
-        }
     }catch(e){ alert("导出失败：" + e.message); }
     finally{
         $("exportApply").disabled = false;
-        $("exportApply").textContent = "导出";
-        $("exportModal").classList.add("hidden");
+        $("exportApply").textContent = "导出文件";
     }
 };
 
-/* ==================== 导入 ==================== */
-$("btnImport").onclick = () => { $("importModal").classList.remove("hidden"); };
-$("importCancel").onclick = () => $("importModal").classList.add("hidden");
+// 5. 高级文件导入逻辑
 $("importApply").onclick = function(){
     const mode = $("importMode").value;
     const ipt = document.createElement("input");
@@ -6002,187 +6463,13 @@ $("importApply").onclick = function(){
         const f = e.target.files && e.target.files[0];
         cleanupInput();
         if(!f){ return; }
-        $("importModal").classList.add("hidden");
         const reader = new FileReader();
         reader.onerror = function(){ alert("读取文件失败，请重试"); };
         reader.onload = function(ev){
             let obj;
             try{ obj = JSON.parse(ev.target.result); }
             catch(err){ alert("导入失败：文件不是有效的 JSON"); return; }
-            if(!obj || !Array.isArray(obj.pets)){ alert("导入失败：备份文件缺少 pets 数组"); return; }
-            const migrated = obj.pets.map(normalizePet);
-            const images = obj.images || {};
-            const imgIds = Object.keys(images);
-            const base64List = [];
-            migrated.forEach(function(p){
-                if(isBase64Img(p.img)) base64List.push({ p: p, field: "img" });
-                if(isBase64Img(p.imgBack)) base64List.push({ p: p, field: "imgBack" });
-                if(isBase64Img(p.imgBaby)) base64List.push({ p: p, field: "imgBaby" });
-                if(p.cp1 && isBase64Img(p.cp1.img)) base64List.push({ p: p, field: "cp1.img" });
-                if(p.cp2 && isBase64Img(p.cp2.img)) base64List.push({ p: p, field: "cp2.img" });
-            });
-            let confirmMsg = "", planAdd = [], planUpdate = [], planKeep = [];
-            if(mode === "replace"){
-                confirmMsg = "覆盖导入将清空现有 " + petList.length + " 只宠物，用备份文件里的 " + migrated.length + " 只替换。\n\n确认继续？";
-            } else {
-                const localMap = new Map();
-                petList.forEach(function(p){ localMap.set(p.id, p); });
-                migrated.forEach(function(mp){
-                    if(!localMap.has(mp.id)){ planAdd.push(mp); }
-                    else {
-                        const exist = localMap.get(mp.id);
-                        if(petDiffers(mp, exist)) planUpdate.push({ mp: mp, exist: exist });
-                        else planKeep.push(mp);
-                    }
-                });
-                confirmMsg = "智能合并（按内容比较）：\n\n· 会新增 " + planAdd.length + " 只宠物\n· 会更新 " + planUpdate.length + " 只（内容不同，用备份覆盖）\n· 会跳过 " + planKeep.length + " 只（内容完全相同）\n\n现有其他 " + (petList.length - planUpdate.length - planKeep.length) + " 只宠物不受影响。\n\n确认继续？";
-            }
-            if(!confirm(confirmMsg)) return;
-            function processImagesSequentially(callback){
-                let i = 0;
-                const total = base64List.length + imgIds.length;
-                if(total === 0){ callback(); return; }
-                function step(){
-                    if(i >= base64List.length){
-                        const j = i - base64List.length;
-                        if(j >= imgIds.length){ callback(); return; }
-                        const id = imgIds[j];
-                        i++;
-                        base64ToBlob(images[id]).then(function(blob){ return saveImage(id, blob); }).catch(function(){}).then(function(){ setTimeout(step, 0); });
-                        return;
-                    }
-                    const item = base64List[i];
-                    i++;
-                    base64ToBlob(getFieldValue(item.p, item.field)).then(function(blob){
-                        const nid = "img_" + genId();
-                        return saveImage(nid, blob).then(function(){ setFieldValue(item.p, item.field, nid); });
-                    }).catch(function(){ setFieldValue(item.p, item.field, ""); }).then(function(){ setTimeout(step, 0); });
-                }
-                step();
-            }
-            processImagesSequentially(function(){
-                let stat = { added: 0, updated: 0, kept: 0 };
-                if(mode === "replace"){ petList = migrated; stat.added = migrated.length; }
-                else {
-                    planAdd.forEach(function(mp){ petList.push(mp); stat.added++; });
-                    planUpdate.forEach(function(item){
-                        const idx = petList.findIndex(function(x){ return x.id === item.mp.id; });
-                        if(idx < 0) return;
-                        const merged = Object.assign({}, item.mp);
-                        if(!merged.img && item.exist.img) merged.img = item.exist.img;
-                        if(!merged.imgBack && item.exist.imgBack) merged.imgBack = item.exist.imgBack;
-                        if(!merged.imgBaby && item.exist.imgBaby) merged.imgBaby = item.exist.imgBaby;
-                        if(merged.cp1 && !merged.cp1.img && item.exist.cp1 && item.exist.cp1.img) merged.cp1.img = item.exist.cp1.img;
-                        if(merged.cp2 && !merged.cp2.img && item.exist.cp2 && item.exist.cp2.img) merged.cp2.img = item.exist.cp2.img;
-                        petList[idx] = merged;
-                        stat.updated++;
-                    });
-                    stat.kept = planKeep.length;
-                }
-                if(mode === "replace"){
-                    accountOptions = Array.isArray(obj.accounts) ? obj.accounts : [];
-                    if(obj.breedMap && typeof obj.breedMap === "object") breedMap = obj.breedMap;
-                    flawScores = obj.flawScores && typeof obj.flawScores === "object" ? obj.flawScores : {};
-                    mainAccount = obj.mainAccount || "";
-                    matchSchemes = Array.isArray(obj.matchSchemes) ? obj.matchSchemes : [];
-                    filterSchemes = Array.isArray(obj.filterSchemes) ? obj.filterSchemes : [];
-                    currentSchemeId = obj.currentSchemeId || "";
-                    nurseryByAccount = obj.nurseryByAccount && typeof obj.nurseryByAccount === "object" ? obj.nurseryByAccount : {};
-                    scheduleOrderByAccount = obj.scheduleOrderByAccount && typeof obj.scheduleOrderByAccount === "object" ? obj.scheduleOrderByAccount : {};
-                    slotDelta = obj.slotDelta && typeof obj.slotDelta === "object" ? obj.slotDelta : {};
-                    slotEvicts = Array.isArray(obj.slotEvicts) ? obj.slotEvicts : [];
-                    if(obj.shareSettings){
-                        const ss = obj.shareSettings;
-                        if(ss.frameColor) shareSettings.frameColor = ss.frameColor;
-                        if(typeof ss.fontScale === "number") shareSettings.fontScale = ss.fontScale;
-                        if(ss.bigImg && typeof ss.bigImg === "object"){
-                            ["name","gender","breed","account","tags","features","note","recoverTime","remainTime"].forEach(k => { if(typeof ss.bigImg[k] === "boolean") shareSettings.bigImg[k] = ss.bigImg[k]; });
-                        }
-                        if(ss.batch && typeof ss.batch === "object"){
-                            ["main","back","baby","meetup"].forEach(k => { if(typeof ss.batch[k] === "boolean") shareSettings.batch[k] = ss.batch[k]; });
-                        }
-                    }
-                    if(obj.featureMap && typeof obj.featureMap === "object"){
-                        const keys = Object.keys(obj.featureMap);
-                        const isOld = keys.length > 0 && typeof obj.featureMap[keys[0]] === "string";
-                        if(isOld){
-                            featureMap = initFeatureMapFromDefaults();
-                            Object.keys(obj.featureMap).forEach(function(name){
-                                const color = obj.featureMap[name];
-                                const guess = guessFeatureCategory(name);
-                                if(guess){ if(!featureMap[guess]) featureMap[guess] = {}; featureMap[guess][name] = color; }
-                                else { if(!featureMap[CAT_COMMON]) featureMap[CAT_COMMON] = {}; featureMap[CAT_COMMON][name] = color; }
-                            });
-                        } else { featureMap = obj.featureMap; if(!featureMap[CAT_COMMON]) featureMap[CAT_COMMON] = {}; }
-                    }
-                } else {
-                    if(Array.isArray(obj.accounts)){ obj.accounts.forEach(function(a){ if(accountOptions.indexOf(a) === -1) accountOptions.push(a); }); }
-                    if(obj.breedMap && typeof obj.breedMap === "object"){
-                        Object.keys(obj.breedMap).forEach(function(cat){
-                            if(!(cat in breedMap)) breedMap[cat] = [];
-                            (obj.breedMap[cat] || []).forEach(function(b){ if(breedMap[cat].indexOf(b) === -1) breedMap[cat].push(b); });
-                        });
-                    }
-                    if(obj.flawScores && typeof obj.flawScores === "object"){
-                        Object.keys(obj.flawScores).forEach(function(k){ if(flawScores[k] === undefined) flawScores[k] = obj.flawScores[k]; });
-                    }
-                    if(obj.mainAccount && !mainAccount) mainAccount = obj.mainAccount;
-                    if(Array.isArray(obj.matchSchemes)){ obj.matchSchemes.forEach(s => { if(!matchSchemes.some(x => x.id === s.id)) matchSchemes.push(s); }); }
-                    if(Array.isArray(obj.filterSchemes)){ obj.filterSchemes.forEach(s => { if(!filterSchemes.some(x => x.id === s.id)) filterSchemes.push(s); }); }
-                    if(obj.nurseryByAccount && typeof obj.nurseryByAccount === "object"){
-                        Object.keys(obj.nurseryByAccount).forEach(function(k){ if(!nurseryByAccount[k]) nurseryByAccount[k] = obj.nurseryByAccount[k]; });
-                    }
-                    if(obj.scheduleOrderByAccount && typeof obj.scheduleOrderByAccount === "object"){
-                        Object.keys(obj.scheduleOrderByAccount).forEach(function(k){ if(!scheduleOrderByAccount[k]) scheduleOrderByAccount[k] = obj.scheduleOrderByAccount[k]; });
-                    }
-                    if(obj.slotDelta && typeof obj.slotDelta === "object"){
-                        Object.keys(obj.slotDelta).forEach(function(k){ if(!slotDelta[k]) slotDelta[k] = obj.slotDelta[k]; });
-                    }
-                    if(Array.isArray(obj.slotEvicts)){
-                        obj.slotEvicts.forEach(function(ev){
-                            if(!slotEvicts.some(x => x.id === ev.id)) slotEvicts.push(ev);
-                        });
-                    }
-                    if(obj.featureMap && typeof obj.featureMap === "object"){
-                        const keys = Object.keys(obj.featureMap);
-                        const isOld = keys.length > 0 && typeof obj.featureMap[keys[0]] === "string";
-                        if(isOld){
-                            Object.keys(obj.featureMap).forEach(function(name){
-                                const color = obj.featureMap[name];
-                                const guess = guessFeatureCategory(name);
-                                const target = guess || CAT_COMMON;
-                                if(!featureMap[target]) featureMap[target] = {};
-                                if(!featureMap[target][name]) featureMap[target][name] = color;
-                            });
-                        } else {
-                            Object.keys(obj.featureMap).forEach(function(cat){
-                                if(!featureMap[cat]) featureMap[cat] = {};
-                                Object.keys(obj.featureMap[cat]).forEach(function(name){
-                                    if(!featureMap[cat][name]) featureMap[cat][name] = obj.featureMap[cat][name];
-                                });
-                            });
-                        }
-                    }
-                }
-                petList.forEach(function(p){ if(!p.features) return; p.features.forEach(function(f){ ensureFeatureExists(f, p.category); }); });
-                accountOptions.forEach(function(a){
-                    if(!nurseryByAccount[a]) nurseryByAccount[a] = { litters:0, twins:0, babies:0, exitTasks:[] };
-                    if(!nurseryByAccount[a].exitTasks) nurseryByAccount[a].exitTasks = [];
-                });
-                saveLocal();
-                lastSnapshot = null;
-                updateUndoBtn();
-                setTimeout(function(){
-                    render();
-                    setTimeout(function(){
-                        if(mode === "replace"){
-                            alert("导入成功\n模式：覆盖\n共导入 " + migrated.length + " 只\n当前共 " + petList.length + " 只宠物");
-                        } else {
-                            alert("导入成功\n模式：智能合并（内容比较）\n· 新增 " + stat.added + " 只\n· 更新 " + stat.updated + " 只\n· 跳过 " + stat.kept + " 只\n\n当前共 " + petList.length + " 只宠物");
-                        }
-                    }, 100);
-                }, 0);
-            });
+            processImportedData(obj, mode);
         };
         reader.readAsText(f);
     };
@@ -8638,6 +8925,21 @@ setInterval(() => {
     if(checkAutoLock(Date.now())) saveLocal();
     tickUpdate();
 }, 1000);
+
+// 剪贴板帮助弹窗
+$("clipHelpBtn").onclick = function(){
+    $("clipHelpModal").classList.remove("hidden");
+};
+$("closeClipHelp").onclick = function(){
+    $("clipHelpModal").classList.add("hidden");
+};
+$("clipHelpModal").addEventListener("click", e=>{
+    if(e.target === $("clipHelpModal")){
+        $("clipHelpModal").classList.add("hidden");
+    }
+});
+
+
 </script>
 <footer style="text-align:center;font-size:11px;color:#aaa;padding:16px 0 8px;border-top:1px solid #eee;margin-top:20px">
   © 2026 绒光宠物录 · 保留所有权利<br>
